@@ -14,30 +14,31 @@
 
 class CapturaThread : public QThread
 {
- Q_OBJECT
+Q_OBJECT
 
 public:
-     CapturaThread(QObject *parent,char *camara, GLWidget *glWidgetcam);
+     CapturaThread(QObject *parent,QString camara, GLWidget *glWidgetcam,GLWidget *glWidgetpgm);
      ~CapturaThread();
      void selecfontvideo(QString fontdevideo);
-signals:
-     void mostrarframe(IplImage *frame, char *camera,GLWidget *glWidgetcam);
 
 public slots:
-     void estatdelatransicio();
+     void selecfontPGM();
 
 protected:
      void run();
 
 private:
-     char *camara;
      GLWidget *glwidgetcam;
+     GLWidget *glwidgetpgm;
+     QString camara,camarapgm;
      QString fontvideo;
      CvCapture *cap;
+     IplImage *frame;
+     IplImage *pgm;
      bool parar;
      bool estattransicio;
 
- };
+};
 
 
 

@@ -1,12 +1,18 @@
+//Implementació de la clase GLWidget
+
 #include "glwidget.h"
 
+//Constuctor de la clase GLWidget
 GLWidget::GLWidget() : QGLWidget(QGLFormat(QGL::SampleBuffers)) {
     setMinimumSize(320,240);
 }
 
+//Funció menbre que inicialitza el widget opengl a 0, negre
 void GLWidget::initializeGL() {
     glClearColor(0.0f,0.0f,0.0f,1.0f);
 }
+
+//Funció menbre que actualitza el contingut del widget opengl
 void GLWidget::paintGL() {
     glClear (GL_COLOR_BUFFER_BIT);
     glClearColor (0.0,0.0,0.0,1.0);
@@ -44,6 +50,7 @@ void GLWidget::paintGL() {
     // qDebug() << "Drawing...";
 }
 
+//Funció menbre que redimensiona el widget opengl
 void GLWidget::resizeGL(int w, int h) {
     glViewport (0, 0, (GLsizei)w, (GLsizei)h);
     glMatrixMode (GL_PROJECTION);
@@ -53,6 +60,7 @@ void GLWidget::resizeGL(int w, int h) {
     // qDebug() << "Resizing...";
 }
 
+//Funció menbre que converteix una imatge OpenCV a OpenGL
 void GLWidget::sendImage(IplImage *img) {
     //La imatge es guarda utilitzant 24-bit RGB(8-8-8).
     qframe = QImage((const unsigned char*)(img->imageData), img->width, img->height, img->widthStep, QImage::Format_RGB888).rgbSwapped();
@@ -60,9 +68,10 @@ void GLWidget::sendImage(IplImage *img) {
     this->updateGL();
 }
 
-void GLWidget::mouseMoveEvent(QMouseEvent *event)
+//Funció menbre que controla si s'ha clicat el widget opengl, per fer el canvi de càmera
+void GLWidget::mousePressEvent(QMouseEvent *event)
 {
-
+ emit widgetClicked();
+ QWidget::mousePressEvent(event);
 }
-
 

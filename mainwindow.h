@@ -26,8 +26,7 @@ public:
     ~MainWindow();
 
 public slots: 
-    void processCam(IplImage *frame,char *camera,GLWidget *glWidgetcam);
-    void cambiarcamara(QMouseEvent *);
+    void cambiarcamara();
 
 protected:
     void changeEvent(QEvent *e);

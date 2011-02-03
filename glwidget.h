@@ -1,3 +1,5 @@
+//Declaració de la clase GLWidget
+
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
@@ -13,17 +15,17 @@ class GLWidget : public QGLWidget
 public:
     GLWidget();
 
-signals:
-    void mousePressEvent(QMouseEvent *event);
-
 public slots:
     void sendImage(IplImage *img);
+
+signals:
+    void widgetClicked();
 
 protected:
     void initializeGL();
     void paintGL();
     void resizeGL(int width, int height);
-    void mouseMoveEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event);
 
 private:
     QImage qframe;

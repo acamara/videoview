@@ -4,12 +4,13 @@
 #include "CapturaThread.h"
 
 //Constructor de la clase CapturaThread
-CapturaThread::CapturaThread(QObject *parent,char *camaraacapturar,GLWidget *glWidgetcam)
+CapturaThread::CapturaThread(QObject *parent,QString camaraacapturar,GLWidget *glWidgetcam,GLWidget *glWidgetpgm)
         : QThread(parent)
 {
      camara=camaraacapturar;
      glwidgetcam=glWidgetcam;
-}
+     glwidgetpgm=glWidgetpgm;
+ }
 
 //Destructor de la clase CapturaThread
 CapturaThread::~CapturaThread()
@@ -23,14 +24,15 @@ void CapturaThread::selecfontvideo(QString fontdevideo)
      fontvideo=fontdevideo;
 }
 
-//Funció menbre que controla l'estat de la transició
-void CapturaThread::estatdelatransicio()
+//Funció menbre que selecciona la font de video de sortida PGM
+void CapturaThread::selecfontPGM()
 {
-   estattransicio=false;
+     camarapgm=sender()->objectName();
+     qDebug()<<camarapgm<<"   "<<camara;
+
 }
 
-
-//Funció menbre que comença la captura
+//Funció menbre que realitza l'adquisició dels frames
 void CapturaThread::run()
  {
     CvCapture *cap;
@@ -54,15 +56,17 @@ void CapturaThread::run()
 
   //cvNamedWindow(camara,1);
 
-   IplImage *frame = cvQueryFrame(cap);
+   frame = cvQueryFrame(cap);
 
-   int tecla= cvWaitKey(10);
-
-   while (frame && tecla==-1) {
+   while (frame) {
        //cvShowImage(camara, frame);
        frame= cvQueryFrame(cap);
-       mostrarframe(frame,camara,glwidgetcam);
-       tecla= cvWaitKey(10);
+       glwidgetcam->sendImage(frame);
+       if(camara==camarapgm){
+           pgm=cvCloneImage(frame);
+           glwidgetpgm->sendImage(pgm);
+       }
+       cvWaitKey(25);
    }
    cvReleaseCapture(&cap);
  }

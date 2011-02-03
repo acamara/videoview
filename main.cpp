@@ -1,3 +1,5 @@
+//Implementació del main
+
 #include <QtGui/QApplication>
 #include "mainwindow.h"
 

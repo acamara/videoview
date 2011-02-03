@@ -13,6 +13,7 @@ CvVideoWriter *video;
 CvSize size = cvSize(720,576); //Tamaño de grabación
 double fps = 25; // Frames por Segundo
 
+//Constructor de la clase GravarThread
 GravarThread::GravarThread(QObject *parent,QString nomdeprojecte,int tipusdetransicio,int duradadetransicio)
     : QThread(parent)
 {
@@ -20,11 +21,13 @@ GravarThread::GravarThread(QObject *parent,QString nomdeprojecte,int tipusdetran
     duradatransicio = duradadetransicio;
 }
 
+//Destructor de la clase GravarThread
 GravarThread::~GravarThread()
 {
 
 }
 
+//Funció menbre que realitza la gravació i el processat dels frames de sortida PGM
 void GravarThread::run()
 {
     video= cvCreateVideoWriter("salida.avi",CV_FOURCC('M','J','P','G'),fps,size, 1);
@@ -46,7 +49,6 @@ void GravarThread::selecduratransicio(int duradetransicio)
 }
 
 //Funció menbre que manipula la transició
-
 void GravarThread::activarlatransicio(IplImage* Imatgeactual,IplImage *Imatgeanterior,bool estattransicio)
 {
 
@@ -63,7 +65,7 @@ void GravarThread::activarlatransicio(IplImage* Imatgeactual,IplImage *Imatgeant
         sal= cvCloneImage(ent1);
         cvAddWeighted(ent1, peso/100.0, ent2, 1.0-peso/100.0, 0, sal);
 
-        cvShowImage("PGM", sal);
+        //cvShowImage("PGM", sal);
         cvReleaseImage(&ent1);
         cvReleaseImage(&ent2);
         cvReleaseImage(&sal);
@@ -78,7 +80,7 @@ void GravarThread::activarlatransicio(IplImage* Imatgeactual,IplImage *Imatgeant
         }
 
     default:    //Transició per defecte Tall
-        cvShowImage("PGM", Imatgeactual);
+        //cvShowImage("PGM", Imatgeactual);
         pararlatransicio();
        // qDebug()<<"Transició activada,default";
     }

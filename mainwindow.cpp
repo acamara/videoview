@@ -1,3 +1,5 @@
+//Implementació de la clase MainWindow
+
 #include <QtGui>
 
 #include "mainwindow.h"
@@ -84,7 +86,9 @@ void MainWindow::creainterficie()
         glWidget_cam1 = new GLWidget();
         glWidget_pgm = new GLWidget();
 
-        QObject::connect(glWidget_cam1, SIGNAL(mousePressEvent(QMouseEvent *)),this, SLOT(cambiarcamara(QMouseEvent *)));
+        glWidget_cam1->setObjectName("cam1");
+
+        QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
 
         ui->gridLayout->addWidget(cam1Label,1,1);
         ui->gridLayout->addWidget(glWidget_cam1,2,1);
@@ -103,8 +107,11 @@ void MainWindow::creainterficie()
         glWidget_cam2 = new GLWidget();
         glWidget_pgm = new GLWidget();
 
-        QObject::connect(glWidget_cam1, SIGNAL(mousePressEvent(QMouseEvent *)),this, SLOT(cambiarcamara(QMouseEvent *)));
-        QObject::connect(glWidget_cam2, SIGNAL(mousePressEvent(QMouseEvent *)),this, SLOT(cambiarcamara(QMouseEvent *)));
+        glWidget_cam1->setObjectName("cam1");
+        glWidget_cam2->setObjectName("cam2");
+
+        QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
+        QObject::connect(glWidget_cam2, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
 
         ui->gridLayout->addWidget(cam1Label,1,1);
         ui->gridLayout->addWidget(glWidget_cam1,2,1);
@@ -132,9 +139,13 @@ void MainWindow::creainterficie()
         glWidget_cam3 = new GLWidget();
         glWidget_pgm = new GLWidget();
 
-        QObject::connect(glWidget_cam1, SIGNAL(mousePressEvent(QMouseEvent *)),this, SLOT(cambiarcamara(QMouseEvent *)));
-        QObject::connect(glWidget_cam2, SIGNAL(mousePressEvent(QMouseEvent *)),this, SLOT(cambiarcamara(QMouseEvent *)));
-        QObject::connect(glWidget_cam3, SIGNAL(mousePressEvent(QMouseEvent *)),this, SLOT(cambiarcamara(QMouseEvent *)));
+        glWidget_cam1->setObjectName("cam1");
+        glWidget_cam2->setObjectName("cam2");
+        glWidget_cam3->setObjectName("cam3");
+
+        QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
+        QObject::connect(glWidget_cam2, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
+        QObject::connect(glWidget_cam3, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
 
         ui->gridLayout->addWidget(cam1Label,1,1);
         ui->gridLayout->addWidget(glWidget_cam1,2,1);
@@ -167,10 +178,15 @@ void MainWindow::creainterficie()
         glWidget_cam4 = new GLWidget();
         glWidget_pgm = new GLWidget();
 
-        QObject::connect(glWidget_cam1, SIGNAL(mousePressEvent(QMouseEvent *)),this, SLOT(cambiarcamara(QMouseEvent *)));
-        QObject::connect(glWidget_cam2, SIGNAL(mousePressEvent(QMouseEvent *)),this, SLOT(cambiarcamara(QMouseEvent *)));
-        QObject::connect(glWidget_cam3, SIGNAL(mousePressEvent(QMouseEvent *)),this, SLOT(cambiarcamara(QMouseEvent *)));
-        QObject::connect(glWidget_cam4, SIGNAL(mousePressEvent(QMouseEvent *)),this, SLOT(cambiarcamara(QMouseEvent *)));
+        glWidget_cam1->setObjectName("cam1");
+        glWidget_cam2->setObjectName("cam2");
+        glWidget_cam3->setObjectName("cam3");
+        glWidget_cam4->setObjectName("cam4");
+
+        QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
+        QObject::connect(glWidget_cam2, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
+        QObject::connect(glWidget_cam3, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
+        QObject::connect(glWidget_cam4, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
 
         ui->gridLayout->addWidget(cam1Label,1,1);
         ui->gridLayout->addWidget(glWidget_cam1,2,1);
@@ -206,7 +222,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *event)
     menu.exec(event->globalPos());
 }
 
-
+//Funció menbre que controla l'acció nou fitxer
 void MainWindow::newFile()
 {
     Dialog *configdialog = new Dialog;
@@ -216,20 +232,20 @@ void MainWindow::newFile()
 
 }
 
-
+//Funció menbre que controla l'acció about
 void MainWindow::about()
 {
     QMessageBox::about(this, tr("Ajuda"),tr("Ajuda de Capturadora"));
 }
 
-
+//Funció menbre que controla l'acció aboutQt
 void MainWindow::aboutQt()
 {
     QMessageBox::about(this, tr("Sobre Capturadora"),
             tr("Sobre capturadora, versió 1, Tots els drets reservats"));
 }
 
-
+//Funció menbre que crea les diferents accions de la finestra principal
 void MainWindow::createActions()
 {
     newAct = new QAction(tr("&Nova"), this);
@@ -252,6 +268,7 @@ void MainWindow::createActions()
 
 }
 
+//Funció menbre que crea el menu de l'aplicació
 void MainWindow::createMenus()
 {
     fileMenu = menuBar()->addMenu(tr("&Captura"));
@@ -268,9 +285,7 @@ void MainWindow::createMenus()
 
 }
 
-
-
-
+//Funció menbre que controla el botó capturar
 void MainWindow::on_capturaButton_clicked()
 {
     QString fontdevideo1;
@@ -288,7 +303,7 @@ void MainWindow::on_capturaButton_clicked()
 
     connect(ui->comboBox, SIGNAL(activated (int)),Gravarthread,SLOT(selectransicio(int)));
 
-    //connect(ui->spinBox, SIGNAL(valueChanged (int)),Gravarthread,SLOT(selecduratransicio(int)));
+    connect(ui->spinBox, SIGNAL(valueChanged (int)),Gravarthread,SLOT(selecduratransicio(int)));
 
     Gravarthread->start();
 
@@ -297,23 +312,21 @@ void MainWindow::on_capturaButton_clicked()
     {
     case 1:
        //Creació dels threads de captura
-       Capturathread1 = new CapturaThread(this,"cam1",glWidget_cam1);
+       Capturathread1 = new CapturaThread(this,"cam1",glWidget_cam1,glWidget_pgm);
 
        fontdevideo1 = QFileDialog::getOpenFileName();
+
        Capturathread1->selecfontvideo(fontdevideo1);
        Capturathread1->start();
 
-       QObject::connect(Capturathread1, SIGNAL(mostrarframe(IplImage *, char *,GLWidget *)),this, SLOT(processCam(IplImage *, char *,GLWidget *)));
+       QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),Capturathread1, SLOT(selecfontPGM()));
 
        break;
 
     case 2:
        //Creació dels threads de captura
-       Capturathread1 = new CapturaThread(this,"cam1",glWidget_cam1);
-       Capturathread2 = new CapturaThread(this,"cam2",glWidget_cam2);
-
-       QObject::connect(Capturathread1, SIGNAL(mostrarframe(IplImage *, char *,GLWidget *)),this, SLOT(processCam(IplImage *, char *,GLWidget *)));
-       QObject::connect(Capturathread2, SIGNAL(mostrarframe(IplImage *, char *,GLWidget *)),this, SLOT(processCam(IplImage *, char *,GLWidget *)));
+       Capturathread1 = new CapturaThread(this,"cam1",glWidget_cam1,glWidget_pgm);
+       Capturathread2 = new CapturaThread(this,"cam2",glWidget_cam2,glWidget_pgm);
 
        fontdevideo1 = QFileDialog::getOpenFileName();
        fontdevideo2 = QFileDialog::getOpenFileName();
@@ -322,18 +335,17 @@ void MainWindow::on_capturaButton_clicked()
        Capturathread1->start();
        Capturathread2->selecfontvideo(fontdevideo2);
        Capturathread2->start();
+
+       QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),Capturathread1, SLOT(selecfontPGM()));
+       QObject::connect(glWidget_cam2, SIGNAL(widgetClicked()),Capturathread2, SLOT(selecfontPGM()));
+
        break;
 
     case 3:
        //Creació dels threads de captura
-       Capturathread1 = new CapturaThread(this,"cam1",glWidget_cam1);
-       Capturathread2 = new CapturaThread(this,"cam2",glWidget_cam2);
-       Capturathread3 = new CapturaThread(this,"cam3",glWidget_cam3);
-
-       QObject::connect(Capturathread1, SIGNAL(mostrarframe(IplImage *, char *,GLWidget *)),this, SLOT(processCam(IplImage *, char *,GLWidget *)));
-       QObject::connect(Capturathread2, SIGNAL(mostrarframe(IplImage *, char *,GLWidget *)),this, SLOT(processCam(IplImage *, char *,GLWidget *)));
-       QObject::connect(Capturathread3, SIGNAL(mostrarframe(IplImage *, char *,GLWidget *)),this, SLOT(processCam(IplImage *, char *,GLWidget *)));
-
+       Capturathread1 = new CapturaThread(this,"cam1",glWidget_cam1,glWidget_pgm);
+       Capturathread2 = new CapturaThread(this,"cam2",glWidget_cam2,glWidget_pgm);
+       Capturathread3 = new CapturaThread(this,"cam3",glWidget_cam3,glWidget_pgm);
 
        fontdevideo1 = QFileDialog::getOpenFileName();
        fontdevideo2 = QFileDialog::getOpenFileName();
@@ -346,20 +358,18 @@ void MainWindow::on_capturaButton_clicked()
        Capturathread3->selecfontvideo(fontdevideo3);
        Capturathread3->start();
 
+       QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),Capturathread1, SLOT(selecfontPGM()));
+       QObject::connect(glWidget_cam2, SIGNAL(widgetClicked()),Capturathread2, SLOT(selecfontPGM()));
+       QObject::connect(glWidget_cam3, SIGNAL(widgetClicked()),Capturathread3, SLOT(selecfontPGM()));
+
        break;
 
     default:
        //Creació dels threads de captura
-       Capturathread1 = new CapturaThread(this,"cam1",glWidget_cam1);
-       Capturathread2 = new CapturaThread(this,"cam2",glWidget_cam2);
-       Capturathread3 = new CapturaThread(this,"cam3",glWidget_cam3);
-       Capturathread4 = new CapturaThread(this,"cam4",glWidget_cam4);
-
-       QObject::connect(Capturathread1, SIGNAL(mostrarframe(IplImage *, char *,GLWidget *)),this, SLOT(processCam(IplImage *, char *,GLWidget *)));
-       QObject::connect(Capturathread2, SIGNAL(mostrarframe(IplImage *, char *,GLWidget *)),this, SLOT(processCam(IplImage *, char *,GLWidget *)));
-       QObject::connect(Capturathread3, SIGNAL(mostrarframe(IplImage *, char *,GLWidget *)),this, SLOT(processCam(IplImage *, char *,GLWidget *)));
-       QObject::connect(Capturathread4, SIGNAL(mostrarframe(IplImage *, char *,GLWidget *)),this, SLOT(processCam(IplImage *, char *,GLWidget *)));
-
+       Capturathread1 = new CapturaThread(this,"cam1",glWidget_cam1,glWidget_pgm);
+       Capturathread2 = new CapturaThread(this,"cam2",glWidget_cam2,glWidget_pgm);
+       Capturathread3 = new CapturaThread(this,"cam3",glWidget_cam3,glWidget_pgm);
+       Capturathread4 = new CapturaThread(this,"cam4",glWidget_cam4,glWidget_pgm);
 
        fontdevideo1 = QFileDialog::getOpenFileName();
        fontdevideo2 = QFileDialog::getOpenFileName();
@@ -375,65 +385,85 @@ void MainWindow::on_capturaButton_clicked()
        Capturathread4->selecfontvideo(fontdevideo4);
        Capturathread4->start();
 
+       QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),Capturathread1, SLOT(selecfontPGM()));
+       QObject::connect(glWidget_cam2, SIGNAL(widgetClicked()),Capturathread2, SLOT(selecfontPGM()));
+       QObject::connect(glWidget_cam3, SIGNAL(widgetClicked()),Capturathread3, SLOT(selecfontPGM()));
+       QObject::connect(glWidget_cam4, SIGNAL(widgetClicked()),Capturathread4, SLOT(selecfontPGM()));
+
        }
 
 }
 
+//Funció menbre que controla el botó stop
 void MainWindow::on_stopButton_clicked()
 {
-    Capturathread1->terminate();
-    Capturathread2->terminate();
-    Capturathread3->terminate();
-    Capturathread4->terminate();
-}
+    switch(numcam)
+    {
+    case 1:
+        Capturathread1->terminate();
 
-void MainWindow::processCam(IplImage *frame, char *camera,GLWidget *glWidgetcam) {
+    break;
 
-   if (frame->imageData) {
-            //this->processFrame(frame);
-            glWidgetcam->sendImage(frame);
-            ui->statusBar->showMessage("Adquirint....");
+    case 2:
+        Capturathread1->terminate();
+        Capturathread2->terminate();
+
+    break;
+
+    case 3:
+        Capturathread1->terminate();
+        Capturathread2->terminate();
+        Capturathread3->terminate();
+
+    break;
+
+    default:
+        Capturathread1->terminate();
+        Capturathread2->terminate();
+        Capturathread3->terminate();
+        Capturathread4->terminate();
+
+    break;
     }
-    return;
 }
 
-
-void MainWindow::cambiarcamara(QMouseEvent *)
-{
-    qDebug()<<"Has clicat un widget";
-   switch (1)
-   {
-        case 1:
+//Funció menbre que controla el canvi de càmera
+void MainWindow::cambiarcamara()
+{  
+      if(sender()->objectName()=="cam1")
+      {
             cam1Label->setStyleSheet("background-color: rgb(255, 0, 0)");
 
             cam2Label->setStyleSheet("background-color: rgb(255, 255, 255)");
             cam3Label->setStyleSheet("background-color: rgb(255, 255, 255)");
             cam4Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-            break;
+      }
 
-        case 2:
+      if(sender()->objectName()=="cam2")
+      {
             cam2Label->setStyleSheet("background-color: rgb(255, 0, 0)");
 
             cam1Label->setStyleSheet("background-color: rgb(255, 255, 255)");
             cam3Label->setStyleSheet("background-color: rgb(255, 255, 255)");
             cam4Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-            break;
+      }
 
-        case 3:
+      if(sender()->objectName()=="cam3")
+      {
             cam3Label->setStyleSheet("background-color: rgb(255, 0, 0)");
 
             cam1Label->setStyleSheet("background-color: rgb(255, 255, 255)");
             cam2Label->setStyleSheet("background-color: rgb(255, 255, 255)");
             cam4Label->setStyleSheet("background-color: rgb(255, 255, 255)");
 
-            break;
+      }
 
-        default:
+      if(sender()->objectName()=="cam4")
+      {
             cam4Label->setStyleSheet("background-color: rgb(255, 0, 0)");
 
             cam1Label->setStyleSheet("background-color: rgb(255, 255, 255)");
             cam2Label->setStyleSheet("background-color: rgb(255, 255, 255)");
             cam3Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-
-   }
+      }
 }
