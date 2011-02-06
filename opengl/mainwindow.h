@@ -2,7 +2,13 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTime>
+
 #include "glwidget.h"
+
+#include <cxcore.h>
+#include <cv.h>
+#include <highgui.h>
 
 namespace Ui {
     class MainWindow;

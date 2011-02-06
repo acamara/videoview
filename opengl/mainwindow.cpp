@@ -10,8 +10,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->ui->verticalLayout->addWidget(glWidget);
 
-     connect(ui->boto,SIGNAL(clicked()),glWidget,SLOT(drawframe()));
-
 }
 
 MainWindow::~MainWindow()

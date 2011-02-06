@@ -15,15 +15,8 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0">
-     <layout class="QVBoxLayout" name="verticalLayout"/>
-    </item>
     <item row="0" column="0">
-     <widget class="QPushButton" name="boto">
-      <property name="text">
-       <string>Mostra rectangles</string>
-      </property>
-     </widget>
+     <layout class="QVBoxLayout" name="verticalLayout"/>
     </item>
    </layout>
   </widget>
@@ -49,6 +42,16 @@
   <action name="actionPintar">
    <property name="text">
     <string>Pintar</string>
+   </property>
+  </action>
+  <action name="actionAdquirir">
+   <property name="text">
+    <string>Adquirir</string>
+   </property>
+  </action>
+  <action name="actionParar">
+   <property name="text">
+    <string>Parar</string>
    </property>
   </action>
  </widget>
