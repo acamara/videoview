@@ -23,9 +23,18 @@ public:
 protected:
     void changeEvent(QEvent *e);
 
+private slots:
+    void startCam();
+    void stopCam();
+    void processCam();
+
 private:
     Ui::MainWindow *ui;
     GLWidget *glWidget;
+
+    CvCapture *capture;
+    QTime timer;
+    bool parar;
 
 };
 

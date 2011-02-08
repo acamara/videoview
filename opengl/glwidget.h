@@ -14,6 +14,7 @@ class GLWidget : public QGLWidget
 
 public:
     GLWidget();
+    void sendImage(IplImage *img);
 
 protected:
     void initializeGL();

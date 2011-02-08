@@ -10,6 +10,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->ui->verticalLayout->addWidget(glWidget);
 
+    connect(ui->actionAdquirir,SIGNAL(triggered()),this,SLOT(startCam()));
+    connect(ui->actionParar,SIGNAL(triggered()),this,SLOT(stopCam()));
+
 }
 
 MainWindow::~MainWindow()
@@ -27,4 +30,32 @@ void MainWindow::changeEvent(QEvent *e)
     default:
         break;
     }
+}
+
+void MainWindow::startCam() {
+    QString video= QFileDialog::getOpenFileName();
+    capture= cvCaptureFromFile(video.toAscii());
+    if (!capture) return;
+    parar=false;
+    this->processCam();
+
+}
+void MainWindow::stopCam() {
+    parar=true;
+    ui->statusBar->showMessage("Parat");
+}
+
+void MainWindow::processCam() {
+    if (capture && !parar)
+    {
+        timer.restart();
+        IplImage *frame;
+        frame=cvQueryFrame(capture);
+        if (frame->imageData) {
+            glWidget->sendImage(frame);
+            ui->statusBar->showMessage("Adquirint....");
+            QTimer::singleShot(40, this, SLOT(processCam()));
+        }
+    }
+    return;
 }

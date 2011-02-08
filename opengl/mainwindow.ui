@@ -38,6 +38,14 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuC_mera">
+    <property name="title">
+     <string>Càmera</string>
+    </property>
+    <addaction name="actionAdquirir"/>
+    <addaction name="actionParar"/>
+   </widget>
+   <addaction name="menuC_mera"/>
   </widget>
   <action name="actionPintar">
    <property name="text">
