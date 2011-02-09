@@ -13,8 +13,6 @@
 #include <highgui.h>
 
 
-int numcam;
-
 //Constructor de la clase MainWindow
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

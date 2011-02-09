@@ -46,6 +46,8 @@ private:
     void createMenus();
     void creainterficie();
 
+    int numcam;
+
     QMenu *fileMenu;
     QMenu *editMenu;
     QMenu *helpMenu;
