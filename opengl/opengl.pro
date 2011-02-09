@@ -6,23 +6,21 @@ TARGET = opengl
 TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
-    glwidget.cpp
+    glwidget.cpp \
+    configdialog.cpp
 HEADERS += mainwindow.h \
-    glwidget.h
-FORMS += mainwindow.ui
-
-win32 {
-
-INCLUDEPATH += "C:\OpenCV2.0\include\opencv"
-LIBS += -L"C:\OpenCV2.0\lib" \
-    -lcv200 \
-    -lcxcore200 \
-    -lhighgui200
- }
-
-else{
-
-INCLUDEPATH += /usr/local/include/opencv
-LIBS += -L/usr/local/lib
-
+    glwidget.h \
+    configdialog.h
+FORMS += mainwindow.ui \
+    configdialog.ui
+win32 { 
+    INCLUDEPATH += "C:\OpenCV2.0\include\opencv"
+    LIBS += -L"C:\OpenCV2.0\lib" \
+        -lcv200 \
+        -lcxcore200 \
+        -lhighgui200
+}
+else { 
+    INCLUDEPATH += /usr/local/include/opencv
+    LIBS += -L/usr/local/lib
 }

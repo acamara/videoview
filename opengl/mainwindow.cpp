@@ -1,12 +1,17 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "configdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    glWidget = new GLWidget();
+
+    Dialog *configdialog = new Dialog;
+    configdialog->exec();
+    int numcam=configdialog->get_config();
+    glWidget = new GLWidget(numcam);
 
     this->ui->verticalLayout->addWidget(glWidget);
 

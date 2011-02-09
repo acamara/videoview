@@ -13,7 +13,7 @@ class GLWidget : public QGLWidget
     Q_OBJECT
 
 public:
-    GLWidget();
+    GLWidget(int numcam);
     void sendImage(IplImage *img);
 
 protected:
@@ -26,6 +26,7 @@ private:
     QImage qframe2;
     QImage qframe3;
     QImage qframe4;
+    int numcam;
 };
 
 #endif // GLWIDGET_H

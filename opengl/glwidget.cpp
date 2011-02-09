@@ -1,7 +1,8 @@
 #include "glwidget.h"
 
-GLWidget::GLWidget() : QGLWidget(QGLFormat(QGL::SampleBuffers)) {
+GLWidget::GLWidget(int numcams) : QGLWidget(QGLFormat(QGL::SampleBuffers)) {
     setMinimumSize(320,240);
+    numcam=numcams;
 }
 
 void GLWidget::initializeGL() {
@@ -17,22 +18,135 @@ void GLWidget::paintGL() {
     glLoadIdentity();                   //La inicialtzem com a matriu identitat
     gluOrtho2D(0,1,0,1);                //Creem una matriu per projectar coordenades en dues dimensions en la pantalla i la multipliquem per la matriu actual.
 
+    //Habilitem la textura y la carregem
+    glEnable(GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
+    switch(numcam)
 
-    if (!qframe1.isNull()||!qframe2.isNull()||!qframe3.isNull()||!qframe4.isNull()) {
+    {
+    case 1:
+
+        if (!qframe1.isNull()) {
+            qframe1 = qframe1.scaled(this->size(), Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+
+            glTexImage2D( GL_TEXTURE_2D, 0, 4, qframe1.width(), qframe1.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, qframe1.bits() );
+
+            //Assignem les coordenades a la textura "CAM-1"
+            glBegin(GL_POLYGON);
+                glTexCoord2f(0,0);
+                glVertex2f(0.05,0.05);
+                glTexCoord2f(1,0);
+                glVertex2f(0.95,0.05);
+                glTexCoord2f(1,1);
+                glVertex2f(0.95,0.95);
+                glTexCoord2f(0,1);
+                glVertex2f(0.05,0.95);
+            glEnd();
+            }
+
+    break;
+
+    case 2:
+
+       if (!qframe1.isNull()||!qframe2.isNull()) {
+           qframe1 = qframe1.scaled(this->size(), Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+           qframe2 = qframe2.scaled(this->size(), Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+
+           glTexImage2D( GL_TEXTURE_2D, 0, 4, qframe1.width(), qframe1.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, qframe1.bits() );
+
+           //Assignem les coordenades a la textura "CAM-1"
+           glBegin(GL_POLYGON);
+               glTexCoord2f(0,0);
+               glVertex2f(0.05,0.55);
+               glTexCoord2f(1,0);
+               glVertex2f(0.45,0.55);
+               glTexCoord2f(1,1);
+               glVertex2f(.45,0.95);
+               glTexCoord2f(0,1);
+               glVertex2f(0.05,0.95);
+           glEnd();
+
+           glTexImage2D( GL_TEXTURE_2D, 0, 4, qframe2.width(), qframe2.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, qframe2.bits() );
+
+           //Assignem les coordenades a la textura "CAM-2"
+           glBegin(GL_POLYGON);
+               glTexCoord2f(0,0);
+               glVertex2f(0.05,0.05);
+               glTexCoord2f(1,0);
+               glVertex2f(0.45,0.05);
+               glTexCoord2f(1,1);
+               glVertex2f(.45,0.45);
+               glTexCoord2f(0,1);
+               glVertex2f(0.05,0.45);
+           glEnd();
+           }
+
+    break;
+
+    case 3:
+
+        if (!qframe1.isNull()||!qframe2.isNull()||!qframe3.isNull()) {
+           qframe1 = qframe1.scaled(this->size(), Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+           qframe2 = qframe2.scaled(this->size(), Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+           qframe3 = qframe3.scaled(this->size(), Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+
+           glTexImage2D( GL_TEXTURE_2D, 0, 4, qframe1.width(), qframe1.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, qframe1.bits() );
+
+           //Assignem les coordenades a la textura "CAM-1"
+           glBegin(GL_POLYGON);
+               glTexCoord2f(0,0);
+               glVertex2f(0.05,0.55);
+               glTexCoord2f(1,0);
+               glVertex2f(0.45,0.55);
+               glTexCoord2f(1,1);
+               glVertex2f(.45,0.95);
+               glTexCoord2f(0,1);
+               glVertex2f(0.05,0.95);
+           glEnd();
+
+           glTexImage2D( GL_TEXTURE_2D, 0, 4, qframe2.width(), qframe2.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, qframe2.bits() );
+
+           //Assignem les coordenades a la textura "CAM-2"
+           glBegin(GL_POLYGON);
+               glTexCoord2f(0,0);
+               glVertex2f(0.55,0.55);
+               glTexCoord2f(1,0);
+               glVertex2f(0.95,0.55);
+               glTexCoord2f(1,1);
+               glVertex2f(0.95,0.95);
+               glTexCoord2f(0,1);
+               glVertex2f(0.55,0.95);
+           glEnd();
+
+           glTexImage2D( GL_TEXTURE_2D, 0, 4, qframe3.width(), qframe3.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, qframe3.bits() );
+
+           //Assignem les coordenades a la textura "CAM-3"
+           glBegin(GL_POLYGON);
+               glTexCoord2f(0,0);
+               glVertex2f(0.05,0.05);
+               glTexCoord2f(1,0);
+               glVertex2f(0.45,0.05);
+               glTexCoord2f(1,1);
+               glVertex2f(.45,0.45);
+               glTexCoord2f(0,1);
+               glVertex2f(0.05,0.45);
+           glEnd();
+           }
+    break;
+
+    default:
+
+     if (!qframe1.isNull()||!qframe2.isNull()||!qframe3.isNull()||!qframe4.isNull()) {
             qframe1 = qframe1.scaled(this->size(), Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
             qframe2 = qframe2.scaled(this->size(), Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
             qframe3 = qframe3.scaled(this->size(), Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
             qframe4 = qframe4.scaled(this->size(), Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
 
-            //Habilitem la textura y la carregem
-            glEnable(GL_TEXTURE_2D);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
             glTexImage2D( GL_TEXTURE_2D, 0, 4, qframe1.width(), qframe1.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, qframe1.bits() );
 
-            //Assignem les coordenades a la textura
+            //Assignem les coordenades a la textura "CAM-1"
             glBegin(GL_POLYGON);
                 glTexCoord2f(0,0);
                 glVertex2f(0.05,0.55);
@@ -46,7 +160,7 @@ void GLWidget::paintGL() {
 
             glTexImage2D( GL_TEXTURE_2D, 0, 4, qframe2.width(), qframe2.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, qframe2.bits() );
 
-            //Assignem les coordenades a la textura
+            //Assignem les coordenades a la textura "CAM-2"
             glBegin(GL_POLYGON);
                 glTexCoord2f(0,0);
                 glVertex2f(0.55,0.55);
@@ -60,7 +174,7 @@ void GLWidget::paintGL() {
 
             glTexImage2D( GL_TEXTURE_2D, 0, 4, qframe3.width(), qframe3.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, qframe3.bits() );
 
-            //Assignem les coordenades a la textura
+            //Assignem les coordenades a la textura "CAM-3"
             glBegin(GL_POLYGON);
                 glTexCoord2f(0,0);
                 glVertex2f(0.05,0.05);
@@ -74,7 +188,7 @@ void GLWidget::paintGL() {
 
             glTexImage2D( GL_TEXTURE_2D, 0, 4, qframe4.width(), qframe4.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, qframe4.bits() );
 
-            //Assignem les coordenades a la textura
+            //Assignem les coordenades a la textura "CAM-4"
             glBegin(GL_POLYGON);
                 glTexCoord2f(0,0);
                 glVertex2f(0.55,0.05);
@@ -87,6 +201,9 @@ void GLWidget::paintGL() {
             glEnd();
 
         }
+
+    break;
+    }
 
 }
 
