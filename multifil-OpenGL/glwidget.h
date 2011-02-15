@@ -13,6 +13,7 @@
  */
 class GLWidget : public QGLWidget
 {
+    Q_OBJECT
 public:
     GLWidget(QWidget *parent = 0);
     /** Starts the rendering thread.
@@ -21,7 +22,8 @@ public:
     void initRendering();
     /** Stops the rendering thread of the widget. */
     void finishRendering();
-    /** Call this method before doing any OpenGL rendering from a thread.
+
+     /** Call this method before doing any OpenGL rendering from a thread.
      * This method will aquire the GL rendering context for the calling thread.
      * Rendering will only be possible from this thread until unlockGLContext()
      * is called from the same thread.
@@ -38,6 +40,8 @@ public:
      * This is only for internal purpose (render thread communication)
      */
     QMutex& renderMutex();
+    /** The rendering thread. */
+    RenderThread glt;
 
 public slots:
     /** Cause the rendering thread to render one frame of the OpenGL scene.
@@ -46,6 +50,7 @@ public slots:
      * NO additional new frame will be rendered afterwards!
      */
     void render();
+    void finalitzat();
 
 protected:
     /** Performs a save shutdown if the widget recieves a close event. */
@@ -56,13 +61,10 @@ protected:
     void resizeEvent(QResizeEvent* _e);
 
 private:
-    /** The rendering thread. */
-    RenderThread glt;
     /** Mutex for protecting the GL rendering context for multithreading. */
     QMutex render_mutex;
     /** The rendering thread uses this wait condition to save CPU ressources. */
     QWaitCondition render_condition;
-
 };
 
 #endif // GLWIDGET_H

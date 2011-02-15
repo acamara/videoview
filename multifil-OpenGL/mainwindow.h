@@ -3,6 +3,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QTime>
 #include <QMainWindow>
 
 #include "glwidget.h"
@@ -17,13 +18,22 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+private slots:
+    void startCam();
+    void stopCam();
+    void processCam();
+
 protected:
     void changeEvent(QEvent *e);
 
 private:
     Ui::MainWindow *ui;
     GLWidget *glWidget;
-    GLWidget *glWidget2;
+
+
+    CvCapture *capture;
+    QTime timer;
+    bool parar;
 };
 
 #endif // MAINWINDOW_H

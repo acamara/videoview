@@ -1,5 +1,8 @@
 //Implementació de la classe MainWindow
 
+#include <QTimer>
+#include <QFileDialog>
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -11,11 +14,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     glWidget = new GLWidget();
-    glWidget2 = new GLWidget();
 
     this->ui->horizontalLayout->addWidget(glWidget);
-    this->ui->horizontalLayout->addWidget(glWidget2);
 
+    connect(ui->actionAdquirir,SIGNAL(triggered()),this,SLOT(startCam()));
+    connect(ui->actionParar,SIGNAL(triggered()),this,SLOT(stopCam()));
 }
 
 //Destructor de la classe Mainwindow
@@ -34,4 +37,33 @@ void MainWindow::changeEvent(QEvent *e)
     default:
         break;
     }
+}
+
+void MainWindow::startCam() {
+    QString nombre= QFileDialog::getOpenFileName();
+    capture= cvCaptureFromFile(nombre.toAscii());
+    if (!capture) return;
+    parar=false;
+    this->processCam();
+}
+void MainWindow::stopCam() {
+    parar=true;
+    ui->statusBar->showMessage("Parat");
+}
+
+void MainWindow::processCam() {
+    if (capture && !parar)
+    {
+        timer.restart();
+        IplImage *frame;
+        frame=cvQueryFrame(capture);
+        if (frame->imageData) {
+            //this->processFrame(frame);
+            glWidget->glt.sendImage(frame);
+            ui->statusBar->showMessage("Adquirint....");
+            QTimer::singleShot(40, this, SLOT(processCam()));
+
+        }
+    }
+    return;
 }

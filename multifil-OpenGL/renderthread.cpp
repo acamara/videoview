@@ -1,5 +1,6 @@
 //Implementació de la classe RenderThread
 
+#include <QDebug>
 #include "renderthread.h"
 #include "glwidget.h"
 
@@ -8,7 +9,7 @@
 #include <highgui.h>
 
 //Constructor de la classe RenderThread
-RenderThread::RenderThread( GLWidget & _glw )
+RenderThread::RenderThread( GLWidget &_glw )
         : QThread(),
         glw(_glw),
         render_flag(true),
@@ -38,13 +39,13 @@ void RenderThread::stop( )
 void RenderThread::run( )
 {
     // Bloqueja el render mutex del GlWidget i crea el context de renderitzat del GLWidget actual en aquest fil
-    glw.lockGLContext();
+   glw.lockGLContext();
 
     // Inicialització OpenGL.
     initializeGL();
 
-    // Realitza aquestb procés mentre el flag de renderitzat estigui actiu
-    while( render_flag )
+    // Realitza aquest procés mentre el flag de renderitzat estigui actiu
+    while(render_flag )
     {
         // Comprovació de si es necesita redimensionar el GLWidget
         if (resize_flag)
@@ -53,13 +54,12 @@ void RenderThread::run( )
             resize_flag = false;
         }
 
-        // El codi de renderitzat va aquí
         paintGL();
 
         // Intercanvi dels buffers del GLWidget
-        glw.swapBuffers();
+       glw.swapBuffers();
 
-        glw.doneCurrent(); // Alliberar el context de renderitzat OpenGL per seleccionar el treball!
+       glw.doneCurrent(); // Alliberar el context de renderitzat OpenGL per seleccionar el treball!
 
         // wait until the gl widget says that there is something to render
         // glwidget.lockGlContext() had to be called before (see top of the function)!
@@ -67,23 +67,23 @@ void RenderThread::run( )
         // and will lock the render mutex again before exiting
         // waiting this way instead of insane looping will not waste any CPU ressources
 
-        glw.renderCondition().wait(&glw.renderMutex());
+       glw.renderCondition().wait(&glw.renderMutex());
 
-        glw.makeCurrent(); // get the GL render context back
+       glw.makeCurrent(); // get the GL render context back
 
         // DEACTIVATED -- alternatively render a frame after a certain amount of time
         //prevent to much continous rendering activity
-        // msleep(16); //sleep for 16 ms
+        msleep(40); //sleep for 40 ms
     }
     // Desbloqejar el render mutex abans de sortir
-    glw.unlockGLContext();
+   glw.unlockGLContext();
 }
 
 //Mètode de la classe RenderThread que inicialitza el GLWidget
 void RenderThread::initializeGL()
 {
     // Inicialització típica d'OpenGL
-    glw.qglClearColor(Qt::black);
+   glw.qglClearColor(Qt::black);
     glShadeModel(GL_FLAT);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -103,21 +103,41 @@ void RenderThread::resizeGL(int width, int height)
 //Mètode de la classe RenderThread que pinta en el GLWidget
 void RenderThread::paintGL()
 { 
-    // Dibuixa el frame de "CAM"
-    glClear (GL_COLOR_BUFFER_BIT);      //Netegem el buffer de color
-    glClearColor (0.0,0.0,0.0,1.0);     //Activa el color de fons actual,seguint el model de representació RGB
-    glMatrixMode(GL_PROJECTION);        //Seleccionem la matriu de projecció
-    glLoadIdentity();                   //La inicialtzem com a matriu identitat
-    gluOrtho2D(0,1,0,1);                //Creem una matriu per projectar coordenades en dues dimensions en la pantalla i la multipliquem per la matriu actual.
+        glClear (GL_COLOR_BUFFER_BIT);
+        glClearColor (0.0,0.0,0.0,1.0);
 
-    IplImage *img=cvLoadImage("cam1.jpg");
+        if (!qframe.isNull()) {
+            qframe = qframe.scaled(viewport_size, Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
 
+            glDisable(GL_DEPTH_TEST);
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            gluOrtho2D(0,1,0,1);
+
+            glEnable(GL_TEXTURE_2D);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexImage2D( GL_TEXTURE_2D, 0, 4, qframe.width(), qframe.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, qframe.bits() );
+
+            glBegin(GL_QUADS);
+                glTexCoord2f(0,0); glVertex2f(0,0);
+                glTexCoord2f(1,0); glVertex2f(1,0);
+                glTexCoord2f(1,1); glVertex2f(1,1);
+                glTexCoord2f(0,1); glVertex2f(0,1);
+            glEnd();
+
+            glDisable(GL_TEXTURE_2D);
+
+            glFlush();
+        }
+        //qDebug() << "Drawing...";
+}
+
+void RenderThread::sendImage(IplImage *img) {
+    //La imatge es guarda utilitzant 24-bit RGB(8-8-8).
     qframe = QImage((const unsigned char*)(img->imageData), img->width, img->height, img->widthStep, QImage::Format_RGB888).rgbSwapped();
     qframe = QGLWidget::convertToGLFormat(qframe);
 
-    if (!qframe.isNull()) {
-        qframe = qframe.scaled(viewport_size, Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
-        glDrawPixels(qframe.width(),qframe.height(), GL_RGBA, GL_UNSIGNED_BYTE, qframe.bits());
-    }
+    glw.render();
 }
-

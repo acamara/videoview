@@ -1,6 +1,7 @@
 //Implementació de la classe GLWidget (widget OpenGL)
 
 #include <qevent.h>
+#include <qdebug.h>
 
 #include "glwidget.h"
 #include "renderthread.h"
@@ -25,6 +26,8 @@ void GLWidget::initRendering( )
 {
     // Inici del fil de renderitzat
     glt.start();
+    QObject::connect(&glt, SIGNAL(finished()),this, SLOT(finalitzat()));
+
     // wake the waiting render thread
     renderCondition().wakeAll();
 }
@@ -88,6 +91,11 @@ void GLWidget::render( )
 {
     // let the wait condition wake up the waiting thread
     renderCondition().wakeAll();
+}
+
+void GLWidget::finalitzat( )
+{
+    qDebug()<<"S'ha acabat el loop run";
 }
 
 //Mètode de la classe GLWidget que controla la condició de renderitzat

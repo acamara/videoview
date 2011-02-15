@@ -22,6 +22,7 @@ class GLWidget;
 
 class RenderThread : public QThread
 {
+    Q_OBJECT
 public:
     /** Init an OpenGl render thread for the _glwidget QGL */
     RenderThread(GLWidget& _glw);
@@ -33,7 +34,7 @@ public:
      * This is usually called from the QGLWidgets resizeEvent() method.
      */
     void resizeViewport(const QSize& _size);
-
+    void sendImage(IplImage *img);
 protected:
     /** Init the GL environment. */
     void initializeGL();
@@ -55,8 +56,8 @@ private:
     QSize viewport_size;
 
     QImage qframe;
+    IplImage *img;
 };
 
 
 #endif // RENDERTHREAD_H
-
