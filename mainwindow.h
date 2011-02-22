@@ -38,10 +38,6 @@ private slots:
     void about();
     void aboutQt();
 
-    void startCam();
-    void stopCam();
-    void processCam();
-
 private:
     Ui::MainWindow *ui;
 
@@ -65,10 +61,6 @@ private:
     QLabel *pgmLabel;
 
     int numcam;
-
-    CvCapture *capture;
-    QTime timer;
-    bool parar;
 
     GLWidget *glWidget_cam1;
     GLWidget *glWidget_cam2;

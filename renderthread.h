@@ -43,6 +43,10 @@ protected:
     /** Does all the painting. */
     void paintGL();
 
+    void startCam();
+    void processCam();
+
+
 private:
      /** The QGLWidget of the render thread.
      * This widget provides the GL rendering context.
@@ -56,7 +60,8 @@ private:
     QSize viewport_size;
 
     QImage qframe;
-    IplImage *img;
+    IplImage *frame;
+    CvCapture *capture;
 };
 
 

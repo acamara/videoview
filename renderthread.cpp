@@ -1,6 +1,7 @@
 //Implementació de la classe RenderThread
 
 #include <QDebug>
+#include <QFileDialog>
 #include "renderthread.h"
 #include "glwidget.h"
 
@@ -16,7 +17,8 @@ RenderThread::RenderThread( GLWidget &_glw )
         resize_flag(false),
         viewport_size(_glw.size())
 {
-
+    //Això s'hauria de fer diferent
+    startCam();
 }
 
 //Mètode de la classe RenderThread que activa el flag de redimensionat de la finestra
@@ -43,6 +45,7 @@ void RenderThread::run( )
 
     // Inicialització OpenGL.
     initializeGL();
+    
 
     // Realitza aquest procés mentre el flag de renderitzat estigui actiu
     while(render_flag )
@@ -55,11 +58,12 @@ void RenderThread::run( )
         }
 
         paintGL();
+        processCam();
 
         // Intercanvi dels buffers del GLWidget
-       glw.swapBuffers();
+        glw.swapBuffers();
 
-       glw.doneCurrent(); // Alliberar el context de renderitzat OpenGL per seleccionar el treball!
+        glw.doneCurrent(); // Alliberar el context de renderitzat OpenGL per seleccionar el treball!
 
         // wait until the gl widget says that there is something to render
         // glwidget.lockGlContext() had to be called before (see top of the function)!
@@ -67,9 +71,9 @@ void RenderThread::run( )
         // and will lock the render mutex again before exiting
         // waiting this way instead of insane looping will not waste any CPU ressources
 
-       glw.renderCondition().wait(&glw.renderMutex());
+        //glw.renderCondition().wait(&glw.renderMutex());
 
-       glw.makeCurrent(); // get the GL render context back
+        glw.makeCurrent(); // get the GL render context back
 
         // DEACTIVATED -- alternatively render a frame after a certain amount of time
         //prevent to much continous rendering activity
@@ -138,6 +142,23 @@ void RenderThread::sendImage(IplImage *img) {
     //La imatge es guarda utilitzant 24-bit RGB(8-8-8).
     qframe = QImage((const unsigned char*)(img->imageData), img->width, img->height, img->widthStep, QImage::Format_RGB888).rgbSwapped();
     qframe = QGLWidget::convertToGLFormat(qframe);
+}
 
-    glw.render();
+void RenderThread::startCam() {
+    QString nombre= QFileDialog::getOpenFileName();
+    capture= cvCaptureFromFile(nombre.toAscii());
+    if (!capture) return;
+
+}
+
+void RenderThread::processCam() {
+    if (capture)
+    {
+        frame=cvQueryFrame(capture);
+        if (frame->imageData) {
+            //this->processFrame(frame);
+            sendImage(frame);
+        }
+    }
+    return;
 }

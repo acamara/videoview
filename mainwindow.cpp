@@ -297,37 +297,6 @@ void MainWindow::createMenus()
 
 }
 
-void MainWindow::startCam() {
-    QString nombre= QFileDialog::getOpenFileName();
-    capture= cvCaptureFromFile(nombre.toAscii());
-    if (!capture) return;
-    parar=false;
-    this->processCam();
-}
-void MainWindow::stopCam() {
-    parar=true;
-    ui->statusBar->showMessage("Parat");
-}
-
-void MainWindow::processCam() {
-    if (capture && !parar)
-    {
-        timer.restart();
-        IplImage *img;
-        img=cvQueryFrame(capture);
-        IplImage *frame=cvCloneImage(img);
-        if (frame->imageData) {
-            //this->processFrame(frame);
-            glWidget_cam1->glt.sendImage(frame);
-            ui->statusBar->showMessage("Adquirint....");
-            QTimer::singleShot(40, this, SLOT(processCam()));
-
-        }
-    }
-    return;
-}
-
-
 //Funció menbre que controla el botó capturar
 void MainWindow::on_capturaButton_clicked()
 {
@@ -335,19 +304,19 @@ void MainWindow::on_capturaButton_clicked()
     switch(numcam)
     {
     case 1:
-        startCam();
+
        break;
 
     case 2:
-         startCam();
+
        break;
 
     case 3:
-         startCam();
+
        break;
 
     default:
-         startCam();
+
        break;
        }
 
@@ -359,19 +328,19 @@ void MainWindow::on_stopButton_clicked()
     switch(numcam)
     {
     case 1:
-            stopCam();
+
         break;
 
     case 2:
-            stopCam();
+
         break;
 
     case 3:
-            stopCam();
+
         break;
 
     default:
-            stopCam();
+
         break;
     }
 }
