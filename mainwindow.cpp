@@ -4,9 +4,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
 #include "configdialog.h"
-#include "CapturaThread.h"
 
 #include <cxcore.h>
 #include <cv.h>
@@ -88,11 +86,18 @@ void MainWindow::creainterficie()
 
         QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
 
-        ui->gridLayout->addWidget(cam1Label,1,1);
-        ui->gridLayout->addWidget(glWidget_cam1,2,1);
+        ui->gridLayout->addWidget(cam1Label,1,1,1,2);
+        ui->gridLayout->addWidget(glWidget_cam1,2,1,4,2);
 
-        ui->gridLayout->addWidget(pgmLabel,1,2);
-        ui->gridLayout->addWidget(glWidget_pgm,2,2);
+        ui->gridLayout->addWidget(pgmLabel,1,3);
+        ui->gridLayout->addWidget(glWidget_pgm,2,3);
+
+        ui->gridLayout->setColumnMinimumWidth(1,400);
+        ui->gridLayout->setColumnMinimumWidth(2,400);
+        ui->gridLayout->setColumnMinimumWidth(3,400);
+
+        ui->gridLayout->setRowMinimumHeight(2,300);
+        ui->gridLayout->setRowMinimumHeight(4,300);
 
         cam1Label->setStyleSheet("background-color: rgb(255, 255, 255)");
 
@@ -120,9 +125,12 @@ void MainWindow::creainterficie()
         ui->gridLayout->addWidget(pgmLabel,1,2);
         ui->gridLayout->addWidget(glWidget_pgm,2,2);
 
-        ui->gridLayout->setColumnMinimumWidth(1,395);
-        ui->gridLayout->setColumnMinimumWidth(2,395);
-        ui->gridLayout->setColumnMinimumWidth(3,395);
+        ui->gridLayout->setColumnMinimumWidth(1,400);
+        ui->gridLayout->setColumnMinimumWidth(2,400);
+        ui->gridLayout->setColumnMinimumWidth(3,400);
+
+        ui->gridLayout->setRowMinimumHeight(2,300);
+        ui->gridLayout->setRowMinimumHeight(4,300);
 
         cam1Label->setStyleSheet("background-color: rgb(255, 255, 255)");
         cam2Label->setStyleSheet("background-color: rgb(255, 255, 255)");
@@ -157,9 +165,12 @@ void MainWindow::creainterficie()
         ui->gridLayout->addWidget(pgmLabel,1,3);
         ui->gridLayout->addWidget(glWidget_pgm,2,3);
 
-        ui->gridLayout->setColumnMinimumWidth(1,395);
-        ui->gridLayout->setColumnMinimumWidth(2,395);
-        ui->gridLayout->setColumnMinimumWidth(3,395);
+        ui->gridLayout->setColumnMinimumWidth(1,400);
+        ui->gridLayout->setColumnMinimumWidth(2,400);
+        ui->gridLayout->setColumnMinimumWidth(3,400);
+
+        ui->gridLayout->setRowMinimumHeight(2,300);
+        ui->gridLayout->setRowMinimumHeight(4,300);
 
         cam1Label->setStyleSheet("background-color: rgb(255, 255, 255)");
         cam2Label->setStyleSheet("background-color: rgb(255, 255, 255)");
@@ -201,9 +212,12 @@ void MainWindow::creainterficie()
         ui->gridLayout->addWidget(pgmLabel,1,3);
         ui->gridLayout->addWidget(glWidget_pgm,2,3);
 
-        ui->gridLayout->setColumnMinimumWidth(1,395);
-        ui->gridLayout->setColumnMinimumWidth(2,395);
-        ui->gridLayout->setColumnMinimumWidth(3,395);
+        ui->gridLayout->setColumnMinimumWidth(1,400);
+        ui->gridLayout->setColumnMinimumWidth(2,400);
+        ui->gridLayout->setColumnMinimumWidth(3,400);
+
+        ui->gridLayout->setRowMinimumHeight(2,300);
+        ui->gridLayout->setRowMinimumHeight(4,300);
 
         cam1Label->setStyleSheet("background-color: rgb(255, 255, 255)");
         cam2Label->setStyleSheet("background-color: rgb(255, 255, 255)");
@@ -283,111 +297,58 @@ void MainWindow::createMenus()
 
 }
 
+void MainWindow::startCam() {
+    QString nombre= QFileDialog::getOpenFileName();
+    capture= cvCaptureFromFile(nombre.toAscii());
+    if (!capture) return;
+    parar=false;
+    this->processCam();
+}
+void MainWindow::stopCam() {
+    parar=true;
+    ui->statusBar->showMessage("Parat");
+}
+
+void MainWindow::processCam() {
+    if (capture && !parar)
+    {
+        timer.restart();
+        IplImage *img;
+        img=cvQueryFrame(capture);
+        IplImage *frame=cvCloneImage(img);
+        if (frame->imageData) {
+            //this->processFrame(frame);
+            glWidget_cam1->glt.sendImage(frame);
+            ui->statusBar->showMessage("Adquirint....");
+            QTimer::singleShot(40, this, SLOT(processCam()));
+
+        }
+    }
+    return;
+}
+
+
 //Funció menbre que controla el botó capturar
 void MainWindow::on_capturaButton_clicked()
 {
-    QString fontdevideo1;
-    QString fontdevideo2;
-    QString fontdevideo3;
-    QString fontdevideo4;
-
-    //Creació dels thread de gravació
-
-    //QString nomdeprojecte = QFileDialog::getSaveFileName();
-
-    QString nomdeprojecte =("salida.avi");
-
-    Gravarthread = new GravarThread(this,nomdeprojecte,ui->comboBox->currentIndex (),25);
-
-    connect(ui->comboBox, SIGNAL(activated (int)),Gravarthread,SLOT(selectransicio(int)));
-
-    connect(ui->spinBox, SIGNAL(valueChanged (int)),Gravarthread,SLOT(selecduratransicio(int)));
-
-    Gravarthread->start();
-
 
     switch(numcam)
     {
     case 1:
-       //Creació dels threads de captura
-       Capturathread1 = new CapturaThread(this,"cam1",glWidget_cam1,glWidget_pgm);
-
-       fontdevideo1 = QFileDialog::getOpenFileName();
-
-       Capturathread1->selecfontvideo(fontdevideo1);
-       Capturathread1->start();
-
-       QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),Capturathread1, SLOT(selecfontPGM()));
-
+        startCam();
        break;
 
     case 2:
-       //Creació dels threads de captura
-       Capturathread1 = new CapturaThread(this,"cam1",glWidget_cam1,glWidget_pgm);
-       Capturathread2 = new CapturaThread(this,"cam2",glWidget_cam2,glWidget_pgm);
-
-       fontdevideo1 = QFileDialog::getOpenFileName();
-       fontdevideo2 = QFileDialog::getOpenFileName();
-
-       Capturathread1->selecfontvideo(fontdevideo1);
-       Capturathread1->start();
-       Capturathread2->selecfontvideo(fontdevideo2);
-       Capturathread2->start();
-
-       QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),Capturathread1, SLOT(selecfontPGM()));
-       QObject::connect(glWidget_cam2, SIGNAL(widgetClicked()),Capturathread2, SLOT(selecfontPGM()));
-
+         startCam();
        break;
 
     case 3:
-       //Creació dels threads de captura
-       Capturathread1 = new CapturaThread(this,"cam1",glWidget_cam1,glWidget_pgm);
-       Capturathread2 = new CapturaThread(this,"cam2",glWidget_cam2,glWidget_pgm);
-       Capturathread3 = new CapturaThread(this,"cam3",glWidget_cam3,glWidget_pgm);
-
-       fontdevideo1 = QFileDialog::getOpenFileName();
-       fontdevideo2 = QFileDialog::getOpenFileName();
-       fontdevideo3 = QFileDialog::getOpenFileName();
-
-       Capturathread1->selecfontvideo(fontdevideo1);
-       Capturathread1->start();
-       Capturathread2->selecfontvideo(fontdevideo2);
-       Capturathread2->start();
-       Capturathread3->selecfontvideo(fontdevideo3);
-       Capturathread3->start();
-
-       QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),Capturathread1, SLOT(selecfontPGM()));
-       QObject::connect(glWidget_cam2, SIGNAL(widgetClicked()),Capturathread2, SLOT(selecfontPGM()));
-       QObject::connect(glWidget_cam3, SIGNAL(widgetClicked()),Capturathread3, SLOT(selecfontPGM()));
-
+         startCam();
        break;
 
     default:
-       //Creació dels threads de captura
-       Capturathread1 = new CapturaThread(this,"cam1",glWidget_cam1,glWidget_pgm);
-       Capturathread2 = new CapturaThread(this,"cam2",glWidget_cam2,glWidget_pgm);
-       Capturathread3 = new CapturaThread(this,"cam3",glWidget_cam3,glWidget_pgm);
-       Capturathread4 = new CapturaThread(this,"cam4",glWidget_cam4,glWidget_pgm);
-
-       fontdevideo1 = QFileDialog::getOpenFileName();
-       fontdevideo2 = QFileDialog::getOpenFileName();
-       fontdevideo3 = QFileDialog::getOpenFileName();
-       fontdevideo4 = QFileDialog::getOpenFileName();
-
-       Capturathread1->selecfontvideo(fontdevideo1);
-       Capturathread1->start();
-       Capturathread2->selecfontvideo(fontdevideo2);
-       Capturathread2->start();
-       Capturathread3->selecfontvideo(fontdevideo3);
-       Capturathread3->start();
-       Capturathread4->selecfontvideo(fontdevideo4);
-       Capturathread4->start();
-
-       QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),Capturathread1, SLOT(selecfontPGM()));
-       QObject::connect(glWidget_cam2, SIGNAL(widgetClicked()),Capturathread2, SLOT(selecfontPGM()));
-       QObject::connect(glWidget_cam3, SIGNAL(widgetClicked()),Capturathread3, SLOT(selecfontPGM()));
-       QObject::connect(glWidget_cam4, SIGNAL(widgetClicked()),Capturathread4, SLOT(selecfontPGM()));
-
+         startCam();
+       break;
        }
 
 }
@@ -398,30 +359,20 @@ void MainWindow::on_stopButton_clicked()
     switch(numcam)
     {
     case 1:
-        Capturathread1->terminate();
-
-    break;
+            stopCam();
+        break;
 
     case 2:
-        Capturathread1->terminate();
-        Capturathread2->terminate();
-
-    break;
+            stopCam();
+        break;
 
     case 3:
-        Capturathread1->terminate();
-        Capturathread2->terminate();
-        Capturathread3->terminate();
-
-    break;
+            stopCam();
+        break;
 
     default:
-        Capturathread1->terminate();
-        Capturathread2->terminate();
-        Capturathread3->terminate();
-        Capturathread4->terminate();
-
-    break;
+            stopCam();
+        break;
     }
 }
 

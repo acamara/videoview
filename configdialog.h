@@ -19,16 +19,12 @@ public:
 protected:
     void changeEvent(QEvent *e);
 
-private:
-    Ui::Dialog *ui;
-
-private slots:
-
-
-
 private slots:
     void on_Aceptar_clicked();
     void on_CancelarBoton_clicked();
+
+private:
+    Ui::Dialog *ui;
 
 };
 

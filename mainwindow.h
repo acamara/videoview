@@ -4,9 +4,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTime>
 #include "glwidget.h"
-#include "CapturaThread.h"
-#include "GravarThread.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -39,14 +38,16 @@ private slots:
     void about();
     void aboutQt();
 
+    void startCam();
+    void stopCam();
+    void processCam();
+
 private:
     Ui::MainWindow *ui;
 
     void createActions();
     void createMenus();
     void creainterficie();
-
-    int numcam;
 
     QMenu *fileMenu;
     QMenu *editMenu;
@@ -63,19 +64,17 @@ private:
     QLabel *cam4Label;
     QLabel *pgmLabel;
 
+    int numcam;
+
+    CvCapture *capture;
+    QTime timer;
+    bool parar;
+
     GLWidget *glWidget_cam1;
     GLWidget *glWidget_cam2;
     GLWidget *glWidget_cam3;
     GLWidget *glWidget_cam4;
     GLWidget *glWidget_pgm;
-
-    CapturaThread *Capturathread1;
-    CapturaThread *Capturathread2;
-    CapturaThread *Capturathread3;
-    CapturaThread *Capturathread4;
-
-    GravarThread  *Gravarthread;
-
 };
 
 #endif // MAINWINDOW_H

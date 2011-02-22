@@ -1,77 +1,122 @@
-//Implementació de la clase GLWidget
+//Implementació de la classe GLWidget (widget OpenGL)
+
+#include <qevent.h>
+#include <qdebug.h>
 
 #include "glwidget.h"
+#include "renderthread.h"
 
-//Constuctor de la clase GLWidget
-GLWidget::GLWidget() : QGLWidget(QGLFormat(QGL::SampleBuffers)) {
-    setMinimumSize(320,240);
+//Constructor de la classe GLWidget
+GLWidget::GLWidget(QWidget *parent)
+    : QGLWidget(parent),
+    glt(*this)
+
+{
+    setFormat(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer));
+
+    //L'intercanvi de memòria es controla en el fil de renderitzat
+    setAutoBufferSwap(false);
+
+    // Inici del fil de renderitzat
+    initRendering();
 }
 
-//Funció menbre que inicialitza el widget opengl a 0, negre
-void GLWidget::initializeGL() {
-    glClearColor(0.0f,0.0f,0.0f,1.0f);
+//Mètode de la classe GLWidget que inicia el renderitzat
+void GLWidget::initRendering( )
+{
+    // Inici del fil de renderitzat
+    glt.start();
+    QObject::connect(&glt, SIGNAL(finished()),this, SLOT(finalitzat()));
+
+    // wake the waiting render thread
+    renderCondition().wakeAll();
 }
 
-//Funció menbre que actualitza el contingut del widget opengl
-void GLWidget::paintGL() {
-    glClear (GL_COLOR_BUFFER_BIT);
-    glClearColor (0.0,0.0,0.0,1.0);
-    if (!qframe.isNull()) {
-        qframe = qframe.scaled(this->size(), Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
-        //Es pot utilitzar directament glDrawPixels
-        // glDrawPixels(qframe.width(),qframe.height(), GL_RGBA, GL_UNSIGNED_BYTE, qframe.bits());
-        // o utilitzar una textura 2D
-        glDisable(GL_DEPTH_TEST);
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        gluOrtho2D(0,qframe.width(),qframe.height(),0);
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        glEnable(GL_TEXTURE_2D);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexImage2D( GL_TEXTURE_2D, 0, 4, qframe.width(), qframe.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, qframe.bits() );
-        glBegin(GL_QUADS);
-        glTexCoord2f(0,0); glVertex2f(0,qframe.height());
-        glTexCoord2f(0,1); glVertex2f(0,0);
-        glTexCoord2f(1,1); glVertex2f(qframe.width(),0);
-        glTexCoord2f(1,0); glVertex2f(qframe.width(),qframe.height());
-        glEnd();
-        glDisable(GL_TEXTURE_2D);
-        // .... end
-
-        // some example of alpha blending
-        //glEnable(GL_DEPTH_TEST);
-        //glEnable(GL_BLEND);
-        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        //glColor4f(0.0f,1.0f,1.0f, 0.9f);
-        glFlush();
-    }
-    // qDebug() << "Drawing...";
+//Mètode de la classe GLWidget que finalitza el renderitzat
+void GLWidget::finishRendering( )
+{
+    // Petició de parar el fil de renderitzat
+    glt.stop();
+    // wake up render thread to actually perform stopping
+    renderCondition().wakeAll();
+    // wait till the thread has exited
+    glt.wait();
 }
 
-//Funció menbre que redimensiona el widget opengl
-void GLWidget::resizeGL(int w, int h) {
-    glViewport (0, 0, (GLsizei)w, (GLsizei)h);
-    glMatrixMode (GL_PROJECTION);
-    glLoadIdentity ();
-    gluPerspective (60, (GLfloat)w / (GLfloat)h, 1.0, 100.0);
-    glMatrixMode (GL_MODELVIEW);
-    // qDebug() << "Resizing...";
+//Mètode de la classe GLWidget que controla els events de sortida
+void GLWidget::closeEvent( QCloseEvent * _e )
+{
+    // request stopping
+    finishRendering();
+    // close the widget (base class)
+    QGLWidget::closeEvent(_e);
 }
 
-//Funció menbre que converteix una imatge OpenCV a OpenGL
-void GLWidget::sendImage(IplImage *img) {
-    //La imatge es guarda utilitzant 24-bit RGB(8-8-8).
-    qframe = QImage((const unsigned char*)(img->imageData), img->width, img->height, img->widthStep, QImage::Format_RGB888).rgbSwapped();
-    qframe = QGLWidget::convertToGLFormat(qframe);
-    this->updateGL();
+//Mètode de la classe GLWidget que controla el event de Pintat
+void GLWidget::paintEvent( QPaintEvent * )
+{
+    render();
 }
 
-//Funció menbre que controla si s'ha clicat el widget opengl, per fer el canvi de càmera
+//Mètode de la classe GLWidget que controla el event de redimensionat
+void GLWidget::resizeEvent( QResizeEvent * _e )
+{
+    // signal the rendering thread that a resize is needed
+    glt.resizeViewport(_e->size());
+
+    render();
+}
+
+//Mètode de la classe GLWidget que bloqueja el context OpenGL
+void GLWidget::lockGLContext( )
+{
+    // lock the render mutex for the calling thread
+    renderMutex().lock();
+    // make the render context current for the calling thread
+    makeCurrent();
+}
+
+//Mètode de la classe GLWidget que desbloqueja el context OpenGL
+void GLWidget::unlockGLContext( )
+{
+    // release the render context for the calling thread
+    // to make it available for other threads
+    doneCurrent();
+    // unlock the render mutex for the calling thread
+    renderMutex().unlock();
+}
+
+//Mètode de la classe GLWidget que controla el renderitzat
+void GLWidget::render( )
+{
+    // let the wait condition wake up the waiting thread
+    renderCondition().wakeAll();
+}
+
+//Mètode que controla si s'ha clicat el widget opengl, per fer el canvi de càmera
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
  emit widgetClicked();
  QWidget::mousePressEvent(event);
 }
+
+
+void GLWidget::finalitzat( )
+{
+    qDebug()<<"S'ha acabat el loop run";
+}
+
+//Mètode de la classe GLWidget que controla la condició de renderitzat
+QWaitCondition & GLWidget::renderCondition( )
+{
+    return(render_condition);
+}
+
+//Mètode de la classe GLWidget que controla el render mutex
+QMutex & GLWidget::renderMutex( )
+{
+    return(render_mutex);
+}
+
+
 
