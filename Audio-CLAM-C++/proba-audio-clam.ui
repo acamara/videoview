@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QPixmapRange" name="InControl__AudioMixer__Gain___0">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>40</y>
+     <width>30</width>
+     <height>170</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPixmapRange" name="InControl__AudioMixer__Gain___1">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>40</y>
+     <width>30</width>
+     <height>170</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPixmapRange" name="InControl__AudioMixer__Gain___2">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>40</y>
+     <width>30</width>
+     <height>170</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPixmapRange" name="InControl__AudioMixer__Gain___3">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>40</y>
+     <width>30</width>
+     <height>170</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="Vumeter" name="OutPort__AudioMixer__Output___Audio">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>40</y>
+     <width>40</width>
+     <height>171</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Vumeter</class>
+   <extends>QWidget</extends>
+   <header>Vumeter.hxx</header>
+  </customwidget>
+  <customwidget>
+   <class>QPixmapRange</class>
+   <extends>QWidget</extends>
+   <header>PixmapWidgets.hxx</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

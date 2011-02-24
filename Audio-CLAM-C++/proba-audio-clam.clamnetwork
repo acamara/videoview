@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<network clamVersion="1.4.0" id="Unnamed">
+
+  <description>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;style type="text/css"&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;"&gt;
+&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;"&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+
+  <processing id="AudioMixer" position="207,117" size="160,183" type="AudioMixer">
+    <NumberOfInPorts>4</NumberOfInPorts>
+    <DefaultGains size="4">1 1 1 1</DefaultGains>
+  </processing>
+
+  <processing id="AudioSink" position="433,85" size="128,111" type="AudioSink">
+    <NSinks>1</NSinks>
+  </processing>
+
+  <processing id="Gain 0" position="207,-224" size="175,67" type="OutControlSender">
+    <Min>0</Min>
+    <Default>0.5</Default>
+    <Max>10</Max>
+    <Step>0.01</Step>
+    <ControlRepresentation>Horizontal Slider</ControlRepresentation>
+    <Mapping>Linear</Mapping>
+  </processing>
+
+  <processing id="Gain 1" position="233,-169" size="169,67" type="OutControlSender">
+    <Min>0</Min>
+    <Default>0.5</Default>
+    <Max>1</Max>
+    <Step>0.01</Step>
+    <ControlRepresentation>Horizontal Slider</ControlRepresentation>
+    <Mapping>Linear</Mapping>
+  </processing>
+
+  <processing id="Gain 2" position="256,-111" size="169,67" type="OutControlSender">
+    <Min>0</Min>
+    <Default>0.5</Default>
+    <Max>1</Max>
+    <Step>0.01</Step>
+    <ControlRepresentation>Horizontal Slider</ControlRepresentation>
+    <Mapping>Linear</Mapping>
+  </processing>
+
+  <processing id="Gain 3" position="287,-54" size="169,67" type="OutControlSender">
+    <Min>0</Min>
+    <Default>0.5</Default>
+    <Max>1</Max>
+    <Step>0.01</Step>
+    <ControlRepresentation>Horizontal Slider</ControlRepresentation>
+    <Mapping>Linear</Mapping>
+  </processing>
+
+  <processing id="MonoAudioFileReader" position="-106,15" size="157,54" type="MonoAudioFileReader">
+    <SourceFile>D:/Users/Albert/Desktop/PFC codi/Audio-CLAM-C++/Fitxers-proba(mp3)/Army Angels 30.mp3</SourceFile>
+    <SelectedChannel>0</SelectedChannel>
+    <Loop>1</Loop>
+  </processing>
+
+  <processing id="MonoAudioFileReader_1" position="-105,150" size="169,54" type="MonoAudioFileReader">
+    <SourceFile>D:/Users/Albert/Desktop/PFC codi/Audio-CLAM-C++/Fitxers-proba(mp3)/Floater 30.mp3</SourceFile>
+    <SelectedChannel>0</SelectedChannel>
+    <Loop>1</Loop>
+  </processing>
+
+  <processing id="MonoAudioFileReader_2" position="-109,81" size="169,54" type="MonoAudioFileReader">
+    <SourceFile>D:/Users/Albert/Desktop/PFC codi/Audio-CLAM-C++/Fitxers-proba(mp3)/Face To Face 30.mp3</SourceFile>
+    <SelectedChannel>0</SelectedChannel>
+    <Loop>1</Loop>
+  </processing>
+
+  <processing id="MonoAudioFileReader_3" position="-106,215" size="169,54" type="MonoAudioFileReader">
+    <SourceFile>D:/Users/Albert/Desktop/PFC codi/Audio-CLAM-C++/Fitxers-proba(mp3)/Oh De Doo Dah 30.mp3</SourceFile>
+    <SelectedChannel>0</SelectedChannel>
+    <Loop>1</Loop>
+  </processing>
+
+  <processing id="MultiChannelAudioFileWriter" position="455,372" size="187,62" type="MultiChannelAudioFileWriter">
+    <TargetFile>D:/Users/Albert/Desktop/PFC codi/Audio-CLAM-C++/sortida.wav</TargetFile>
+    <SampleRate>44100</SampleRate>
+    <NChannels>2</NChannels>
+  </processing>
+
+  <processing id="Vumeter" position="440,202" size="101,178" type="Vumeter"/>
+
+  <port_connection>
+    <out>AudioMixer.Output Audio</out>
+    <in>Vumeter.Input</in>
+  </port_connection>
+
+  <port_connection>
+    <out>AudioMixer.Output Audio</out>
+    <in>AudioSink.1</in>
+  </port_connection>
+
+  <port_connection>
+    <out>AudioMixer.Output Audio</out>
+    <in>MultiChannelAudioFileWriter.Channel #0</in>
+  </port_connection>
+
+  <port_connection>
+    <out>AudioMixer.Output Audio</out>
+    <in>MultiChannelAudioFileWriter.Channel #1</in>
+  </port_connection>
+
+  <port_connection>
+    <out>MonoAudioFileReader.Samples Read</out>
+    <in>AudioMixer.Input 0</in>
+  </port_connection>
+
+  <port_connection>
+    <out>MonoAudioFileReader_1.Samples Read</out>
+    <in>AudioMixer.Input 2</in>
+  </port_connection>
+
+  <port_connection>
+    <out>MonoAudioFileReader_2.Samples Read</out>
+    <in>AudioMixer.Input 1</in>
+  </port_connection>
+
+  <port_connection>
+    <out>MonoAudioFileReader_3.Samples Read</out>
+    <in>AudioMixer.Input 3</in>
+  </port_connection>
+
+  <control_connection>
+    <out>Gain 0.out</out>
+    <in>AudioMixer.Gain 0</in>
+  </control_connection>
+
+  <control_connection>
+    <out>Gain 1.out</out>
+    <in>AudioMixer.Gain 1</in>
+  </control_connection>
+
+  <control_connection>
+    <out>Gain 2.out</out>
+    <in>AudioMixer.Gain 2</in>
+  </control_connection>
+
+  <control_connection>
+    <out>Gain 3.out</out>
+    <in>AudioMixer.Gain 3</in>
+  </control_connection>
+
+</network>
