@@ -1,4 +1,4 @@
-//Implementació de la clase GravarThread.
+//Implementació de la classe GravarThread.
 
 #include <QtGui>
 #include "GravarThread.h"
@@ -10,10 +10,10 @@
 
 int peso= 0;
 CvVideoWriter *video;
-CvSize size = cvSize(720,576); //Tamaño de grabación
-double fps = 25; // Frames por Segundo
+CvSize size = cvSize(720,576); //Resolució de gravació
+double fps = 25; // Frames per Segon
 
-//Constructor de la clase GravarThread
+//Constructor de la classe GravarThread
 GravarThread::GravarThread(QObject *parent,QString nomdeprojecte,int tipusdetransicio,int duradadetransicio)
     : QThread(parent)
 {
@@ -21,34 +21,34 @@ GravarThread::GravarThread(QObject *parent,QString nomdeprojecte,int tipusdetran
     duradatransicio = duradadetransicio;
 }
 
-//Destructor de la clase GravarThread
+//Destructor de la classe GravarThread
 GravarThread::~GravarThread()
 {
 
 }
 
-//Funció menbre que realitza la gravació i el processat dels frames de sortida PGM
+//Mètode que realitza la gravació i el processat dels frames de sortida PGM
 void GravarThread::run()
 {
-    video= cvCreateVideoWriter("salida.avi",CV_FOURCC('M','J','P','G'),fps,size, 1);
+    video= cvCreateVideoWriter("sortida.avi",CV_FOURCC('M','J','P','G'),fps,size, 1);
 }
 
 
-//Funció menbre que estableix el tipus de transició
+//Mètode que estableix el tipus de transició
 void GravarThread::selectransicio(int tipusdetransicio)
 {
     tipustransicio=tipusdetransicio;
     qDebug()<<tipustransicio;
 }
 
-//Funció menbre que estableix la durada de la transició
+//Mètode que estableix la durada de la transició
 void GravarThread::selecduratransicio(int duradetransicio)
 {
     duradatransicio=duradetransicio;
     qDebug()<<duradatransicio;
 }
 
-//Funció menbre que manipula la transició
+//Mètode que manipula la transició
 void GravarThread::activarlatransicio(IplImage* Imatgeactual,IplImage *Imatgeanterior,bool estattransicio)
 {
 
@@ -85,4 +85,11 @@ void GravarThread::activarlatransicio(IplImage* Imatgeactual,IplImage *Imatgeant
        // qDebug()<<"Transició activada,default";
     }
 
+}
+
+//Mètode que rep les imatges que s'han de gravar
+void GravarThread::rebregravar(IplImage *frame){
+    //qDebug()<<"S'ha rebut per gravar";
+    //cvNamedWindow("v",0);
+    //cvShowImage("v",frame);
 }

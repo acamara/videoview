@@ -13,10 +13,149 @@
   <property name="windowTitle">
    <string>Video system</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralWidget">
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
      <layout class="QGridLayout" name="gridLayout">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_edicio">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
+        <property name="text">
+         <string>Edició</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="margin">
+         <number>0</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="label_col1">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="label_col2">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <layout class="QVBoxLayout" name="verticalLayout_EDICIO">
+        <item>
+         <widget class="QPushButton" name="adquirirButton">
+          <property name="text">
+           <string>Adquirir</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="stopButton">
+          <property name="text">
+           <string>Stop</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_transicions">
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Transicions</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_tipus">
+          <property name="text">
+           <string>Tipus:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="comboBox_tipus">
+          <item>
+           <property name="text">
+            <string>Tall</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Fos</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_duracio">
+          <property name="text">
+           <string>Duració:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="spinBox_duracio">
+          <property name="minimum">
+           <number>10</number>
+          </property>
+          <property name="maximum">
+           <number>75</number>
+          </property>
+          <property name="value">
+           <number>25</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="2" column="3">
+       <layout class="QVBoxLayout" name="verticalLayout_PGM">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QPushButton" name="gravarButton">
+            <property name="text">
+             <string>Gravar</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="stopButton_2">
+            <property name="text">
+             <string>Stop</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="streamButton">
+            <property name="text">
+             <string>Stream</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
       <item row="3" column="0">
        <widget class="QLabel" name="label_audio">
         <property name="frameShape">
@@ -39,110 +178,6 @@
          <string>TextLabel</string>
         </property>
        </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QLabel" name="label_col2">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="label_col1">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_edicio">
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="text">
-         <string>Edició</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-        <property name="margin">
-         <number>0</number>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <widget class="QPushButton" name="capturaButton">
-          <property name="text">
-           <string>Captura</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="stopButton">
-          <property name="text">
-           <string>Stop</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Transicions</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Tipus:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QComboBox" name="comboBox">
-          <item>
-           <property name="text">
-            <string>Tall</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Fos</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>Duració:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="spinBox">
-          <property name="minimum">
-           <number>10</number>
-          </property>
-          <property name="maximum">
-           <number>75</number>
-          </property>
-          <property name="value">
-           <number>25</number>
-          </property>
-         </widget>
-        </item>
-       </layout>
       </item>
      </layout>
     </item>

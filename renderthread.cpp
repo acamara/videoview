@@ -10,15 +10,14 @@
 #include <highgui.h>
 
 //Constructor de la classe RenderThread
-RenderThread::RenderThread( GLWidget &_glw )
+RenderThread::RenderThread( GLWidget *_glw )
         : QThread(),
         glw(_glw),
         render_flag(true),
         resize_flag(false),
-        viewport_size(_glw.size())
+        viewport_size(_glw->size())
 {
-    //Això s'hauria de fer diferent
-    startCam();
+
 }
 
 //Mètode de la classe RenderThread que activa el flag de redimensionat de la finestra
@@ -37,15 +36,11 @@ void RenderThread::stop( )
     render_flag = false;
 }
 
-//Mètode de la classe RenderThread que
+//Mètode de la classe RenderThread que conté el loop d'adquisició
 void RenderThread::run( )
 {
     // Bloqueja el render mutex del GlWidget i crea el context de renderitzat del GLWidget actual en aquest fil
-   glw.lockGLContext();
-
-    // Inicialització OpenGL.
-    initializeGL();
-    
+    glw->lockGLContext();
 
     // Realitza aquest procés mentre el flag de renderitzat estigui actiu
     while(render_flag )
@@ -61,9 +56,9 @@ void RenderThread::run( )
         processCam();
 
         // Intercanvi dels buffers del GLWidget
-        glw.swapBuffers();
+        glw->swapBuffers();
 
-        glw.doneCurrent(); // Alliberar el context de renderitzat OpenGL per seleccionar el treball!
+        glw->doneCurrent(); // Alliberar el context de renderitzat OpenGL per seleccionar el treball!
 
         // wait until the gl widget says that there is something to render
         // glwidget.lockGlContext() had to be called before (see top of the function)!
@@ -73,24 +68,22 @@ void RenderThread::run( )
 
         //glw.renderCondition().wait(&glw.renderMutex());
 
-        glw.makeCurrent(); // get the GL render context back
+        glw->makeCurrent(); // get the GL render context back
 
         // DEACTIVATED -- alternatively render a frame after a certain amount of time
         //prevent to much continous rendering activity
         msleep(40); //sleep for 40 ms
     }
     // Desbloqejar el render mutex abans de sortir
-   glw.unlockGLContext();
+   glw->unlockGLContext();
 }
 
 //Mètode de la classe RenderThread que inicialitza el GLWidget
 void RenderThread::initializeGL()
 {
     // Inicialització típica d'OpenGL
-   glw.qglClearColor(Qt::black);
-    glShadeModel(GL_FLAT);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+   glw->qglClearColor(Qt::black);
+
 }
 
 //Mètode de la classe RenderThread que redimensiona el GLWidget
@@ -138,27 +131,33 @@ void RenderThread::paintGL()
         //qDebug() << "Drawing...";
 }
 
-void RenderThread::sendImage(IplImage *img) {
-    //La imatge es guarda utilitzant 24-bit RGB(8-8-8).
-    qframe = QImage((const unsigned char*)(img->imageData), img->width, img->height, img->widthStep, QImage::Format_RGB888).rgbSwapped();
-    qframe = QGLWidget::convertToGLFormat(qframe);
-}
-
-void RenderThread::startCam() {
-    QString nombre= QFileDialog::getOpenFileName();
-    capture= cvCaptureFromFile(nombre.toAscii());
-    if (!capture) return;
-
-}
-
+//Mètode de la classe RenderThread que processa els frames adquirits i els converteix a textura
 void RenderThread::processCam() {
     if (capture)
     {
         frame=cvQueryFrame(capture);
+
+        if(camaraactiva==camera){
+            enviaragravar(frame);
+        }
+
         if (frame->imageData) {
-            //this->processFrame(frame);
-            sendImage(frame);
+            //La imatge es guarda utilitzant 24-bit RGB(8-8-8).
+            qframe = QImage((const unsigned char*)(frame->imageData), frame->width, frame->height, frame->widthStep, QImage::Format_RGB888).rgbSwapped();
+            qframe = QGLWidget::convertToGLFormat(qframe);
         }
     }
     return;
+}
+
+//Mètode de la classe RenderThread que selecciona la font de vídeo
+void RenderThread::selecfontvideo(CvCapture *_capture)
+{
+    capture=_capture;
+}
+
+//Mètode de la classe RenderThread que selecciona el nom de la cámara amb la que es treballa
+void RenderThread::seleccam(QString cam)
+{
+    camera=cam;
 }

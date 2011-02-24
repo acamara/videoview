@@ -9,7 +9,7 @@
 //Constructor de la classe GLWidget
 GLWidget::GLWidget(QWidget *parent)
     : QGLWidget(parent),
-    glt(*this)
+    glt(this)
 
 {
     setFormat(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer));
@@ -18,13 +18,15 @@ GLWidget::GLWidget(QWidget *parent)
     setAutoBufferSwap(false);
 
     // Inici del fil de renderitzat
-    initRendering();
+    //initRendering();
 }
 
 //Mètode de la classe GLWidget que inicia el renderitzat
-void GLWidget::initRendering( )
+void GLWidget::initRendering(CvCapture *capture, QString cam)
 {
     // Inici del fil de renderitzat
+    glt.selecfontvideo(capture);
+    glt.seleccam(cam);
     glt.start();
     QObject::connect(&glt, SIGNAL(finished()),this, SLOT(finalitzat()));
 
@@ -44,12 +46,12 @@ void GLWidget::finishRendering( )
 }
 
 //Mètode de la classe GLWidget que controla els events de sortida
-void GLWidget::closeEvent( QCloseEvent * _e )
+void GLWidget::closeEvent( QCloseEvent * event )
 {
     // request stopping
     finishRendering();
     // close the widget (base class)
-    QGLWidget::closeEvent(_e);
+    QGLWidget::closeEvent(event);
 }
 
 //Mètode de la classe GLWidget que controla el event de Pintat
@@ -59,10 +61,10 @@ void GLWidget::paintEvent( QPaintEvent * )
 }
 
 //Mètode de la classe GLWidget que controla el event de redimensionat
-void GLWidget::resizeEvent( QResizeEvent * _e )
+void GLWidget::resizeEvent( QResizeEvent * event )
 {
     // signal the rendering thread that a resize is needed
-    glt.resizeViewport(_e->size());
+    glt.resizeViewport(event->size());
 
     render();
 }
@@ -100,7 +102,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
  QWidget::mousePressEvent(event);
 }
 
-
+//Métode de test "S'HA D'ELIMINAR" només serveix per conèixer si s'ha acabat el loop de renderitat.
 void GLWidget::finalitzat( )
 {
     qDebug()<<"S'ha acabat el loop run";
@@ -118,5 +120,9 @@ QMutex & GLWidget::renderMutex( )
     return(render_mutex);
 }
 
-
-
+//Mètode que controla si s'ha clicat el widget opengl, i realitza el canvi de càmera
+void GLWidget::canviacamactiva()
+{
+    glt.camaraactiva=sender()->objectName();
+    //qDebug()<<glt.camaraactiva;
+}

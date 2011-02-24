@@ -46,7 +46,7 @@ void MainWindow::changeEvent(QEvent *e)
     }
 }
 
-//Funció menbre que genera la interfície gràfica segons el nombre de càmeres
+//Mètode que genera la interfície gràfica segons el nombre de càmeres
 void MainWindow::creainterficie()
 {
     // declaracio variables gráfiques
@@ -70,6 +70,9 @@ void MainWindow::creainterficie()
     pgmLabel = new QLabel(tr("PGM"));
     pgmLabel->setAlignment(Qt::AlignCenter);
 
+    glWidget_pgm = new GLWidget();
+    ui->gridLayout->addWidget(pgmLabel,1,3);
+    ui->verticalLayout_PGM->addWidget(glWidget_pgm);
 
     //comença switch()
 
@@ -80,17 +83,15 @@ void MainWindow::creainterficie()
         //QMessageBox::information(this, "Informació", "Has entrat en case 1, una Càmera");
 
         glWidget_cam1 = new GLWidget();
-        glWidget_pgm = new GLWidget();
 
         glWidget_cam1->setObjectName("cam1");
 
-        QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
+        QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
+
+        QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),glWidget_cam1, SLOT(canviacamactiva()));
 
         ui->gridLayout->addWidget(cam1Label,1,1,1,2);
         ui->gridLayout->addWidget(glWidget_cam1,2,1,4,2);
-
-        ui->gridLayout->addWidget(pgmLabel,1,3);
-        ui->gridLayout->addWidget(glWidget_pgm,2,3);
 
         ui->gridLayout->setColumnMinimumWidth(1,400);
         ui->gridLayout->setColumnMinimumWidth(2,400);
@@ -108,22 +109,21 @@ void MainWindow::creainterficie()
 
         glWidget_cam1 = new GLWidget();
         glWidget_cam2 = new GLWidget();
-        glWidget_pgm = new GLWidget();
 
         glWidget_cam1->setObjectName("cam1");
         glWidget_cam2->setObjectName("cam2");
 
-        QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
-        QObject::connect(glWidget_cam2, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
+        QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
+        QObject::connect(glWidget_cam2, SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
+
+        QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),glWidget_cam1, SLOT(canviacamactiva()));
+        QObject::connect(glWidget_cam2, SIGNAL(widgetClicked()),glWidget_cam2, SLOT(canviacamactiva()));
 
         ui->gridLayout->addWidget(cam1Label,1,1);
         ui->gridLayout->addWidget(glWidget_cam1,2,1);
         
         ui->gridLayout->addWidget(cam2Label,3,1);
         ui->gridLayout->addWidget(glWidget_cam2,4,1);
-
-        ui->gridLayout->addWidget(pgmLabel,1,2);
-        ui->gridLayout->addWidget(glWidget_pgm,2,2);
 
         ui->gridLayout->setColumnMinimumWidth(1,400);
         ui->gridLayout->setColumnMinimumWidth(2,400);
@@ -143,15 +143,18 @@ void MainWindow::creainterficie()
         glWidget_cam1 = new GLWidget();
         glWidget_cam2 = new GLWidget();
         glWidget_cam3 = new GLWidget();
-        glWidget_pgm = new GLWidget();
 
         glWidget_cam1->setObjectName("cam1");
         glWidget_cam2->setObjectName("cam2");
         glWidget_cam3->setObjectName("cam3");
 
-        QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
-        QObject::connect(glWidget_cam2, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
-        QObject::connect(glWidget_cam3, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
+        QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
+        QObject::connect(glWidget_cam2, SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
+        QObject::connect(glWidget_cam3, SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
+
+        QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),glWidget_cam1, SLOT(canviacamactiva()));
+        QObject::connect(glWidget_cam2, SIGNAL(widgetClicked()),glWidget_cam2, SLOT(canviacamactiva()));
+        QObject::connect(glWidget_cam3, SIGNAL(widgetClicked()),glWidget_cam3, SLOT(canviacamactiva()));
 
         ui->gridLayout->addWidget(cam1Label,1,1);
         ui->gridLayout->addWidget(glWidget_cam1,2,1);
@@ -161,9 +164,6 @@ void MainWindow::creainterficie()
 
         ui->gridLayout->addWidget(cam2Label,1,2);
         ui->gridLayout->addWidget(glWidget_cam2,2,2);
-
-        ui->gridLayout->addWidget(pgmLabel,1,3);
-        ui->gridLayout->addWidget(glWidget_pgm,2,3);
 
         ui->gridLayout->setColumnMinimumWidth(1,400);
         ui->gridLayout->setColumnMinimumWidth(2,400);
@@ -185,17 +185,21 @@ void MainWindow::creainterficie()
         glWidget_cam2 = new GLWidget();
         glWidget_cam3 = new GLWidget();
         glWidget_cam4 = new GLWidget();
-        glWidget_pgm = new GLWidget();
 
         glWidget_cam1->setObjectName("cam1");
         glWidget_cam2->setObjectName("cam2");
         glWidget_cam3->setObjectName("cam3");
         glWidget_cam4->setObjectName("cam4");
 
-        QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
-        QObject::connect(glWidget_cam2, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
-        QObject::connect(glWidget_cam3, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
-        QObject::connect(glWidget_cam4, SIGNAL(widgetClicked()),this, SLOT(cambiarcamara()));
+        QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
+        QObject::connect(glWidget_cam2, SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
+        QObject::connect(glWidget_cam3, SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
+        QObject::connect(glWidget_cam4, SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
+
+        QObject::connect(glWidget_cam1, SIGNAL(widgetClicked()),glWidget_cam1, SLOT(canviacamactiva()));
+        QObject::connect(glWidget_cam2, SIGNAL(widgetClicked()),glWidget_cam2, SLOT(canviacamactiva()));
+        QObject::connect(glWidget_cam3, SIGNAL(widgetClicked()),glWidget_cam3, SLOT(canviacamactiva()));
+        QObject::connect(glWidget_cam4, SIGNAL(widgetClicked()),glWidget_cam4, SLOT(canviacamactiva()));
 
         ui->gridLayout->addWidget(cam1Label,1,1);
         ui->gridLayout->addWidget(glWidget_cam1,2,1);
@@ -208,9 +212,6 @@ void MainWindow::creainterficie()
 
         ui->gridLayout->addWidget(cam4Label,3,2);
         ui->gridLayout->addWidget(glWidget_cam4,4,2);
-
-        ui->gridLayout->addWidget(pgmLabel,1,3);
-        ui->gridLayout->addWidget(glWidget_pgm,2,3);
 
         ui->gridLayout->setColumnMinimumWidth(1,400);
         ui->gridLayout->setColumnMinimumWidth(2,400);
@@ -227,14 +228,14 @@ void MainWindow::creainterficie()
     }
 }
 
-//Funció menbre que genera el menu
+//Mètode que genera el menu
 void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 {
     QMenu menu(this);
     menu.exec(event->globalPos());
 }
 
-//Funció menbre que controla l'acció nou fitxer
+//Mètode que controla l'acció nou fitxer
 void MainWindow::newFile()
 {
     Dialog *configdialog = new Dialog;
@@ -244,20 +245,20 @@ void MainWindow::newFile()
 
 }
 
-//Funció menbre que controla l'acció about
+//Mètode que controla l'acció about
 void MainWindow::about()
 {
     QMessageBox::about(this, tr("Ajuda"),tr("Ajuda de Capturadora"));
 }
 
-//Funció menbre que controla l'acció aboutQt
+//Mètode que controla l'acció aboutQt
 void MainWindow::aboutQt()
 {
     QMessageBox::about(this, tr("Sobre Capturadora"),
             tr("Sobre capturadora, versió 1, Tots els drets reservats"));
 }
 
-//Funció menbre que crea les diferents accions de la finestra principal
+//Mètode que crea les diferents accions de la finestra principal
 void MainWindow::createActions()
 {
     newAct = new QAction(tr("&Nova"), this);
@@ -280,7 +281,7 @@ void MainWindow::createActions()
 
 }
 
-//Funció menbre que crea el menu de l'aplicació
+//Mètode que crea el menu de l'aplicació
 void MainWindow::createMenus()
 {
     fileMenu = menuBar()->addMenu(tr("&Captura"));
@@ -297,56 +298,109 @@ void MainWindow::createMenus()
 
 }
 
-//Funció menbre que controla el botó capturar
-void MainWindow::on_capturaButton_clicked()
+//Mètode que controla el botó adquirir
+void MainWindow::on_adquirirButton_clicked()
 {
+    QString fontvideo1,fontvideo2,fontvideo3,fontvideo4;
 
     switch(numcam)
     {
     case 1:
+        fontvideo1= QFileDialog::getOpenFileName();
+        capture= cvCaptureFromFile(fontvideo1.toAscii());
+        if (!capture) return;
+        glWidget_cam1->initRendering(capture,"cam1");
 
        break;
 
     case 2:
+       fontvideo1= QFileDialog::getOpenFileName();
+       capture= cvCaptureFromFile(fontvideo1.toAscii());
+       if (!capture) return;
+       glWidget_cam1->initRendering(capture,"cam1");
+
+       fontvideo2= QFileDialog::getOpenFileName();
+       capture= cvCaptureFromFile(fontvideo2.toAscii());
+       if (!capture) return;
+       glWidget_cam2->initRendering(capture,"cam2");
 
        break;
 
     case 3:
+       fontvideo1= QFileDialog::getOpenFileName();
+       capture= cvCaptureFromFile(fontvideo1.toAscii());
+       if (!capture) return;
+       glWidget_cam1->initRendering(capture,"cam1");
+
+       fontvideo2= QFileDialog::getOpenFileName();
+       capture= cvCaptureFromFile(fontvideo2.toAscii());
+       if (!capture) return;
+       glWidget_cam2->initRendering(capture,"cam2");
+
+       fontvideo3= QFileDialog::getOpenFileName();
+       capture= cvCaptureFromFile(fontvideo3.toAscii());
+       if (!capture) return;
+       glWidget_cam3->initRendering(capture,"cam3");
 
        break;
 
     default:
+       fontvideo1= QFileDialog::getOpenFileName();
+       capture= cvCaptureFromFile(fontvideo1.toAscii());
+       if (!capture) return;
+       glWidget_cam1->initRendering(capture,"cam1");
+
+       fontvideo2= QFileDialog::getOpenFileName();
+       capture= cvCaptureFromFile(fontvideo2.toAscii());
+       if (!capture) return;
+       glWidget_cam2->initRendering(capture,"cam2");
+
+       fontvideo3= QFileDialog::getOpenFileName();
+       capture= cvCaptureFromFile(fontvideo3.toAscii());
+       if (!capture) return;
+       glWidget_cam3->initRendering(capture,"cam3");
+
+       fontvideo4= QFileDialog::getOpenFileName();
+       capture= cvCaptureFromFile(fontvideo4.toAscii());
+       if (!capture) return;
+       glWidget_cam4->initRendering(capture,"cam4");
 
        break;
        }
 
 }
 
-//Funció menbre que controla el botó stop
+//Mètode que controla el botó stop
 void MainWindow::on_stopButton_clicked()
 {
     switch(numcam)
     {
     case 1:
-
+        glWidget_cam1->finishRendering();
         break;
 
     case 2:
-
+        glWidget_cam1->finishRendering();
+        glWidget_cam2->finishRendering();
         break;
 
     case 3:
-
+        glWidget_cam1->finishRendering();
+        glWidget_cam2->finishRendering();
+        glWidget_cam3->finishRendering();
         break;
 
     default:
-
+        glWidget_cam1->finishRendering();
+        glWidget_cam2->finishRendering();
+        glWidget_cam3->finishRendering();
+        glWidget_cam4->finishRendering();
         break;
     }
 }
 
-//Funció menbre que controla el canvi de càmera
-void MainWindow::cambiarcamara()
+//Mètode que controla el canvi de càmera
+void MainWindow::canviacamara()
 {  
       if(sender()->objectName()=="cam1")
       {
@@ -384,4 +438,50 @@ void MainWindow::cambiarcamara()
             cam2Label->setStyleSheet("background-color: rgb(255, 255, 255)");
             cam3Label->setStyleSheet("background-color: rgb(255, 255, 255)");
       }
+}
+
+//Mètode que controla el botó gravar
+void MainWindow::on_gravarButton_clicked()
+{
+    //Creació dels thread de gravació
+
+    QString nomdeprojecte = QFileDialog::getSaveFileName();
+
+    //QString nomdeprojecte =("salida.avi");
+
+    Gravarthread = new GravarThread(this,nomdeprojecte,ui->comboBox_tipus->currentIndex(),25);
+
+    connect(ui->comboBox_tipus, SIGNAL(activated (int)),Gravarthread,SLOT(selectransicio(int)));
+
+    connect(ui->spinBox_duracio, SIGNAL(valueChanged (int)),Gravarthread,SLOT(selecduratransicio(int)));
+
+    switch(numcam)
+    {
+        case 1:
+            connect(&glWidget_cam1->glt, SIGNAL(enviaragravar(IplImage *)),Gravarthread,SLOT(rebregravar(IplImage *)));
+        break;
+        case 2:
+            connect(&glWidget_cam1->glt, SIGNAL(enviaragravar(IplImage *)),Gravarthread,SLOT(rebregravar(IplImage *)));
+            connect(&glWidget_cam2->glt, SIGNAL(enviaragravar(IplImage *)),Gravarthread,SLOT(rebregravar(IplImage *)));
+        break;
+        case 3:
+            connect(&glWidget_cam1->glt, SIGNAL(enviaragravar(IplImage *)),Gravarthread,SLOT(rebregravar(IplImage *)));
+            connect(&glWidget_cam2->glt, SIGNAL(enviaragravar(IplImage *)),Gravarthread,SLOT(rebregravar(IplImage *)));
+            connect(&glWidget_cam3->glt, SIGNAL(enviaragravar(IplImage *)),Gravarthread,SLOT(rebregravar(IplImage *)));
+        default:
+           connect(&glWidget_cam1->glt, SIGNAL(enviaragravar(IplImage *)),Gravarthread,SLOT(rebregravar(IplImage *)));
+           connect(&glWidget_cam2->glt, SIGNAL(enviaragravar(IplImage *)),Gravarthread,SLOT(rebregravar(IplImage *)));
+           connect(&glWidget_cam3->glt, SIGNAL(enviaragravar(IplImage *)),Gravarthread,SLOT(rebregravar(IplImage *)));
+           connect(&glWidget_cam4->glt, SIGNAL(enviaragravar(IplImage *)),Gravarthread,SLOT(rebregravar(IplImage *)));
+        break;
+    }
+
+    Gravarthread->start();
+
+}
+
+//Mètode que controla el botó stop gravació
+void MainWindow::on_stopButton_2_clicked()
+{
+    Gravarthread->terminate();
 }

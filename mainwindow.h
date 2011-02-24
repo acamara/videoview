@@ -5,7 +5,10 @@
 
 #include <QMainWindow>
 #include <QTime>
+
 #include "glwidget.h"
+#include "GravarThread.h"
+
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -25,15 +28,17 @@ public:
     ~MainWindow();
 
 public slots: 
-    void cambiarcamara();
+    void canviacamara();
 
 protected:
     void changeEvent(QEvent *e);
     void contextMenuEvent(QContextMenuEvent *event);
 
 private slots:
+    void on_stopButton_2_clicked();
+    void on_gravarButton_clicked();
     void on_stopButton_clicked();
-    void on_capturaButton_clicked();
+    void on_adquirirButton_clicked();
     void newFile();
     void about();
     void aboutQt();
@@ -67,6 +72,9 @@ private:
     GLWidget *glWidget_cam3;
     GLWidget *glWidget_cam4;
     GLWidget *glWidget_pgm;
+
+    CvCapture *capture;
+    GravarThread  *Gravarthread;
 };
 
 #endif // MAINWINDOW_H

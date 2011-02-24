@@ -1,4 +1,4 @@
-//Declaració de la clase GravarThread
+//Declaració de la classe GravarThread
 
 #ifndef GRAVARTHREAD_H
 #define GRAVARTHREAD_H
@@ -22,6 +22,7 @@ class GravarThread : public QThread
          void selectransicio(int tipusdetransicio);
          void selecduratransicio(int duradetransicio);
          void activarlatransicio(IplImage*,IplImage *,bool estattransicio);
+         void rebregravar(IplImage*);
 
     signals:
          void pararlatransicio();

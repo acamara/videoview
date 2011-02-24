@@ -19,7 +19,7 @@ public:
     /** Starts the rendering thread.
      * This method is called in the contructor.
      */
-    void initRendering();
+    void initRendering(CvCapture *capture,QString cam);
     /** Stops the rendering thread of the widget. */
     void finishRendering();
 
@@ -54,6 +54,7 @@ public slots:
      */
     void render();
     void finalitzat();
+    void canviacamactiva();
 
 protected:
     /** Performs a save shutdown if the widget recieves a close event. */

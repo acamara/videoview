@@ -1,0 +1,13 @@
+INPUT(
+./release/renderthread.o
+./release/mainwindow.o
+./release/main.o
+./release/glwidget.o
+./release/configdialog.o
+./release/GravarThread.o
+./release/moc_renderthread.o
+./release/moc_mainwindow.o
+./release/moc_glwidget.o
+./release/moc_configdialog.o
+./release/moc_GravarThread.o
+);

@@ -2,12 +2,14 @@ QT += opengl
 HEADERS += renderthread.h \
     mainwindow.h \
     glwidget.h \
-    configdialog.h
+    configdialog.h \
+    GravarThread.h
 SOURCES += renderthread.cpp \
     mainwindow.cpp \
     main.cpp \
     glwidget.cpp \
-    configdialog.cpp
+    configdialog.cpp \
+    GravarThread.cpp
 FORMS += mainwindow.ui \
     configdialog.ui
 win32 { 
