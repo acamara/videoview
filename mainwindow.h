@@ -10,6 +10,7 @@
 #include "GravarThread.h"
 
 
+
 QT_BEGIN_NAMESPACE
 class QAction;
 class QActionGroup;
@@ -66,11 +67,8 @@ private:
     QLabel *pgmLabel;
 
     int numcam;
-
-    GLWidget *glWidget_cam1;
-    GLWidget *glWidget_cam2;
-    GLWidget *glWidget_cam3;
-    GLWidget *glWidget_cam4;
+    enum{numwidgets=4};
+    GLWidget *glWidget_cam[numwidgets];
     GLWidget *glWidget_pgm;
 
     CvCapture *capture;

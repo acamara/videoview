@@ -54,7 +54,7 @@ public slots:
      */
     void render();
     void finalitzat();
-    void canviacamactiva();
+    void canviacamactiva(QString cam);
 
 protected:
     /** Performs a save shutdown if the widget recieves a close event. */

@@ -36,7 +36,7 @@ void RenderThread::stop( )
     render_flag = false;
 }
 
-//Mètode de la classe RenderThread que conté el loop d'adquisició
+//Mètode de la classe RenderThread que
 void RenderThread::run( )
 {
     // Bloqueja el render mutex del GlWidget i crea el context de renderitzat del GLWidget actual en aquest fil
@@ -131,7 +131,6 @@ void RenderThread::paintGL()
         //qDebug() << "Drawing...";
 }
 
-//Mètode de la classe RenderThread que processa els frames adquirits i els converteix a textura
 void RenderThread::processCam() {
     if (capture)
     {
@@ -150,13 +149,11 @@ void RenderThread::processCam() {
     return;
 }
 
-//Mètode de la classe RenderThread que selecciona la font de vídeo
 void RenderThread::selecfontvideo(CvCapture *_capture)
 {
     capture=_capture;
 }
 
-//Mètode de la classe RenderThread que selecciona el nom de la cámara amb la que es treballa
 void RenderThread::seleccam(QString cam)
 {
     camera=cam;

@@ -34,14 +34,14 @@ void Dialog::changeEvent(QEvent *e)
     }
 }
 
-//Mètode que controla el botó cancelar
+//Funció menbre que controla el botó cancelar
 void Dialog::on_CancelarBoton_clicked()
 {
     close ();
 
 }
 
-//Mètode que controla el botó aceptar
+//Funció menbre que controla el botó aceptar
 void Dialog::on_Aceptar_clicked()
 {
     QMessageBox::information(this, "Información de depuración",
@@ -53,7 +53,7 @@ void Dialog::on_Aceptar_clicked()
 
 }
 
-//Mètode que retorna l'informació obtiguda de la configuració
+//Funció menbre que retorna l'informació obtiguda de la configuració
 int Dialog::get_config()
 {
     return(ui->NumCam->currentIndex ()+1);

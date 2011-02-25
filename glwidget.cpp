@@ -102,7 +102,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
  QWidget::mousePressEvent(event);
 }
 
-//Métode de test "S'HA D'ELIMINAR" només serveix per conèixer si s'ha acabat el loop de renderitat.
+
 void GLWidget::finalitzat( )
 {
     qDebug()<<"S'ha acabat el loop run";
@@ -120,9 +120,8 @@ QMutex & GLWidget::renderMutex( )
     return(render_mutex);
 }
 
-//Mètode que controla si s'ha clicat el widget opengl, i realitza el canvi de càmera
-void GLWidget::canviacamactiva()
+void GLWidget::canviacamactiva(QString cam)
 {
-    glt.camaraactiva=sender()->objectName();
+    glt.camaraactiva=cam;
     //qDebug()<<glt.camaraactiva;
 }

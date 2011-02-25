@@ -87,9 +87,8 @@ void GravarThread::activarlatransicio(IplImage* Imatgeactual,IplImage *Imatgeant
 
 }
 
-//Mètode que rep les imatges que s'han de gravar
 void GravarThread::rebregravar(IplImage *frame){
     //qDebug()<<"S'ha rebut per gravar";
-    //cvNamedWindow("v",0);
-    //cvShowImage("v",frame);
+    cvNamedWindow("pvw",0);
+    cvShowImage("pvw",frame);
 }
