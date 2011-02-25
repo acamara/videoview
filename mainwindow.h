@@ -67,11 +67,11 @@ private:
     QLabel *pgmLabel;
 
     int numcam;
-    enum{numwidgets=4};
+    enum { numwidgets = 4 };
     GLWidget *glWidget_cam[numwidgets];
     GLWidget *glWidget_pgm;
 
-    CvCapture *capture;
+    CvCapture *capture[numwidgets];
     GravarThread  *Gravarthread;
 };
 

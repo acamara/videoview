@@ -74,6 +74,13 @@ void MainWindow::creainterficie()
     ui->gridLayout->addWidget(pgmLabel,1,3);
     ui->verticalLayout_PGM->addWidget(glWidget_pgm);
 
+    QString nom("cam%1");
+    for (int k = 0; k < numcam; k++) {
+      glWidget_cam[k] = new GLWidget();
+      glWidget_cam[k]->setObjectName(nom.arg(k).toAscii());
+      QObject::connect(glWidget_cam[k], SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
+    }
+
     //comença switch()
 
     switch(numcam)
@@ -82,21 +89,8 @@ void MainWindow::creainterficie()
     case 1:
         //QMessageBox::information(this, "Informació", "Has entrat en case 1, una Càmera");
 
-        glWidget_cam[1] = new GLWidget();
-
-        glWidget_cam[1]->setObjectName("cam1");
-
-        QObject::connect(glWidget_cam[1], SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
-
         ui->gridLayout->addWidget(cam1Label,1,1,1,2);
-        ui->gridLayout->addWidget(glWidget_cam[1],2,1,4,2);
-
-        ui->gridLayout->setColumnMinimumWidth(1,400);
-        ui->gridLayout->setColumnMinimumWidth(2,400);
-        ui->gridLayout->setColumnMinimumWidth(3,400);
-
-        ui->gridLayout->setRowMinimumHeight(2,300);
-        ui->gridLayout->setRowMinimumHeight(4,300);
+        ui->gridLayout->addWidget(glWidget_cam[0],2,1,4,2);
 
         cam1Label->setStyleSheet("background-color: rgb(255, 255, 255)");
 
@@ -105,27 +99,11 @@ void MainWindow::creainterficie()
     case 2:
         //QMessageBox::information(this, "Informació", "Has entrat en case 2, dues Càmeres");
 
-        glWidget_cam[1] = new GLWidget();
-        glWidget_cam[2] = new GLWidget();
-
-        glWidget_cam[1]->setObjectName("cam1");
-        glWidget_cam[2]->setObjectName("cam2");
-
-        QObject::connect(glWidget_cam[1], SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
-        QObject::connect(glWidget_cam[2], SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
-
         ui->gridLayout->addWidget(cam1Label,1,1);
-        ui->gridLayout->addWidget(glWidget_cam[1],2,1);
+        ui->gridLayout->addWidget(glWidget_cam[0],2,1);
         
         ui->gridLayout->addWidget(cam2Label,3,1);
-        ui->gridLayout->addWidget(glWidget_cam[2],4,1);
-
-        ui->gridLayout->setColumnMinimumWidth(1,400);
-        ui->gridLayout->setColumnMinimumWidth(2,400);
-        ui->gridLayout->setColumnMinimumWidth(3,400);
-
-        ui->gridLayout->setRowMinimumHeight(2,300);
-        ui->gridLayout->setRowMinimumHeight(4,300);
+        ui->gridLayout->addWidget(glWidget_cam[1],4,1);
 
         cam1Label->setStyleSheet("background-color: rgb(255, 255, 255)");
         cam2Label->setStyleSheet("background-color: rgb(255, 255, 255)");
@@ -135,33 +113,14 @@ void MainWindow::creainterficie()
     case 3:
         //QMessageBox::information(this, "Informació", "Has entrat en case 3, tres Càmeres");
 
-        glWidget_cam[1] = new GLWidget();
-        glWidget_cam[2] = new GLWidget();
-        glWidget_cam[3] = new GLWidget();
-
-        glWidget_cam[1]->setObjectName("cam1");
-        glWidget_cam[2]->setObjectName("cam2");
-        glWidget_cam[3]->setObjectName("cam3");
-
-        QObject::connect(glWidget_cam[1], SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
-        QObject::connect(glWidget_cam[2], SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
-        QObject::connect(glWidget_cam[3], SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
-
         ui->gridLayout->addWidget(cam1Label,1,1);
-        ui->gridLayout->addWidget(glWidget_cam[1],2,1);
+        ui->gridLayout->addWidget(glWidget_cam[0],2,1);
 
         ui->gridLayout->addWidget(cam3Label,3,1);
-        ui->gridLayout->addWidget(glWidget_cam[3],4,1);
+        ui->gridLayout->addWidget(glWidget_cam[2],4,1);
 
         ui->gridLayout->addWidget(cam2Label,1,2);
-        ui->gridLayout->addWidget(glWidget_cam[2],2,2);
-
-        ui->gridLayout->setColumnMinimumWidth(1,400);
-        ui->gridLayout->setColumnMinimumWidth(2,400);
-        ui->gridLayout->setColumnMinimumWidth(3,400);
-
-        ui->gridLayout->setRowMinimumHeight(2,300);
-        ui->gridLayout->setRowMinimumHeight(4,300);
+        ui->gridLayout->addWidget(glWidget_cam[1],2,2);
 
         cam1Label->setStyleSheet("background-color: rgb(255, 255, 255)");
         cam2Label->setStyleSheet("background-color: rgb(255, 255, 255)");
@@ -172,39 +131,18 @@ void MainWindow::creainterficie()
     default:
         //QMessageBox::information(this, "Informacin", "Has entrat en case default, quatre Càmeres");
 
-        glWidget_cam[1] = new GLWidget();
-        glWidget_cam[2] = new GLWidget();
-        glWidget_cam[3] = new GLWidget();
-        glWidget_cam[4] = new GLWidget();
-
-        glWidget_cam[1]->setObjectName("cam1");
-        glWidget_cam[2]->setObjectName("cam2");
-        glWidget_cam[3]->setObjectName("cam3");
-        glWidget_cam[4]->setObjectName("cam4");
-
-        QObject::connect(glWidget_cam[1], SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
-        QObject::connect(glWidget_cam[2], SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
-        QObject::connect(glWidget_cam[3], SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
-        QObject::connect(glWidget_cam[4], SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
-
         ui->gridLayout->addWidget(cam1Label,1,1);
-        ui->gridLayout->addWidget(glWidget_cam[1],2,1);
+        ui->gridLayout->addWidget(glWidget_cam[0],2,1);
 
         ui->gridLayout->addWidget(cam3Label,3,1);
-        ui->gridLayout->addWidget(glWidget_cam[3],4,1);
+        ui->gridLayout->addWidget(glWidget_cam[2],4,1);
 
         ui->gridLayout->addWidget(cam2Label,1,2);
-        ui->gridLayout->addWidget(glWidget_cam[2],2,2);
+        ui->gridLayout->addWidget(glWidget_cam[1],2,2);
 
         ui->gridLayout->addWidget(cam4Label,3,2);
-        ui->gridLayout->addWidget(glWidget_cam[4],4,2);
+        ui->gridLayout->addWidget(glWidget_cam[3],4,2);
 
-        ui->gridLayout->setColumnMinimumWidth(1,400);
-        ui->gridLayout->setColumnMinimumWidth(2,400);
-        ui->gridLayout->setColumnMinimumWidth(3,400);
-
-        ui->gridLayout->setRowMinimumHeight(2,300);
-        ui->gridLayout->setRowMinimumHeight(4,300);
 
         cam1Label->setStyleSheet("background-color: rgb(255, 255, 255)");
         cam2Label->setStyleSheet("background-color: rgb(255, 255, 255)");
@@ -212,6 +150,13 @@ void MainWindow::creainterficie()
         cam4Label->setStyleSheet("background-color: rgb(255, 255, 255)");
 
     }
+
+    ui->gridLayout->setColumnMinimumWidth(1,400);
+    ui->gridLayout->setColumnMinimumWidth(2,400);
+    ui->gridLayout->setColumnMinimumWidth(3,400);
+
+    ui->gridLayout->setRowMinimumHeight(2,300);
+    ui->gridLayout->setRowMinimumHeight(4,300);
 }
 
 //Funció menbre que genera el menu
@@ -287,102 +232,26 @@ void MainWindow::createMenus()
 //Funció menbre que controla el botó capturar
 void MainWindow::on_adquirirButton_clicked()
 {
-    QString fontvideo1,fontvideo2,fontvideo3,fontvideo4;
+    QString fontvideo[numwidgets];
 
-    switch(numcam)
-    {
-    case 1:
-        fontvideo1= QFileDialog::getOpenFileName();
-        capture= cvCaptureFromFile(fontvideo1.toAscii());
-        if (!capture) return;
-        glWidget_cam[1]->initRendering(capture,"cam1");
+    for (int k = 0; k < numcam; k++) {
+      fontvideo[k] = QFileDialog::getOpenFileName();
+      capture[k] = cvCaptureFromFile(fontvideo[k].toAscii());
+      if (!capture[k]) return;
+    }
 
-       break;
-
-    case 2:
-       fontvideo1= QFileDialog::getOpenFileName();
-       capture= cvCaptureFromFile(fontvideo1.toAscii());
-       if (!capture) return;
-       glWidget_cam[1]->initRendering(capture,"cam1");
-
-       fontvideo2= QFileDialog::getOpenFileName();
-       capture= cvCaptureFromFile(fontvideo2.toAscii());
-       if (!capture) return;
-       glWidget_cam[2]->initRendering(capture,"cam2");
-
-       break;
-
-    case 3:
-       fontvideo1= QFileDialog::getOpenFileName();
-       capture= cvCaptureFromFile(fontvideo1.toAscii());
-       if (!capture) return;
-       glWidget_cam[1]->initRendering(capture,"cam1");
-
-       fontvideo2= QFileDialog::getOpenFileName();
-       capture= cvCaptureFromFile(fontvideo2.toAscii());
-       if (!capture) return;
-       glWidget_cam[2]->initRendering(capture,"cam2");
-
-       fontvideo3= QFileDialog::getOpenFileName();
-       capture= cvCaptureFromFile(fontvideo3.toAscii());
-       if (!capture) return;
-       glWidget_cam[3]->initRendering(capture,"cam3");
-
-       break;
-
-    default:
-       fontvideo1= QFileDialog::getOpenFileName();
-       capture= cvCaptureFromFile(fontvideo1.toAscii());
-       if (!capture) return;
-       glWidget_cam[1]->initRendering(capture,"cam1");
-
-       fontvideo2= QFileDialog::getOpenFileName();
-       capture= cvCaptureFromFile(fontvideo2.toAscii());
-       if (!capture) return;
-       glWidget_cam[2]->initRendering(capture,"cam2");
-
-       fontvideo3= QFileDialog::getOpenFileName();
-       capture= cvCaptureFromFile(fontvideo3.toAscii());
-       if (!capture) return;
-       glWidget_cam[3]->initRendering(capture,"cam3");
-
-       fontvideo4= QFileDialog::getOpenFileName();
-       capture= cvCaptureFromFile(fontvideo4.toAscii());
-       if (!capture) return;
-       glWidget_cam[4]->initRendering(capture,"cam4");
-
-       break;
-       }
-
+    for (int k = 0; k < numcam; k++) {
+      QString nom("cam%1");
+      glWidget_cam[k]->initRendering(capture[k], nom.arg(k).toAscii());
+    }
 }
 
 //Funció menbre que controla el botó stop
 void MainWindow::on_stopButton_clicked()
 {
-    switch(numcam)
-    {
-    case 1:
-        glWidget_cam[1]->finishRendering();
-        break;
-
-    case 2:
-        glWidget_cam[1]->finishRendering();
-        glWidget_cam[2]->finishRendering();
-        break;
-
-    case 3:
-        glWidget_cam[1]->finishRendering();
-        glWidget_cam[2]->finishRendering();
-        glWidget_cam[3]->finishRendering();
-        break;
-
-    default:
-        glWidget_cam[1]->finishRendering();
-        glWidget_cam[2]->finishRendering();
-        glWidget_cam[3]->finishRendering();
-        glWidget_cam[4]->finishRendering();
-        break;
-    }
+  for (int k = 0; k < numcam; k++) {
+    glWidget_cam[k]->finishRendering();
+  }
 }
 
 //Funció menbre que controla el canvi de càmera

@@ -52,8 +52,10 @@ void RenderThread::run( )
             resize_flag = false;
         }
 
-        paintGL();
-        processCam();
+        if (capture) {
+          processCam(); // agafem el frame de la camera
+          paintGL();
+        }
 
         // Intercanvi dels buffers del GLWidget
         glw->swapBuffers();
@@ -103,8 +105,9 @@ void RenderThread::paintGL()
         glClear (GL_COLOR_BUFFER_BIT);
         glClearColor (0.0,0.0,0.0,1.0);
 
-        if (!qframe.isNull()) {
-            qframe = qframe.scaled(viewport_size, Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+        if (frame->imageData) {
+            // qframe = qframe.scaled(viewport_size, Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+
 
             glDisable(GL_DEPTH_TEST);
             glMatrixMode(GL_PROJECTION);
@@ -115,13 +118,15 @@ void RenderThread::paintGL()
 
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexImage2D( GL_TEXTURE_2D, 0, 4, qframe.width(), qframe.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, qframe.bits() );
+            glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB,
+                          frame->width, frame->height,
+                          0, GL_BGR, GL_UNSIGNED_BYTE, frame->imageData);
 
             glBegin(GL_QUADS);
-                glTexCoord2f(0,0); glVertex2f(0,0);
-                glTexCoord2f(1,0); glVertex2f(1,0);
-                glTexCoord2f(1,1); glVertex2f(1,1);
-                glTexCoord2f(0,1); glVertex2f(0,1);
+                glTexCoord2f(0,1); glVertex2f(0,0);
+                glTexCoord2f(1,1); glVertex2f(1,0);
+                glTexCoord2f(1,0); glVertex2f(1,1);
+                glTexCoord2f(0,0); glVertex2f(0,1);
             glEnd();
 
             glDisable(GL_TEXTURE_2D);
@@ -132,21 +137,17 @@ void RenderThread::paintGL()
 }
 
 void RenderThread::processCam() {
-    if (capture)
-    {
-        frame=cvQueryFrame(capture);
+    frame = cvQueryFrame(capture);
 
-        if(camaraactiva==camera){
-            enviaragravar(frame);
-        }
-
-        if (frame->imageData) {
-            //La imatge es guarda utilitzant 24-bit RGB(8-8-8).
-            qframe = QImage((const unsigned char*)(frame->imageData), frame->width, frame->height, frame->widthStep, QImage::Format_RGB888).rgbSwapped();
-            qframe = QGLWidget::convertToGLFormat(qframe);
-        }
+    if(camaraactiva==camera){
+        enviaragravar(frame);
     }
-    return;
+
+    if (frame->imageData) {
+        //La imatge es guarda utilitzant 24-bit RGB(8-8-8).
+        // qframe = QImage((const unsigned char*)(frame->imageData), frame->width, frame->height, frame->widthStep, QImage::Format_RGB888).rgbSwapped();
+        // qframe = QGLWidget::convertToGLFormat(qframe);
+    }
 }
 
 void RenderThread::selecfontvideo(CvCapture *_capture)

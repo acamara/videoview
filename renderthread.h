@@ -64,7 +64,7 @@ private:
     /** Current size of the viewport. */
     QSize viewport_size;
 
-    QImage qframe;
+    // QImage qframe;
     IplImage *frame;
     CvCapture *capture;
 
