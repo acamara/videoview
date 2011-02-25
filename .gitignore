@@ -1,3 +1,5 @@
 sortida.avi
 *.o
 *~
+menus.pro.user
+Makefile
