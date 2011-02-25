@@ -20,6 +20,6 @@ win32 {
         -lhighgui200
 }
 else { 
-    INCLUDEPATH += /usr/local/include/opencv
-    LIBS += -L/usr/local/lib
+    INCLUDEPATH += /usr/include/opencv
+    LIBS += -L/usr/local/lib -lhighgui -lcxcore
 }
