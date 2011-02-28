@@ -1,5 +1,9 @@
 sortida.avi
 *.o
+*.Debug
+*.Release
 *~
 menus.pro.user
 Makefile
+ui_configdialog.h
+ui_mainwindow.h
