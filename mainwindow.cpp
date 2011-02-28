@@ -189,7 +189,7 @@ void MainWindow::on_adquirirButton_clicked()
     }
 
     for (int k = 0; k < numcam; k++) {
-      QString nom("cam%1");
+      QString nom("CAM %1");
       glWidget_cam[k]->initadquirir(capture[k], nom.arg(k).toAscii());
     }
 }

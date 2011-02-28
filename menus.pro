@@ -21,5 +21,7 @@ win32 {
 }
 else { 
     INCLUDEPATH += /usr/include/opencv
-    LIBS += -L/usr/local/lib -lhighgui -lcxcore
+    LIBS += -L/usr/local/lib \
+        -lhighgui \
+        -lcxcore
 }
