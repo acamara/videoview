@@ -49,106 +49,54 @@ void MainWindow::changeEvent(QEvent *e)
 //Funció menbre que genera la interfície gràfica segons el nombre de càmeres
 void MainWindow::creainterficie()
 {
-    // declaracio variables gráfiques
+    // Declaració variables gráfiques
 
-    cam1Label = new QLabel(tr("CAM 1"));
-    cam1Label->setAlignment(Qt::AlignCenter);
-    cam1Label->setFont(QFont("arial", 10, QFont::Bold));
+    QString nom("CAM %1");
 
-    cam2Label = new QLabel(tr("CAM 2"));
-    cam2Label->setAlignment(Qt::AlignCenter);
-    cam2Label->setFont(QFont("arial", 10, QFont::Bold));
+    for (int k=0;k<numcam;k++){
+        Label_cam[k] = new QLabel(tr(nom.arg(k).toAscii()));
+        Label_cam[k]->setAlignment(Qt::AlignCenter);
+        Label_cam[k]->setFont(QFont("arial", 10, QFont::Bold));
+        Label_cam[k]->setStyleSheet("background-color: rgb(255, 255, 255)");
+    }
 
-    cam3Label = new QLabel(tr("CAM 3"));
-    cam3Label->setAlignment(Qt::AlignCenter);
-    cam3Label->setFont(QFont("arial", 10, QFont::Bold));
-
-    cam4Label = new QLabel(tr("CAM 4"));
-    cam4Label->setAlignment(Qt::AlignCenter);
-    cam4Label->setFont(QFont("arial", 10, QFont::Bold));
-
-    pgmLabel = new QLabel(tr("PGM"));
-    pgmLabel->setAlignment(Qt::AlignCenter);
+    Label_pgm = new QLabel(tr("PGM"));
+    Label_pgm->setAlignment(Qt::AlignCenter);
 
     glWidget_pgm = new GLWidget();
-    ui->gridLayout->addWidget(pgmLabel,1,3);
+    ui->gridLayout->addWidget(Label_pgm,1,3);
     ui->verticalLayout_PGM->addWidget(glWidget_pgm);
 
-    QString nom("cam%1");
     for (int k = 0; k < numcam; k++) {
       glWidget_cam[k] = new GLWidget();
       glWidget_cam[k]->setObjectName(nom.arg(k).toAscii());
       QObject::connect(glWidget_cam[k], SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
     }
 
-    //comença switch()
+    //Switch() de posicionament dels diferents widgets a la finestra
 
     switch(numcam)
 
     {
-    case 1:
-        //QMessageBox::information(this, "Informació", "Has entrat en case 1, una Càmera");
-
-        ui->gridLayout->addWidget(cam1Label,1,1,1,2);
-        ui->gridLayout->addWidget(glWidget_cam[0],2,1,4,2);
-
-        cam1Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-
-        break;
-
-    case 2:
-        //QMessageBox::information(this, "Informació", "Has entrat en case 2, dues Càmeres");
-
-        ui->gridLayout->addWidget(cam1Label,1,1);
-        ui->gridLayout->addWidget(glWidget_cam[0],2,1);
-        
-        ui->gridLayout->addWidget(cam2Label,3,1);
-        ui->gridLayout->addWidget(glWidget_cam[1],4,1);
-
-        cam1Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-        cam2Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-
-        break;
-
-    case 3:
-        //QMessageBox::information(this, "Informació", "Has entrat en case 3, tres Càmeres");
-
-        ui->gridLayout->addWidget(cam1Label,1,1);
-        ui->gridLayout->addWidget(glWidget_cam[0],2,1);
-
-        ui->gridLayout->addWidget(cam3Label,3,1);
-        ui->gridLayout->addWidget(glWidget_cam[2],4,1);
-
-        ui->gridLayout->addWidget(cam2Label,1,2);
-        ui->gridLayout->addWidget(glWidget_cam[1],2,2);
-
-        cam1Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-        cam2Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-        cam3Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-
-        break;
-
     default:
-        //QMessageBox::information(this, "Informacin", "Has entrat en case default, quatre Càmeres");
-
-        ui->gridLayout->addWidget(cam1Label,1,1);
-        ui->gridLayout->addWidget(glWidget_cam[0],2,1);
-
-        ui->gridLayout->addWidget(cam3Label,3,1);
-        ui->gridLayout->addWidget(glWidget_cam[2],4,1);
-
-        ui->gridLayout->addWidget(cam2Label,1,2);
-        ui->gridLayout->addWidget(glWidget_cam[1],2,2);
-
-        ui->gridLayout->addWidget(cam4Label,3,2);
+        ui->gridLayout->addWidget(Label_cam[3],3,2);
         ui->gridLayout->addWidget(glWidget_cam[3],4,2);
 
+    case 3:
+        ui->gridLayout->addWidget(Label_cam[2],3,1);
+        ui->gridLayout->addWidget(glWidget_cam[2],4,1);
 
-        cam1Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-        cam2Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-        cam3Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-        cam4Label->setStyleSheet("background-color: rgb(255, 255, 255)");
+    case 2:
+        ui->gridLayout->addWidget(Label_cam[0],1,1);
+        ui->gridLayout->addWidget(glWidget_cam[0],2,1);
 
+        ui->gridLayout->addWidget(Label_cam[1],1,2);
+        ui->gridLayout->addWidget(glWidget_cam[1],2,2);
+
+        break;
+    case 1:
+        ui->gridLayout->addWidget(Label_cam[0],1,1,1,2);
+        ui->gridLayout->addWidget(glWidget_cam[0],2,1,4,2);
     }
 
     ui->gridLayout->setColumnMinimumWidth(1,400);
@@ -242,7 +190,7 @@ void MainWindow::on_adquirirButton_clicked()
 
     for (int k = 0; k < numcam; k++) {
       QString nom("cam%1");
-      glWidget_cam[k]->initRendering(capture[k], nom.arg(k).toAscii());
+      glWidget_cam[k]->initadquirir(capture[k], nom.arg(k).toAscii());
     }
 }
 
@@ -257,62 +205,18 @@ void MainWindow::on_stopButton_clicked()
 //Funció menbre que controla el canvi de càmera
 void MainWindow::canviacamara()
 {  
-      if(sender()->objectName()=="cam1")
-      {
-            cam1Label->setStyleSheet("background-color: rgb(255, 0, 0)");
+    QString canvi=sender()->objectName();
+    
+    for (int k = 0; k < numcam; k++){
+        glWidget_cam[k]->canviacamactiva(canvi);
 
-            for (int i=1;i<=numcam;i++)
-            {
-                glWidget_cam[i]->canviacamactiva("cam1");
-            }
-
-            cam2Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-            cam3Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-            cam4Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-      }
-
-      if(sender()->objectName()=="cam2")
-      {
-            cam2Label->setStyleSheet("background-color: rgb(255, 0, 0)");
-
-            for (int i=1;i<=numcam;i++)
-            {
-                glWidget_cam[i]->canviacamactiva("cam2");
-            }
-
-            cam1Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-            cam3Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-            cam4Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-      }
-
-      if(sender()->objectName()=="cam3")
-      {
-            cam3Label->setStyleSheet("background-color: rgb(255, 0, 0)");
-
-            for (int i=1;i<=numcam;i++)
-            {
-                glWidget_cam[i]->canviacamactiva("cam3");
-            }
-
-            cam1Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-            cam2Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-            cam4Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-
-      }
-
-      if(sender()->objectName()=="cam4")
-      {
-            cam4Label->setStyleSheet("background-color: rgb(255, 0, 0)");
-
-            for (int i=1;i<=numcam;i++)
-            {
-                glWidget_cam[i]->canviacamactiva("cam4");
-            }
-
-            cam1Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-            cam2Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-            cam3Label->setStyleSheet("background-color: rgb(255, 255, 255)");
-      }
+        if(k==canvi[4].digitValue()){
+            Label_cam[k]->setStyleSheet("background-color: rgb(255, 0, 0)");
+        }
+        else{
+             Label_cam[k]->setStyleSheet("background-color: rgb(255, 255, 255)");
+        }
+    }
 }
 
 
@@ -322,7 +226,7 @@ void MainWindow::on_gravarButton_clicked()
 
     QString nomdeprojecte = QFileDialog::getSaveFileName();
 
-    //QString nomdeprojecte =("salida.avi");
+    //QString nomdeprojecte =("sortida.avi");
 
     Gravarthread = new GravarThread(this,nomdeprojecte,ui->comboBox_tipus->currentIndex(),25);
 
@@ -330,9 +234,8 @@ void MainWindow::on_gravarButton_clicked()
 
     connect(ui->spinBox_duracio, SIGNAL(valueChanged (int)),Gravarthread,SLOT(selecduratransicio(int)));
 
-    for (int i=1;i<=numcam;i++)
-    {
-      connect(&glWidget_cam[i]->glt, SIGNAL(enviaragravar(IplImage *)),Gravarthread,SLOT(rebregravar(IplImage *)));
+    for (int k = 0; k < numcam; k++){
+      connect(&glWidget_cam[k]->glt, SIGNAL(enviaragravar(IplImage *)),Gravarthread,SLOT(rebregravar(IplImage *)));
     }
 
     Gravarthread->start();

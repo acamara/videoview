@@ -9,8 +9,6 @@
 #include "glwidget.h"
 #include "GravarThread.h"
 
-
-
 QT_BEGIN_NAMESPACE
 class QAction;
 class QActionGroup;
@@ -60,14 +58,11 @@ private:
     QAction *aboutAct;
     QAction *aboutQtAct;
 
-    QLabel *cam1Label;
-    QLabel *cam2Label;
-    QLabel *cam3Label;
-    QLabel *cam4Label;
-    QLabel *pgmLabel;
-
     int numcam;
     enum { numwidgets = 4 };
+
+    QLabel *Label_cam[numwidgets];
+    QLabel *Label_pgm;
     GLWidget *glWidget_cam[numwidgets];
     GLWidget *glWidget_pgm;
 
