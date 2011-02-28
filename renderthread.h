@@ -31,44 +31,28 @@ public:
 
     void selecfontvideo(CvCapture *_capture);
     void seleccam(QString cam);
-
+    void setadquirir(bool _adquirir);
     QString camaraactiva;
 
 signals:
     void enviaragravar(IplImage *frame);
 
 protected:
-    /** Init the GL environment. */
-    void initializeGL();
-
     /** Handles resizes of the GL viewport. */
     void resizeGL(int width, int height);
-
-    /** Does all the painting. */
-    void paintGL();
-
     void processCam();
-    void startCam();
+    void paintGL();
 
 
 private:
-     /** The QGLWidget of the render thread. This widget provides the GL rendering context.*/
     GLWidget *glw;
-
-    /** Keep the thread running as long this flag is true. */
-    volatile bool render_flag;
-
-    /** Perform a resize when this flag is true. */
-    volatile bool resize_flag;
-
-    /** Current size of the viewport. */
+    bool render_flag;
+    bool resize_flag;
+    bool adquirir;
     QSize viewport_size;
-
-    // QImage qframe;
+    QString camera;
     IplImage *frame;
     CvCapture *capture;
-
-    QString camera;
 };
 
 
