@@ -46,7 +46,7 @@ void MainWindow::changeEvent(QEvent *e)
     }
 }
 
-//Funció menbre que genera la interfície gràfica segons el nombre de càmeres
+//Mètode que genera la interfície gràfica segons el nombre de càmeres
 void MainWindow::creainterficie()
 {
     // Declaració variables gráfiques
@@ -63,7 +63,7 @@ void MainWindow::creainterficie()
     Label_pgm = new QLabel(tr("PGM"));
     Label_pgm->setAlignment(Qt::AlignCenter);
 
-    glWidget_pgm = new GLWidget();
+    glWidget_pgm = new PGMWidget();
     ui->gridLayout->addWidget(Label_pgm,1,3);
     ui->verticalLayout_PGM->addWidget(glWidget_pgm);
 
@@ -71,7 +71,13 @@ void MainWindow::creainterficie()
       glWidget_cam[k] = new GLWidget();
       glWidget_cam[k]->setObjectName(nom.arg(k).toAscii());
       QObject::connect(glWidget_cam[k], SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
+
+      connect(&glWidget_cam[k]->glt,SIGNAL(enviaragravar(IplImage *)),&glWidget_pgm->glt,
+              SLOT(rebregravar(IplImage *)));
     }
+
+    connect(ui->comboBox_tipus, SIGNAL(activated (int)),&glWidget_pgm->glt,SLOT(selectransicio(int)));
+    connect(ui->spinBox_duracio, SIGNAL(valueChanged (int)),&glWidget_pgm->glt,SLOT(selecduratransicio(int)));
 
     //Switch() de posicionament dels diferents widgets a la finestra
 
@@ -107,14 +113,14 @@ void MainWindow::creainterficie()
     ui->gridLayout->setRowMinimumHeight(4,300);
 }
 
-//Funció menbre que genera el menu
+//Mètode que genera el menu
 void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 {
     QMenu menu(this);
     menu.exec(event->globalPos());
 }
 
-//Funció menbre que controla l'acció nou fitxer
+//Mètode que controla l'acció nou fitxer
 void MainWindow::newFile()
 {
     Label_pgm->~QLabel();
@@ -134,20 +140,20 @@ void MainWindow::newFile()
 
 }
 
-//Funció menbre que controla l'acció about
+//Mètode que controla l'acció about
 void MainWindow::about()
 {
     QMessageBox::about(this, tr("Ajuda"),tr("Ajuda de Capturadora"));
 }
 
-//Funció menbre que controla l'acció aboutQt
+//Mètode que controla l'acció aboutQt
 void MainWindow::aboutQt()
 {
     QMessageBox::about(this, tr("Sobre Capturadora"),
             tr("Sobre capturadora, versió 1, Tots els drets reservats"));
 }
 
-//Funció menbre que crea les diferents accions de la finestra principal
+//Mètode que crea les diferents accions de la finestra principal
 void MainWindow::createActions()
 {
     newAct = new QAction(tr("&Nova"), this);
@@ -170,7 +176,7 @@ void MainWindow::createActions()
 
 }
 
-//Funció menbre que crea el menu de l'aplicació
+//Mètode que crea el menu de l'aplicació
 void MainWindow::createMenus()
 {
     fileMenu = menuBar()->addMenu(tr("&Captura"));
@@ -187,7 +193,7 @@ void MainWindow::createMenus()
 
 }
 
-//Funció menbre que controla el botó capturar
+//Mètode que controla el botó capturar
 void MainWindow::on_adquirirButton_clicked()
 {
     QString fontvideo[numwidgets];
@@ -204,7 +210,7 @@ void MainWindow::on_adquirirButton_clicked()
     }
 }
 
-//Funció menbre que controla el botó stop
+//Mètode que controla el botó stop
 void MainWindow::on_stopButton_clicked()
 {
   for (int k = 0; k < numcam; k++) {
@@ -212,11 +218,11 @@ void MainWindow::on_stopButton_clicked()
   }
 }
 
-//Funció menbre que controla el canvi de càmera
+//Mètode que controla el canvi de càmera
 void MainWindow::canviacamara()
 {  
     QString canvi=sender()->objectName();
-    
+
     for (int k = 0; k < numcam; k++){
         glWidget_cam[k]->canviacamactiva(canvi);
 
@@ -232,27 +238,16 @@ void MainWindow::canviacamara()
 
 void MainWindow::on_gravarButton_clicked()
 {
-    //Creació dels thread de gravació
+    //Activació de la gravació en el thread de gravació
 
-    QString nomdeprojecte = QFileDialog::getSaveFileName();
+    //QString nomdeprojecte = QFileDialog::getSaveFileName();
 
     //QString nomdeprojecte =("sortida.avi");
 
-    Gravarthread = new GravarThread(this,nomdeprojecte,ui->comboBox_tipus->currentIndex(),25);
-
-    connect(ui->comboBox_tipus, SIGNAL(activated (int)),Gravarthread,SLOT(selectransicio(int)));
-
-    connect(ui->spinBox_duracio, SIGNAL(valueChanged (int)),Gravarthread,SLOT(selecduratransicio(int)));
-
-    for (int k = 0; k < numcam; k++){
-      connect(&glWidget_cam[k]->glt, SIGNAL(enviaragravar(IplImage *)),Gravarthread,SLOT(rebregravar(IplImage *)));
-    }
-
-    Gravarthread->start();
-
+    glWidget_pgm->glt.setgravar(true);
 }
 
 void MainWindow::on_stopButton_2_clicked()
 {
-    Gravarthread->terminate();
+    glWidget_pgm->finishRendering();
 }

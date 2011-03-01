@@ -47,7 +47,7 @@ void RenderThread::run( )
             resize_flag = false;
         }
 
-        if (adquirir)
+        if (adquirir && capture)
         {
             processCam();
             paintGL();

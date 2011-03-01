@@ -7,7 +7,8 @@
 #include <QTime>
 
 #include "glwidget.h"
-#include "GravarThread.h"
+#include "pgmwidget.h"
+
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -64,10 +65,9 @@ private:
     QLabel *Label_cam[numwidgets];
     QLabel *Label_pgm;
     GLWidget *glWidget_cam[numwidgets];
-    GLWidget *glWidget_pgm;
+    PGMWidget *glWidget_pgm;
 
     CvCapture *capture[numwidgets];
-    GravarThread  *Gravarthread;
 };
 
 #endif // MAINWINDOW_H
