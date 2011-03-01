@@ -2,37 +2,116 @@
 
 #include <QtGui>
 #include "GravarThread.h"
+#include "pgmwidget.h"
 
 #include <cxcore.h>
 #include <cv.h>
 #include <highgui.h>
 
 
-int peso= 0;
-CvVideoWriter *video;
-CvSize size = cvSize(720,576); //Resolució de gravació
-double fps = 25; // Frames per Segon
-
 //Constructor de la classe GravarThread
-GravarThread::GravarThread(QObject *parent,QString nomdeprojecte,int tipusdetransicio,int duradadetransicio)
-    : QThread(parent)
+GravarThread::GravarThread(PGMWidget *_glw )
+        : QThread(),
+        glw(_glw)
 {
-    tipustransicio = tipusdetransicio;
-    duradatransicio = duradadetransicio;
+    render_flag=true;
+    resize_flag=false;
+    gravar=false;
+    mostrar=false;
 }
 
-//Destructor de la classe GravarThread
-GravarThread::~GravarThread()
+//Mètode de la classe GravarThread que activa el flag de redimensionat de la finestra
+void GravarThread::resizeViewport( const QSize& _size )
 {
-
+    // Selecciona la mida del visor i activa el canvi de mida
+    viewport_size = _size;
+    resize_flag = true;
 }
 
 //Mètode que realitza la gravació i el processat dels frames de sortida PGM
 void GravarThread::run()
 {
-    video= cvCreateVideoWriter("sortida.avi",CV_FOURCC('M','J','P','G'),fps,size, 1);
+    CvVideoWriter *video=cvCreateVideoWriter("sortida.avi",0,25,cvSize(1280,720));
+    glw->makeCurrent();
+
+    // Realitza aquest procés mentre el flag de renderitzat estigui actiu
+    while(render_flag )
+    {
+        // Comprovació de si es necesita redimensionar el GLWidget
+        if (resize_flag)
+        {
+            resizeGL(viewport_size.width(), viewport_size.height());
+            resize_flag = false;
+        }
+
+        if (mostrar)
+        {
+            paintGL();
+        }
+
+        if (gravar)
+        {
+            //Aquí ha d'anar el codi per gravar a fitxer.
+            cvCvtColor(frame,frame,CV_BGR2RGB);
+            cvWriteFrame(video,frame);
+        }
+
+        // Intercanvi dels buffers del GLWidget
+        glw->swapBuffers();
+        //-----------------------------------------------------------------
+        //No hi hauria de ser aquest makeCurrent però si l'actives funciona.
+        glw->makeCurrent();
+        //-----------------------------------------------------------------
+        msleep(40); //sleep for 40 ms
+    }
+    cvReleaseVideoWriter (&video);
 }
 
+//Métode de la classe GravarThread que pinta en el GLWidget
+void GravarThread::paintGL()
+{
+        glClear (GL_COLOR_BUFFER_BIT);
+        glClearColor (0.0,0.0,0.0,1.0);
+
+        if (frame->imageData) {
+
+            glDisable(GL_DEPTH_TEST);
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            gluOrtho2D(0,1,0,1);
+
+            glEnable(GL_TEXTURE_2D);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB,
+                          frame->width, frame->height,
+                          0, GL_RGB, GL_UNSIGNED_BYTE, frame->imageData);
+
+            glBegin(GL_QUADS);
+                glTexCoord2f(0,1); glVertex2f(0,0);
+                glTexCoord2f(1,1); glVertex2f(1,0);
+                glTexCoord2f(1,0); glVertex2f(1,1);
+                glTexCoord2f(0,0); glVertex2f(0,1);
+            glEnd();
+            glDisable(GL_TEXTURE_2D);
+
+        }
+}
+
+//Mètode de la classe GravarThread que activa el flag per parar el renderitzat
+void GravarThread::stop( )
+{
+    render_flag=false;
+}
+
+//Mètode de la classe GravarThread que redimensiona el GLWidget
+void GravarThread::resizeGL(int width, int height)
+{
+    glViewport(0, 0, width, height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+}
 
 //Mètode que estableix el tipus de transició
 void GravarThread::selectransicio(int tipusdetransicio)
@@ -48,47 +127,14 @@ void GravarThread::selecduratransicio(int duradetransicio)
     qDebug()<<duradatransicio;
 }
 
-//Mètode que manipula la transició
-void GravarThread::activarlatransicio(IplImage* Imatgeactual,IplImage *Imatgeanterior,bool estattransicio)
-{
-
-    switch(tipustransicio)
-    {
-    case 1: //Fos
-
-        if(estattransicio){
-        IplImage *ent1, *ent2, *sal;
-
-        ent1= cvCloneImage(Imatgeactual);
-        ent2= cvCloneImage(Imatgeanterior);
-
-        sal= cvCloneImage(ent1);
-        cvAddWeighted(ent1, peso/100.0, ent2, 1.0-peso/100.0, 0, sal);
-
-        //cvShowImage("PGM", sal);
-        cvReleaseImage(&ent1);
-        cvReleaseImage(&ent2);
-        cvReleaseImage(&sal);
-        peso++;
-
-        if(peso==100)
-        {
-          pararlatransicio();
-          peso=0;
-        }
-        break;
-        }
-
-    default:    //Transició per defecte Tall
-        //cvShowImage("PGM", Imatgeactual);
-        pararlatransicio();
-       // qDebug()<<"Transició activada,default";
-    }
-
-}
-
-void GravarThread::rebregravar(IplImage *frame){
+void GravarThread::rebregravar(IplImage *_frame){
+    frame=_frame;
+    mostrar=true;
     //qDebug()<<"S'ha rebut per gravar";
     cvNamedWindow("pvw",0);
     cvShowImage("pvw",frame);
+}
+
+void GravarThread::setgravar(bool _gravar){
+    gravar=_gravar;
 }
