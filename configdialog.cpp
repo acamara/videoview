@@ -34,14 +34,14 @@ void Dialog::changeEvent(QEvent *e)
     }
 }
 
-//Funció menbre que controla el botó cancelar
+//Mètode que controla el botó cancelar
 void Dialog::on_CancelarBoton_clicked()
 {
     close ();
 
 }
 
-//Funció menbre que controla el botó aceptar
+//Mètode que controla el botó aceptar
 void Dialog::on_Aceptar_clicked()
 {
     /*
@@ -55,7 +55,7 @@ void Dialog::on_Aceptar_clicked()
 
 }
 
-//Funció menbre que retorna l'informació obtiguda de la configuració
+//Mètode que retorna l'informació obtiguda de la configuració
 int Dialog::get_config()
 {
     return(ui->NumCam->currentIndex ()+1);

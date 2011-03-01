@@ -5,9 +5,11 @@ INPUT(
 ./debug/glwidget.o
 ./debug/configdialog.o
 ./debug/GravarThread.o
+./debug/pgmwidget.o
 ./debug/moc_renderthread.o
 ./debug/moc_mainwindow.o
 ./debug/moc_glwidget.o
 ./debug/moc_configdialog.o
 ./debug/moc_GravarThread.o
+./debug/moc_pgmwidget.o
 );

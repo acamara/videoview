@@ -3,13 +3,15 @@ HEADERS += renderthread.h \
     mainwindow.h \
     glwidget.h \
     configdialog.h \
-    GravarThread.h
+    GravarThread.h \
+    pgmwidget.h
 SOURCES += renderthread.cpp \
     mainwindow.cpp \
     main.cpp \
     glwidget.cpp \
     configdialog.cpp \
-    GravarThread.cpp
+    GravarThread.cpp \
+    pgmwidget.cpp
 FORMS += mainwindow.ui \
     configdialog.ui
 win32 { 
