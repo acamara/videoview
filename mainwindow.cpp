@@ -117,6 +117,16 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 //Funció menbre que controla l'acció nou fitxer
 void MainWindow::newFile()
 {
+    Label_pgm->~QLabel();
+    glWidget_pgm->glt.terminate();
+    glWidget_pgm->~QGLWidget();
+
+    for (int k = 0; k < numcam; k++) {
+      glWidget_cam[k]->glt.terminate();
+      glWidget_cam[k]->~QGLWidget();
+      Label_cam[k]->~QLabel();
+    }
+
     Dialog *configdialog = new Dialog;
     configdialog->exec();
     numcam=configdialog->get_config();
