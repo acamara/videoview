@@ -29,7 +29,7 @@ void RenderThread::resizeViewport( const QSize& _size )
 //Mètode de la classe RenderThread que activa el flag per parar el renderitzat
 void RenderThread::stop( )
 {
-
+    render_flag=false;
 }
 
 //Mètode de la classe RenderThread que
@@ -60,7 +60,6 @@ void RenderThread::run( )
         //No hi hauria de ser aquest makeCurrent però si l'actives funciona.
         glw->makeCurrent();
         //-----------------------------------------------------------------
-
         msleep(40); //sleep for 40 ms
     }
 
@@ -111,6 +110,7 @@ void RenderThread::paintGL()
                 glTexCoord2f(0,0); glVertex2f(0,1);
             glEnd();
             glDisable(GL_TEXTURE_2D);
+
         }
 }
 
