@@ -52,8 +52,9 @@ void GravarThread::run()
         if (gravar)
         {
             //Aquí ha d'anar el codi per gravar a fitxer.
-            cvCvtColor(frame,frame,CV_BGR2RGB);
-            cvWriteFrame(video,frame);
+            auxframe=cvCloneImage(frame);
+            cvCvtColor(auxframe,auxframe,CV_BGR2RGB);
+            cvWriteFrame(video,auxframe);
         }
 
         // Intercanvi dels buffers del GLWidget

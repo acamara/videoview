@@ -41,6 +41,7 @@ class GravarThread : public QThread
 
         QSize viewport_size;
         IplImage *frame;
+        IplImage *auxframe;
         int duradatransicio;
         int tipustransicio;
  };
