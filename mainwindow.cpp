@@ -23,9 +23,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     Dialog *configdialog = new Dialog;
     configdialog->exec();
-    numcam=configdialog->get_config();
+    configdialog->get_config(numcam,resolucio);
     creainterficie();
-
 }
 
 //Destructor de la clase MainWindow
@@ -64,6 +63,7 @@ void MainWindow::creainterficie()
     Label_pgm->setAlignment(Qt::AlignCenter);
 
     glWidget_pgm = new PGMWidget();
+    glWidget_pgm->glt.setconfig(resolucio,25);
     ui->gridLayout->addWidget(Label_pgm,1,3);
     ui->verticalLayout_PGM->addWidget(glWidget_pgm);
 
@@ -135,7 +135,7 @@ void MainWindow::newFile()
 
     Dialog *configdialog = new Dialog;
     configdialog->exec();
-    numcam=configdialog->get_config();
+    configdialog->get_config(numcam,resolucio);
     creainterficie();
 
 }
@@ -243,7 +243,6 @@ void MainWindow::on_gravarButton_clicked()
     //QString nomdeprojecte = QFileDialog::getSaveFileName();
 
     //QString nomdeprojecte =("sortida.avi");
-
     glWidget_pgm->glt.setgravar(true);
 }
 

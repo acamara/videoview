@@ -23,10 +23,11 @@ class GravarThread : public QThread
         void resizeViewport(const QSize& _size);
 
     public slots:
-         void selectransicio(int tipusdetransicio);
-         void selecduratransicio(int duradetransicio);
-         void rebregravar(IplImage*);
-         void setgravar(bool _gravar);
+        void setconfig(QSize _resolucio,double _fps );
+        void selectransicio(int tipusdetransicio);
+        void selecduratransicio(int duradetransicio);
+        void rebregravar(IplImage*);
+        void setgravar(bool _gravar);
 
     protected:
         void resizeGL(int width, int height);
@@ -38,9 +39,10 @@ class GravarThread : public QThread
         bool resize_flag;
         bool gravar;
         bool mostrar;
-
         QSize viewport_size;
+        QSize resolucio;
         IplImage *frame;
+        double fps;
         int duradatransicio;
         int tipustransicio;
  };

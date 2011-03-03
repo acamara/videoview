@@ -31,7 +31,7 @@ void GravarThread::resizeViewport( const QSize& _size )
 //Mètode que realitza la gravació i el processat dels frames de sortida PGM
 void GravarThread::run()
 {
-    CvVideoWriter *video=cvCreateVideoWriter("sortida.avi",0,25,cvSize(1280,720));
+    CvVideoWriter *video=cvCreateVideoWriter("sortida.avi",0,fps,cvSize(resolucio.width(),resolucio.height()));
     glw->makeCurrent();
 
     // Realitza aquest procés mentre el flag de renderitzat estigui actiu
@@ -52,6 +52,7 @@ void GravarThread::run()
         if (gravar)
         {
             //Aquí ha d'anar el codi per gravar a fitxer.
+            //cvResize(const CvArr* src, CvArr* dst, int interpolation=CV_INTER_LINEAR)
             cvWriteFrame(video,frame);
         }
 
@@ -136,4 +137,8 @@ void GravarThread::rebregravar(IplImage *_frame){
 
 void GravarThread::setgravar(bool _gravar){
     gravar=_gravar;
+}
+void GravarThread::setconfig(QSize _resolucio,double _fps ){
+    resolucio=_resolucio;
+    fps=_fps;
 }

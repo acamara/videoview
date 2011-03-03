@@ -60,6 +60,8 @@ private:
     QAction *aboutQtAct;
 
     int numcam;
+    QSize resolucio;
+
     enum { numwidgets = 4 };
 
     QLabel *Label_cam[numwidgets];

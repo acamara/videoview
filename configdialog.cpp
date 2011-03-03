@@ -56,8 +56,27 @@ void Dialog::on_Aceptar_clicked()
 }
 
 //Mètode que retorna l'informació obtiguda de la configuració
-int Dialog::get_config()
+void Dialog::get_config(int &numcam,QSize &resolucio)
 {
-    return(ui->NumCam->currentIndex ()+1);
+   numcam=ui->NumCam->currentIndex ()+1;
 
+   switch (ui->Tamanycuadre->currentIndex()){
+       case 0:
+           resolucio.setWidth(720);
+           resolucio.setHeight(576);
+        break;
+       case 1:
+           resolucio.setWidth(720);
+           resolucio.setHeight(480);
+        break;
+       case 2:
+           resolucio.setWidth(1280);
+           resolucio.setHeight(720);
+        break;
+       case 3:
+           resolucio.setWidth(1920);
+           resolucio.setHeight(1080);
+        break;
+    }
 }
+

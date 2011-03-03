@@ -14,7 +14,7 @@ class Dialog : public QDialog {
 public:
     Dialog(QWidget *parent = 0);
     ~Dialog();
-    int get_config();
+    void get_config(int &numcam,QSize &resolucio);
 
 protected:
     void changeEvent(QEvent *e);
