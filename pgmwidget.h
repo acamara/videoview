@@ -5,6 +5,7 @@
 
 #include "GravarThread.h"
 #include <qgl.h>
+#include <GL/glext.h>
 
 class PGMWidget : public QGLWidget
 {
@@ -19,9 +20,6 @@ public:
 
     /** The rendering thread. */
     GravarThread glt;
-
-signals:
-    void widgetClicked();
 
 protected:
     /** Performs a save shutdown if the widget recieves a close event. */

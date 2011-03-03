@@ -5,6 +5,7 @@
 
 #include "renderthread.h"
 #include <qgl.h>
+#include <GL/glext.h>
 
 class GLWidget : public QGLWidget
 {

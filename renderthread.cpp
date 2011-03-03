@@ -75,7 +75,6 @@ void RenderThread::resizeGL(int width, int height)
 
 void RenderThread::processCam() {
     frame = cvQueryFrame(capture);
-    cvCvtColor(frame,frame,CV_BGR2RGB);
 
     if(camaraactiva==camera){
         enviaragravar(frame);
@@ -101,7 +100,7 @@ void RenderThread::paintGL()
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB,
                           frame->width, frame->height,
-                          0, GL_RGB, GL_UNSIGNED_BYTE, frame->imageData);
+                          0, GL_BGR, GL_UNSIGNED_BYTE, frame->imageData);
 
             glBegin(GL_QUADS);
                 glTexCoord2f(0,1); glVertex2f(0,0);

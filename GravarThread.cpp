@@ -52,9 +52,7 @@ void GravarThread::run()
         if (gravar)
         {
             //Aquí ha d'anar el codi per gravar a fitxer.
-            auxframe=cvCloneImage(frame);
-            cvCvtColor(auxframe,auxframe,CV_BGR2RGB);
-            cvWriteFrame(video,auxframe);
+            cvWriteFrame(video,frame);
         }
 
         // Intercanvi dels buffers del GLWidget
@@ -87,7 +85,7 @@ void GravarThread::paintGL()
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB,
                           frame->width, frame->height,
-                          0, GL_RGB, GL_UNSIGNED_BYTE, frame->imageData);
+                          0, GL_BGR, GL_UNSIGNED_BYTE, frame->imageData);
 
             glBegin(GL_QUADS);
                 glTexCoord2f(0,1); glVertex2f(0,0);
