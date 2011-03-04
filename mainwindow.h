@@ -33,6 +33,7 @@ public slots:
 protected:
     void changeEvent(QEvent *e);
     void contextMenuEvent(QContextMenuEvent *event);
+    void closeEvent(QCloseEvent *);
 
 private slots:
     void on_stopButton_2_clicked();
@@ -49,6 +50,7 @@ private:
     void createActions();
     void createMenus();
     void creainterficie();
+    void finishCameras();
 
     QMenu *fileMenu;
     QMenu *editMenu;

@@ -33,6 +33,10 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::closeEvent(QCloseEvent *) {
+  finishCameras();
+}
+
 void MainWindow::changeEvent(QEvent *e)
 {
     QMainWindow::changeEvent(e);
@@ -120,24 +124,28 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *event)
     menu.exec(event->globalPos());
 }
 
+void MainWindow::finishCameras()
+{
+  delete Label_pgm;
+  glWidget_pgm->finishRendering();
+  delete glWidget_pgm;
+
+  for (int k = 0; k < numcam; k++) {
+    glWidget_cam[k]->finishRendering();
+    delete glWidget_cam[k];
+    delete Label_cam[k];
+  }
+}
+
 //Mètode que controla l'acció nou fitxer
 void MainWindow::newFile()
 {
-    Label_pgm->~QLabel();
-    glWidget_pgm->glt.terminate();
-    glWidget_pgm->~QGLWidget();
-
-    for (int k = 0; k < numcam; k++) {
-      glWidget_cam[k]->glt.terminate();
-      glWidget_cam[k]->~QGLWidget();
-      Label_cam[k]->~QLabel();
-    }
+    finishCameras();
 
     Dialog *configdialog = new Dialog;
     configdialog->exec();
     configdialog->get_config(numcam,resolucio);
     creainterficie();
-
 }
 
 //Mètode que controla l'acció about
