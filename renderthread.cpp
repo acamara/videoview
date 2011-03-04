@@ -87,7 +87,7 @@ void RenderThread::paintGL()
         glClear (GL_COLOR_BUFFER_BIT);
         glClearColor (0.0,0.0,0.0,1.0);
 
-        if (frame->imageData) {
+        if (frame) {
             
             glDisable(GL_DEPTH_TEST);
             glMatrixMode(GL_PROJECTION);
