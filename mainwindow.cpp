@@ -57,7 +57,7 @@ void MainWindow::creainterficie()
     QString nom("CAM %1");
 
     for (int k=0;k<numcam;k++){
-        Label_cam[k] = new QLabel(tr(nom.arg(k).toAscii()));
+        Label_cam[k] = new QLabel(tr(nom.arg(k + 1).toAscii()));
         Label_cam[k]->setAlignment(Qt::AlignCenter);
         Label_cam[k]->setFont(QFont("arial", 10, QFont::Bold));
         Label_cam[k]->setStyleSheet("background-color: rgb(255, 255, 255)");
@@ -76,8 +76,8 @@ void MainWindow::creainterficie()
       glWidget_cam[k]->setObjectName(nom.arg(k).toAscii());
       QObject::connect(glWidget_cam[k], SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
 
-      connect(&glWidget_cam[k]->glt,SIGNAL(enviaragravar(IplImage *)),&glWidget_pgm->glt,
-              SLOT(rebregravar(IplImage *)));
+      connect(&glWidget_cam[k]->glt, SIGNAL(enviaragravar(IplImage *)),
+              &glWidget_pgm->glt,    SLOT(rebregravar(IplImage *)));
     }
 
     connect(ui->comboBox_tipus, SIGNAL(activated (int)),&glWidget_pgm->glt,SLOT(selectransicio(int)));

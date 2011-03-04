@@ -53,13 +53,14 @@ void GravarThread::run()
         {
             //Aquí ha d'anar el codi per gravar a fitxer.
             //Escalat del vídeo de sortida
-            if(frame->width!=resolucio.width()|| frame->height!=resolucio.height()){
-                IplImage *sal= cvCreateImage(cvSize(resolucio.width(),resolucio.height()),IPL_DEPTH_8U,3);
-                cvResize(frame, sal);
-                frame=cvCloneImage(sal);
-                cvReleaseImage(&sal);
+            if(frame->width!=resolucio.width()|| frame->height!=resolucio.height()) {
+               IplImage *sal= cvCreateImage(cvSize(resolucio.width(),resolucio.height()),IPL_DEPTH_8U,3);
+               cvResize(frame, sal);
+               cvWriteFrame(video, sal);
+               cvReleaseImage(&sal);
+            } else {
+              cvWriteFrame(video,frame);
             }
-            cvWriteFrame(video,frame);
         }
 
         // Intercanvi dels buffers del GLWidget
