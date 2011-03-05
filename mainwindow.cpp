@@ -52,6 +52,7 @@ void MainWindow::changeEvent(QEvent *e)
 //Mètode que genera la interfície gràfica segons el nombre de càmeres
 void MainWindow::creainterficie()
 {
+
     // Declaració variables gráfiques
 
     QString nom("CAM %1");
@@ -74,7 +75,8 @@ void MainWindow::creainterficie()
     for (int k = 0; k < numcam; k++) {
       glWidget_cam[k] = new GLWidget();
       glWidget_cam[k]->setObjectName(nom.arg(k).toAscii());
-      QObject::connect(glWidget_cam[k], SIGNAL(widgetClicked()),this, SLOT(canviacamara()));
+      QObject::connect(glWidget_cam[k], SIGNAL(widgetClicked()),
+                       this,            SLOT(canviacamara()));
 
       connect(&glWidget_cam[k]->glt, SIGNAL(enviaragravar(IplImage *)),
               &glWidget_pgm->glt,    SLOT(rebregravar(IplImage *)));
@@ -124,6 +126,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *event)
     menu.exec(event->globalPos());
 }
 
+//Mètode que tanca tots els GLWidgets i Layers de càmeres.
 void MainWindow::finishCameras()
 {
   delete Label_pgm;
@@ -134,7 +137,7 @@ void MainWindow::finishCameras()
     glWidget_cam[k]->finishRendering();
     delete glWidget_cam[k];
     delete Label_cam[k];
-  }
+    }
 }
 
 //Mètode que controla l'acció nou fitxer
@@ -218,6 +221,21 @@ void MainWindow::on_adquirirButton_clicked()
       QString nom("CAM %1");
       glWidget_cam[k]->initadquirir(capture[k], nom.arg(k).toAscii());
     }
+
+    //-----------------------------------------------------------
+    //Labels de comprovació s'han de treure en el programa final
+    //-----------------------------------------------------------
+    for (int k = 0; k < numcam; k++) {
+      TempsQthread[k] = new QLabel();
+      TempscvQuery[k] = new QLabel();
+      ui->gridLayout_3->addWidget(TempscvQuery[k],k+1,1);
+      ui->gridLayout_3->addWidget(TempsQthread[k],k+1,2);
+      connect(&glWidget_cam[k]->glt, SIGNAL(MostraTempsQT(int,double)),
+              this,                  SLOT(MostraTempsQT(int,double)));
+      connect(&glWidget_cam[k]->glt, SIGNAL(MostraTempscvQuery(int,double)),
+              this,                  SLOT(MostraTempscvQuery(int,double)));
+    }
+    //-----------------------------------------------------------
 }
 
 //Mètode que controla el botó stop
@@ -240,7 +258,7 @@ void MainWindow::canviacamara()
             Label_cam[k]->setStyleSheet("background-color: rgb(255, 0, 0)");
         }
         else{
-             Label_cam[k]->setStyleSheet("background-color: rgb(255, 255, 255)");
+            Label_cam[k]->setStyleSheet("background-color: rgb(255, 255, 255)");
         }
     }
 }
@@ -260,3 +278,16 @@ void MainWindow::on_stopButton_2_clicked()
 {
     glWidget_pgm->finishGravar();
 }
+
+//-----------------------------------------------------------
+//Mètodes de comprovació s'han de treure en el programa final
+//-----------------------------------------------------------
+void MainWindow::MostraTempsQT(int cam,double timebucle)
+{
+   TempsQthread[cam]->setNum(timebucle);
+}
+
+void MainWindow::MostraTempscvQuery(int cam,double time){
+   TempscvQuery[cam]->setNum(time);
+}
+//-----------------------------------------------------------------

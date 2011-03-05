@@ -9,6 +9,17 @@
 #include <cv.h>
 #include <highgui.h>
 
+//-----------------------------------------------------------
+//Instruccions de comprovació s'han de treure en el programa final
+//-----------------------------------------------------------
+#include <time.h>
+
+double TempsExecucio(void)
+{
+    return (clock()/double(CLK_TCK));
+}
+//-----------------------------------------------------------
+
 //Constructor de la classe RenderThread
 RenderThread::RenderThread( GLWidget *_glw )
         : QThread(),
@@ -40,6 +51,10 @@ void RenderThread::run( )
     // Realitza aquest procés mentre el flag de renderitzat estigui actiu
     while(render_flag )
     {
+        //-----------------------------------------------------------------
+        double t1=TempsExecucio();
+        //-----------------------------------------------------------------
+
         // Comprovació de si es necesita redimensionar el GLWidget
         if (resize_flag)
         {
@@ -60,7 +75,12 @@ void RenderThread::run( )
         //No hi hauria de ser aquest makeCurrent però si l'actives funciona.
         glw->makeCurrent();
         //-----------------------------------------------------------------
-        msleep(40); //sleep for 40 ms
+        msleep(10); //sleep for 10 ms
+
+        //-----------------------------------------------------------------
+        double t2=TempsExecucio();
+        MostraTempsQT(camera[4].digitValue(),t2-t1);
+        //-----------------------------------------------------------------
     }
 
 }
@@ -74,7 +94,17 @@ void RenderThread::resizeGL(int width, int height)
 }
 
 void RenderThread::processCam() {
+
+    //-----------------------------------------------------------------
+    double t1=TempsExecucio();
+    //-----------------------------------------------------------------
+
     frame = cvQueryFrame(capture);
+
+    //-----------------------------------------------------------------
+    double t2=TempsExecucio();
+    MostraTempscvQuery(camera[4].digitValue(),t2-t1);
+    //-----------------------------------------------------------------
 
     if(camaraactiva==camera){
         enviaragravar(frame);

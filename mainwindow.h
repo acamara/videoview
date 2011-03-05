@@ -29,6 +29,12 @@ public:
 
 public slots: 
     void canviacamara();
+    //-----------------------------------------------------------
+    //Mètodes de comprovació s'han de treure en el programa final
+    //-----------------------------------------------------------
+    void MostraTempsQT(int cam,double time);
+    void MostraTempscvQuery(int cam,double time);
+    //-----------------------------------------------------------
 
 protected:
     void changeEvent(QEvent *e);
@@ -68,6 +74,12 @@ private:
 
     QLabel *Label_cam[numwidgets];
     QLabel *Label_pgm;
+
+    //-----------------------------------------------------------
+    QLabel *TempsQthread[numwidgets];
+    QLabel *TempscvQuery[numwidgets];
+    //-----------------------------------------------------------
+
     GLWidget *glWidget_cam[numwidgets];
     PGMWidget *glWidget_pgm;
 

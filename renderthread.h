@@ -36,13 +36,18 @@ public:
 
 signals:
     void enviaragravar(IplImage *frame);
+    //-----------------------------------------------------------
+    //Mètodes de comprovació s'han de treure en el programa final
+    //-----------------------------------------------------------
+    void MostraTempsQT(int cam,double time);
+    void MostraTempscvQuery(int cam,double time);
+    //-----------------------------------------------------------
 
 protected:
     /** Handles resizes of the GL viewport. */
     void resizeGL(int width, int height);
     void processCam();
     void paintGL();
-
 
 private:
     GLWidget *glw;

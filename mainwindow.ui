@@ -156,26 +156,62 @@
         </item>
        </layout>
       </item>
+      <item row="4" column="0">
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="1" column="0">
+         <widget class="QLabel" name="InfoQThread1">
+          <property name="text">
+           <string>CAM 1:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="InfoQThread2">
+          <property name="text">
+           <string>CAM 2:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="InfoQThread3">
+          <property name="text">
+           <string>CAM 3:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="InfoQThread4">
+          <property name="text">
+           <string>CAM 4:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>cvQuery (S) </string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Bucle run (S)</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
       <item row="3" column="0">
-       <widget class="QLabel" name="label_audio">
+       <widget class="QLabel" name="Informaciotempsexecucio">
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
         <property name="text">
-         <string>Audio</string>
+         <string>Informació d'execució</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_fila3">
-        <property name="text">
-         <string>TextLabel</string>
         </property>
        </widget>
       </item>
