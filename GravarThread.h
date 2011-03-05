@@ -28,6 +28,7 @@ class GravarThread : public QThread
         void selecduratransicio(int duradetransicio);
         void rebregravar(IplImage*);
         void setgravar(bool _gravar);
+        void tancavideo();
 
     protected:
         void resizeGL(int width, int height);
@@ -45,6 +46,7 @@ class GravarThread : public QThread
         double fps;
         int duradatransicio;
         int tipustransicio;
+        CvVideoWriter *video;
  };
 
 #endif // GRAVARTHREAD_H

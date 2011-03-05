@@ -258,5 +258,5 @@ void MainWindow::on_gravarButton_clicked()
 
 void MainWindow::on_stopButton_2_clicked()
 {
-    glWidget_pgm->finishRendering();
+    glWidget_pgm->finishGravar();
 }

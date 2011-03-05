@@ -24,14 +24,14 @@ PGMWidget::PGMWidget(QWidget *parent)
 //Mètode de la classe PGMWidget que inicia el renderitzat
 void PGMWidget::initRendering()
 {
-    // Inici del fil de gravació
+    // Inici del fil de renderitzat
     glt.start();
 }
 
-//Mètode de la classe PGMWidget que inicia l'adquisició
+//Mètode de la classe PGMWidget que inicia la gravació
 void PGMWidget::initgravar()
 {
-    // Inici del fil de renderitzat
+    // Inici del fil de gravació
     glt.setgravar(true);
 }
 
@@ -42,6 +42,13 @@ void PGMWidget::finishRendering( )
     glt.stop();
     // wait till the thread has exited
     glt.wait();
+}
+
+//Mètode de la classe PGMWidget que finalitza la gravació
+void PGMWidget::finishGravar( )
+{
+    glt.tancavideo();
+    glt.setgravar(false);
 }
 
 //Mètode de la classe PGMWidget que controla els events de sortida

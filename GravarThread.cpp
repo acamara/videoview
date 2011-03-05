@@ -31,7 +31,7 @@ void GravarThread::resizeViewport( const QSize& _size )
 //Mètode que realitza la gravació i el processat dels frames de sortida PGM
 void GravarThread::run()
 {
-    CvVideoWriter *video=cvCreateVideoWriter("sortida.avi",0,fps,cvSize(resolucio.width(),resolucio.height()),1);
+    video=cvCreateVideoWriter("sortida.avi",0,fps,cvSize(resolucio.width(),resolucio.height()),1);
     glw->makeCurrent();
 
     // Realitza aquest procés mentre el flag de renderitzat estigui actiu
@@ -71,7 +71,7 @@ void GravarThread::run()
         //-----------------------------------------------------------------
         msleep(40); //sleep for 40 ms
     }
-    cvReleaseVideoWriter (&video);
+    tancavideo();
 }
 
 //Métode de la classe GravarThread que pinta en el GLWidget
@@ -145,6 +145,11 @@ void GravarThread::rebregravar(IplImage *_frame){
 void GravarThread::setgravar(bool _gravar){
     gravar=_gravar;
 }
+
+void GravarThread::tancavideo(){
+    cvReleaseVideoWriter (&video);
+}
+
 void GravarThread::setconfig(QSize _resolucio,double _fps ){
     resolucio=_resolucio;
     fps=_fps;
