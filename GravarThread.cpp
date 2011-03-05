@@ -138,8 +138,8 @@ void GravarThread::rebregravar(IplImage *_frame){
     frame=_frame;
     mostrar=true;
     //qDebug()<<"S'ha rebut per gravar";
-    cvNamedWindow("pvw",0);
-    cvShowImage("pvw",frame);
+    //cvNamedWindow("pvw",0);
+    //cvShowImage("pvw",frame);
 }
 
 void GravarThread::setgravar(bool _gravar){
