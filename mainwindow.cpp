@@ -204,10 +204,12 @@ void MainWindow::createMenus()
 //Mètode que controla el botó capturar
 void MainWindow::on_adquirirButton_clicked()
 {
-    QString fontvideo[numwidgets];
+    QStringList fontvideo = QFileDialog::getOpenFileNames(this, tr("Selecciona les fonts de Vídeo"));
+    if (fontvideo.isEmpty()){
+        return;
+    }
 
     for (int k = 0; k < numcam; k++) {
-      fontvideo[k] = QFileDialog::getOpenFileName();
       capture[k] = cvCaptureFromFile(fontvideo[k].toAscii());
       if (!capture[k]) return;
     }
