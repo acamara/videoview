@@ -207,7 +207,7 @@ void MainWindow::createMenus()
 //Mètode que controla el botó capturar
 void MainWindow::on_adquirirButton_clicked()
 {
-    QStringList fontvideo = QFileDialog::getOpenFileNames(this, tr("Selecciona les fonts de Vídeo"));
+    QStringList fontvideo = QFileDialog::getOpenFileNames(this, tr("Selecciona les fonts de Vídeo"),QDir::currentPath(),"Multimedia (*.avi *.mp4 *.mpg *.rm *.ogm *.mov *.asf *.wmv)");
     if (fontvideo.isEmpty()){
         return;
     }
