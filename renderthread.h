@@ -51,6 +51,7 @@ protected:
 
 private:
     GLWidget *glw;
+    bool primer_frame;
     bool render_flag;
     bool resize_flag;
     bool adquirir;

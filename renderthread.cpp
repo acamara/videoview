@@ -27,6 +27,7 @@ RenderThread::RenderThread( GLWidget *_glw )
 {
     render_flag=true;
     adquirir=false;
+    primer_frame=true;
 }
 
 //Mètode de la classe RenderThread que activa el flag de redimensionat de la finestra
@@ -47,7 +48,7 @@ void RenderThread::stop( )
 void RenderThread::run( )
 {
     glw->makeCurrent();
-
+    
     // Realitza aquest procés mentre el flag de renderitzat estigui actiu
     while(render_flag )
     {
@@ -115,11 +116,9 @@ void RenderThread::processCam() {
 void RenderThread::paintGL()
 {
         glClear (GL_COLOR_BUFFER_BIT);
-        glClearColor (0.0,0.0,0.0,1.0);
 
         if (frame) {
             
-            glDisable(GL_DEPTH_TEST);
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
             gluOrtho2D(0,1,0,1);
@@ -128,9 +127,18 @@ void RenderThread::paintGL()
 
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB,
+
+            if(primer_frame){
+                glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB,
                           frame->width, frame->height,
                           0, GL_BGR, GL_UNSIGNED_BYTE, frame->imageData);
+                primer_frame=false;
+            }
+            else{
+                glTexSubImage2D(GL_TEXTURE_2D,0,0,0,
+                                frame->width,frame->height,
+                                GL_BGR,GL_UNSIGNED_BYTE,frame->imageData);
+            }
 
             glBegin(GL_QUADS);
                 glTexCoord2f(0,1); glVertex2f(0,0);
