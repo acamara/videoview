@@ -55,6 +55,7 @@ private:
     bool render_flag;
     bool resize_flag;
     bool adquirir;
+    double frame_time;
     QSize viewport_size;
     QString camera;
     IplImage *frame;

@@ -12,12 +12,18 @@
 //-----------------------------------------------------------
 //Instruccions de comprovació s'han de treure en el programa final
 //-----------------------------------------------------------
-#include <time.h>
+#include <ctime>
 
-double TempsExecucio(void)
-{
-    return (clock()/double(CLK_TCK));
-}
+class Cronometre {
+  clock_t t1, t2;
+public:
+  void begin() { t1 = clock(); }
+  void end()   { t2 = clock(); }
+  double elapsed() const {
+    return 1000.0 * double(t2 - t1) / CLOCKS_PER_SEC;
+  }
+};
+
 //-----------------------------------------------------------
 
 //Constructor de la classe RenderThread
@@ -52,8 +58,9 @@ void RenderThread::run( )
     // Realitza aquest procés mentre el flag de renderitzat estigui actiu
     while(render_flag )
     {
+        Cronometre C;
         //-----------------------------------------------------------------
-        double t1=TempsExecucio();
+        C.begin();
         //-----------------------------------------------------------------
 
         // Comprovació de si es necesita redimensionar el GLWidget
@@ -76,11 +83,24 @@ void RenderThread::run( )
         //No hi hauria de ser aquest makeCurrent però si l'actives funciona.
         glw->makeCurrent();
         //-----------------------------------------------------------------
-        msleep(10); //sleep for 10 ms
+        C.end();
+        double elapsed = C.elapsed();
+
+        static int N = 0;
+        if (++N <= 10) {
+          qDebug() << C.elapsed();
+          N = 0;
+        }
+
+        if (elapsed < frame_time) {
+          // Dormim fins que toqui posar el seguent frame
+          msleep(frame_time - elapsed);
+        } else {
+          qDebug() << "Vaig just!";
+        }
 
         //-----------------------------------------------------------------
-        double t2=TempsExecucio();
-        MostraTempsQT(camera[4].digitValue(),t2-t1);
+        MostraTempsQT(camera[4].digitValue(), C.elapsed());
         //-----------------------------------------------------------------
     }
 
@@ -95,16 +115,16 @@ void RenderThread::resizeGL(int width, int height)
 }
 
 void RenderThread::processCam() {
-
+    Cronometre C;
     //-----------------------------------------------------------------
-    double t1=TempsExecucio();
+    C.begin();
     //-----------------------------------------------------------------
 
     frame = cvQueryFrame(capture);
 
     //-----------------------------------------------------------------
-    double t2=TempsExecucio();
-    MostraTempscvQuery(camera[4].digitValue(),t2-t1);
+    C.end();
+    MostraTempscvQuery(camera[4].digitValue(), C.elapsed());
     //-----------------------------------------------------------------
 
     if(camaraactiva==camera){
@@ -155,6 +175,7 @@ void RenderThread::paintGL()
 void RenderThread::selecfontvideo(CvCapture *_capture)
 {
     capture=_capture;
+    frame_time = 1000.0 / cvGetCaptureProperty(_capture, CV_CAP_PROP_FPS);
 }
 
 void RenderThread::seleccam(QString cam)
