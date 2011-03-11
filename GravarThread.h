@@ -21,12 +21,12 @@ class GravarThread : public QThread
         void run();
         void stop();
         void resizeViewport(const QSize& _size);
+        void rebregravar(IplImage*);
 
     public slots:
         void setconfig(QSize _resolucio,double _fps );
         void selectransicio(int tipusdetransicio);
         void selecduratransicio(int duradetransicio);
-        void rebregravar(IplImage*);
         void setgravar(bool _gravar);
         void tancavideo();
 

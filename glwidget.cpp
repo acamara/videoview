@@ -7,43 +7,58 @@
 #include "renderthread.h"
 
 //Constructor de la classe GLWidget
-GLWidget::GLWidget(QWidget *parent)
-    : QGLWidget(parent),
-    glt(this)
+GLWidget::GLWidget(PGMWidget* pgm, QWidget *parent)
+    : QGLWidget(parent), pglt(0), pPGM(pgm)
 
 {
     setFormat(QGLFormat(QGL::DoubleBuffer));
-
-    //L'intercanvi de memòria es controla en el fil de renderitzat
-    setAutoBufferSwap(false);
-
-    // Inici del fil de renderitzat
-    initRendering();
 }
 
 //Mètode de la classe GLWidget que inicia el renderitzat
 void GLWidget::initRendering()
 {
     // Inici del fil de renderitzat
-    glt.start();
+    pglt = new RenderThread(this);
+
+    //L'intercanvi de memòria es controla en el fil de renderitzat
+    setAutoBufferSwap(false);
+
+    pglt->start();
 }
 
 //Mètode de la classe GLWidget que inicia l'adquisició
 void GLWidget::initadquirir(CvCapture *capture, QString cam)
 {
+    if (pglt) {
+       finishRendering();
+    }
+    initRendering();
     // Inici del fil de renderitzat
-    glt.selecfontvideo(capture);
-    glt.seleccam(cam);
-    glt.setadquirir(true);
+    pglt->selecfontvideo(capture);
+    pglt->seleccam(cam);
+    pglt->setadquirir(true);
 }
 
 //Mètode de la classe GLWidget que finalitza el renderitzat
-void GLWidget::finishRendering( )
+void GLWidget::finishRendering()
 {
     // Petició de parar el fil de renderitzat
-    glt.stop();
+    pglt->stop();
     // wait till the thread has exited
-    glt.wait();
+    pglt->wait();
+    setAutoBufferSwap(true);
+    delete pglt;
+    pglt = 0;
+}
+
+void GLWidget::paintEvent(QPaintEvent *) {
+  if (pglt == 0) {
+    qDebug() << "Repaint " << objectName() << "!";
+    // makeCurrent();
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    updateGL();
+  }
 }
 
 //Mètode de la classe GLWidget que controla els events de sortida
@@ -59,7 +74,9 @@ void GLWidget::closeEvent( QCloseEvent * event )
 void GLWidget::resizeEvent( QResizeEvent * event )
 {
     // signal the rendering thread that a resize is needed
-    glt.resizeViewport(event->size());
+    if (pglt) {
+       pglt->resizeViewport(event->size());
+    }
 }
 
 //Mètode que controla si s'ha clicat el widget opengl, per fer el canvi de càmera
@@ -71,6 +88,8 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 
 void GLWidget::canviacamactiva(QString cam)
 {
-    glt.camaraactiva=cam;
-    //qDebug()<<glt.camaraactiva;
+  if (pglt) {
+    pglt->camaraactiva=cam;
+  }
+  //qDebug()<<pglt->camaraactiva;
 }

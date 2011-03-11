@@ -85,18 +85,11 @@ void RenderThread::run( )
         //-----------------------------------------------------------------
         C.end();
         double elapsed = C.elapsed();
-
-        static int N = 0;
-        if (++N <= 10) {
-          qDebug() << C.elapsed();
-          N = 0;
-        }
-
         if (elapsed < frame_time) {
           // Dormim fins que toqui posar el seguent frame
           msleep(frame_time - elapsed);
         } else {
-          qDebug() << "Vaig just!";
+          // qDebug() << "Vaig just!";
         }
 
         //-----------------------------------------------------------------
@@ -128,7 +121,7 @@ void RenderThread::processCam() {
     //-----------------------------------------------------------------
 
     if(camaraactiva==camera){
-        enviaragravar(frame);
+      glw->pPGM->glt.rebregravar(frame);
     }
 }
 

@@ -73,13 +73,13 @@ void MainWindow::creainterficie()
     ui->verticalLayout_PGM->addWidget(glWidget_pgm);
 
     for (int k = 0; k < numcam; k++) {
-      glWidget_cam[k] = new GLWidget();
+      glWidget_cam[k] = new GLWidget(glWidget_pgm);
       glWidget_cam[k]->setObjectName(nom.arg(k).toAscii());
       QObject::connect(glWidget_cam[k], SIGNAL(widgetClicked()),
                        this,            SLOT(canviacamara()));
 
-      connect(&glWidget_cam[k]->glt, SIGNAL(enviaragravar(IplImage *)),
-              &glWidget_pgm->glt,    SLOT(rebregravar(IplImage *)));
+      //connect(&glWidget_cam[k]->glt, SIGNAL(enviaragravar(IplImage *)),
+      //        &glWidget_pgm->glt,    SLOT(rebregravar(IplImage *)));
     }
 
     connect(ui->comboBox_tipus, SIGNAL(activated (int)),&glWidget_pgm->glt,SLOT(selectransicio(int)));
@@ -230,9 +230,9 @@ void MainWindow::on_adquirirButton_clicked()
       TempscvQuery[k] = new QLabel();
       ui->gridLayout_3->addWidget(TempscvQuery[k],k+1,1);
       ui->gridLayout_3->addWidget(TempsQthread[k],k+1,2);
-      connect(&glWidget_cam[k]->glt, SIGNAL(MostraTempsQT(int,double)),
+      connect(glWidget_cam[k]->pglt, SIGNAL(MostraTempsQT(int,double)),
               this,                  SLOT(MostraTempsQT(int,double)));
-      connect(&glWidget_cam[k]->glt, SIGNAL(MostraTempscvQuery(int,double)),
+      connect(glWidget_cam[k]->pglt, SIGNAL(MostraTempscvQuery(int,double)),
               this,                  SLOT(MostraTempscvQuery(int,double)));
     }
     //-----------------------------------------------------------
@@ -249,12 +249,12 @@ void MainWindow::on_stopButton_clicked()
 //Mètode que controla el canvi de càmera
 void MainWindow::canviacamara()
 {  
-    QString canvi=sender()->objectName();
+    QString nom = sender()->objectName();
 
     for (int k = 0; k < numcam; k++){
-        glWidget_cam[k]->canviacamactiva(canvi);
+        glWidget_cam[k]->canviacamactiva(nom);
 
-        if(k==canvi[4].digitValue()){
+        if(k==nom[4].digitValue()){
             Label_cam[k]->setStyleSheet("background-color: rgb(255, 0, 0)");
         }
         else{
