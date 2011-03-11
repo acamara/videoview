@@ -42,6 +42,7 @@ void GLWidget::initadquirir(CvCapture *capture, QString cam)
 //Mètode de la classe GLWidget que finalitza el renderitzat
 void GLWidget::finishRendering()
 {
+  if (pglt) {
     // Petició de parar el fil de renderitzat
     pglt->stop();
     // wait till the thread has exited
@@ -49,6 +50,7 @@ void GLWidget::finishRendering()
     setAutoBufferSwap(true);
     delete pglt;
     pglt = 0;
+  }
 }
 
 void GLWidget::paintEvent(QPaintEvent *) {
