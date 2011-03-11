@@ -79,10 +79,6 @@ void RenderThread::run( )
         // Intercanvi dels buffers del GLWidget
         glw->swapBuffers();
 
-        //-----------------------------------------------------------------
-        //No hi hauria de ser aquest makeCurrent però si l'actives funciona.
-        glw->makeCurrent();
-        //-----------------------------------------------------------------
         C.end();
         double elapsed = C.elapsed();
         if (elapsed < frame_time) {

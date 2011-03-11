@@ -27,6 +27,7 @@ protected:
     void closeEvent(QCloseEvent* _e);
     /** Requests a GL viewport resize from the rendering thread. */
     void resizeEvent(QResizeEvent* _e);
+    void paintEvent(QPaintEvent *);
 };
 
 #endif // PGMWIDGET_H

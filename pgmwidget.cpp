@@ -66,3 +66,7 @@ void PGMWidget::resizeEvent( QResizeEvent * event )
     // signal the gravació thread that a resize is needed
     glt.resizeViewport(event->size());
 }
+
+void PGMWidget::paintEvent(QPaintEvent *) {
+
+}

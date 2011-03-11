@@ -65,10 +65,7 @@ void GravarThread::run()
 
         // Intercanvi dels buffers del GLWidget
         glw->swapBuffers();
-        //-----------------------------------------------------------------
-        //No hi hauria de ser aquest makeCurrent però si l'actives funciona.
-        glw->makeCurrent();
-        //-----------------------------------------------------------------
+
         msleep(40); //sleep for 40 ms
     }
     tancavideo();
