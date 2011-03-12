@@ -55,7 +55,7 @@ void GLWidget::finishRendering()
 
 void GLWidget::paintEvent(QPaintEvent *) {
   if (pglt == 0) {
-    qDebug() << "Repaint " << objectName() << "!";
+    //qDebug() << "Repaint " << objectName() << "!";
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     updateGL();
@@ -76,8 +76,7 @@ void GLWidget::resizeEvent( QResizeEvent * event )
 {
     // signal the rendering thread that a resize is needed
     if (pglt) {
-       qDebug() << "Resize " << objectName();
-       pglt->resizeViewport(event->size());
+      pglt->resizeViewport(event->size());
     }
 }
 
