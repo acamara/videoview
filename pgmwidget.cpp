@@ -8,47 +8,50 @@
 
 //Constructor de la classe PGMWidget
 PGMWidget::PGMWidget(QWidget *parent)
-    : QGLWidget(parent),
-    glt(this)
+    : QGLWidget(parent),pglt(0)
 
 {
     setFormat(QGLFormat(QGL::DoubleBuffer));
-
-    //L'intercanvi de memòria es controla en el fil de renderitzat
-    setAutoBufferSwap(false);
-
-    // Inici del fil de gravació
-    initRendering();
 }
 
 //Mètode de la classe PGMWidget que inicia el renderitzat
 void PGMWidget::initRendering()
 {
     // Inici del fil de renderitzat
-    glt.start();
+    pglt=new GravarThread(this);
+    setAutoBufferSwap(false);
+    pglt->start();
 }
 
 //Mètode de la classe PGMWidget que inicia la gravació
-void PGMWidget::initgravar()
+void PGMWidget::initPGM(QSize resolucio, double fps)
 {
-    // Inici del fil de gravació
-    glt.setgravar(true);
+    if(pglt){
+        finishRendering();
+    }
+    initRendering();
+    pglt->setconfig(resolucio,fps);
 }
 
 //Mètode de la classe PGMWidget que finalitza el renderitzat
 void PGMWidget::finishRendering( )
 {
+    if(pglt){
     // Petició de parar el fil de renderitzat
-    glt.stop();
+    pglt->stop();
     // wait till the thread has exited
-    glt.wait();
+    pglt->wait();
+    setAutoBufferSwap(true);
+    delete pglt;
+    pglt=0;
+    }
 }
 
 //Mètode de la classe PGMWidget que finalitza la gravació
 void PGMWidget::finishGravar( )
 {
-    glt.tancavideo();
-    glt.setgravar(false);
+    pglt->tancavideo();
+    pglt->setgravar(false);
 }
 
 //Mètode de la classe PGMWidget que controla els events de sortida
@@ -64,9 +67,16 @@ void PGMWidget::closeEvent( QCloseEvent * event )
 void PGMWidget::resizeEvent( QResizeEvent * event )
 {
     // signal the gravació thread that a resize is needed
-    glt.resizeViewport(event->size());
+    if(pglt){
+        pglt->resizeViewport(event->size());
+    }
 }
 
 void PGMWidget::paintEvent(QPaintEvent *) {
-
+    if (pglt == 0) {
+      //qDebug() << "Repaint " << objectName() << "!";
+      glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+      glClear(GL_COLOR_BUFFER_BIT);
+      updateGL();
+    }
 }

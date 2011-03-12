@@ -68,7 +68,6 @@ void MainWindow::creainterficie()
     Label_pgm->setAlignment(Qt::AlignCenter);
 
     glWidget_pgm = new PGMWidget();
-    glWidget_pgm->glt.setconfig(resolucio,25);
     ui->gridLayout->addWidget(Label_pgm,1,3);
     ui->verticalLayout_PGM->addWidget(glWidget_pgm);
 
@@ -77,13 +76,7 @@ void MainWindow::creainterficie()
       glWidget_cam[k]->setObjectName(nom.arg(k).toAscii());
       QObject::connect(glWidget_cam[k], SIGNAL(widgetClicked()),
                        this,            SLOT(canviacamara()));
-
-      //connect(&glWidget_cam[k]->glt, SIGNAL(enviaragravar(IplImage *)),
-      //        &glWidget_pgm->glt,    SLOT(rebregravar(IplImage *)));
     }
-
-    connect(ui->comboBox_tipus, SIGNAL(activated (int)),&glWidget_pgm->glt,SLOT(selectransicio(int)));
-    connect(ui->spinBox_duracio, SIGNAL(valueChanged (int)),&glWidget_pgm->glt,SLOT(selecduratransicio(int)));
 
     //Switch() de posicionament dels diferents widgets a la finestra
 
@@ -207,6 +200,7 @@ void MainWindow::createMenus()
 //Mètode que controla el botó capturar
 void MainWindow::on_adquirirButton_clicked()
 {
+    //Inici del QThread d'adquisició que renderitza a GLWidget el senyal d'entrada
     for (int k = 0; k < numcam; k++) {
        glWidget_cam[k]->finishRendering();
     }
@@ -225,6 +219,11 @@ void MainWindow::on_adquirirButton_clicked()
       QString nom("CAM %1");
       glWidget_cam[k]->initadquirir(capture[k], nom.arg(k).toAscii());
     }
+
+    //Inici del QThread de gravació que grava a fitxer i renderitza a PGMWidget el senyal de PGM
+    glWidget_pgm->initPGM(resolucio,25);
+    connect(ui->comboBox_tipus, SIGNAL(activated (int)),glWidget_pgm->pglt,SLOT(selectransicio(int)));
+    connect(ui->spinBox_duracio, SIGNAL(valueChanged (int)),glWidget_pgm->pglt,SLOT(selecduratransicio(int)));
 
     //-----------------------------------------------------------
     //Labels de comprovació s'han de treure en el programa final
@@ -275,7 +274,7 @@ void MainWindow::on_gravarButton_clicked()
     //QString nomdeprojecte = QFileDialog::getSaveFileName();
 
     //QString nomdeprojecte =("sortida.avi");
-    glWidget_pgm->glt.setgravar(true);
+    glWidget_pgm->pglt->setgravar(true);
 }
 
 void MainWindow::on_stopButton_2_clicked()

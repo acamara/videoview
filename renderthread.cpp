@@ -32,6 +32,7 @@ RenderThread::RenderThread( GLWidget *_glw )
         glw(_glw)
 {
     render_flag=true;
+    resize_flag = true;
     adquirir=false;
     primer_frame=true;
 }
@@ -117,7 +118,7 @@ void RenderThread::processCam() {
     //-----------------------------------------------------------------
 
     if(camaraactiva==camera){
-      glw->pPGM->glt.rebregravar(frame);
+      glw->pPGM->pglt->rebregravar(frame);
     }
 }
 

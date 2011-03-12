@@ -106,6 +106,7 @@ void GravarThread::paintGL()
 //Mètode de la classe GravarThread que activa el flag per parar el renderitzat
 void GravarThread::stop( )
 {
+    tancavideo();
     render_flag=false;
 }
 
@@ -121,22 +122,22 @@ void GravarThread::resizeGL(int width, int height)
 void GravarThread::selectransicio(int tipusdetransicio)
 {
     tipustransicio=tipusdetransicio;
-    qDebug()<<tipustransicio;
+    //qDebug()<<tipustransicio;
 }
 
 //Mètode que estableix la durada de la transició
 void GravarThread::selecduratransicio(int duradetransicio)
 {
     duradatransicio=duradetransicio;
-    qDebug()<<duradatransicio;
 }
 
-void GravarThread::rebregravar(IplImage *_frame){
+void GravarThread::rebregravar(IplImage *_frame)
+{
     frame=_frame;
     mostrar=true;
-    //qDebug()<<"S'ha rebut per gravar";
     //cvNamedWindow("pvw",0);
     //cvShowImage("pvw",frame);
+    //qDebug()<<"Rebut per gravar";
 }
 
 void GravarThread::setgravar(bool _gravar){
