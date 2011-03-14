@@ -124,13 +124,13 @@ void MainWindow::finishCameras()
 {
   delete Label_pgm;
   glWidget_pgm->finishRendering();
-  delete glWidget_pgm;
 
   for (int k = 0; k < numcam; k++) {
     glWidget_cam[k]->finishRendering();
     delete glWidget_cam[k];
     delete Label_cam[k];
     }
+  delete glWidget_pgm;
 }
 
 //Mètode que controla l'acció nou fitxer

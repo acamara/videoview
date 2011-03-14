@@ -9,7 +9,6 @@
 //Constructor de la classe PGMWidget
 PGMWidget::PGMWidget(QWidget *parent)
     : QGLWidget(parent),pglt(0)
-
 {
     setFormat(QGLFormat(QGL::DoubleBuffer));
 }
@@ -37,21 +36,22 @@ void PGMWidget::initPGM(QSize resolucio, double fps)
 void PGMWidget::finishRendering( )
 {
     if(pglt){
-    // Petició de parar el fil de renderitzat
-    pglt->stop();
-    // wait till the thread has exited
-    pglt->wait();
-    setAutoBufferSwap(true);
-    delete pglt;
-    pglt=0;
+        // Petició de parar el fil de renderitzat
+        pglt->stop();
+        // wait till the thread has exited
+        pglt->wait();
+        setAutoBufferSwap(true);
+        delete pglt;
+        pglt=0;
     }
 }
 
 //Mètode de la classe PGMWidget que finalitza la gravació
 void PGMWidget::finishGravar( )
 {
-    pglt->tancavideo();
-    pglt->setgravar(false);
+     if(pglt){
+        pglt->setgravar(false);
+    }
 }
 
 //Mètode de la classe PGMWidget que controla els events de sortida
@@ -73,10 +73,7 @@ void PGMWidget::resizeEvent( QResizeEvent * event )
 }
 
 void PGMWidget::paintEvent(QPaintEvent *) {
-    if (pglt == 0) {
-      //qDebug() << "Repaint " << objectName() << "!";
-      glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-      glClear(GL_COLOR_BUFFER_BIT);
-      updateGL();
+    if(pglt==0){
+        updateGL();
     }
 }

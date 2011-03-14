@@ -9,7 +9,6 @@
 //Constructor de la classe GLWidget
 GLWidget::GLWidget(PGMWidget* pgm, QWidget *parent)
     : QGLWidget(parent), pglt(0), pPGM(pgm)
-
 {
     setFormat(QGLFormat(QGL::DoubleBuffer));
 }
@@ -55,9 +54,6 @@ void GLWidget::finishRendering()
 
 void GLWidget::paintEvent(QPaintEvent *) {
   if (pglt == 0) {
-    //qDebug() << "Repaint " << objectName() << "!";
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
     updateGL();
   }
 }

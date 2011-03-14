@@ -59,9 +59,10 @@ void RenderThread::run( )
     // Realitza aquest procés mentre el flag de renderitzat estigui actiu
     while(render_flag )
     {
-        Cronometre C;
         //-----------------------------------------------------------------
+        Cronometre C,CT;
         C.begin();
+        CT.begin();
         //-----------------------------------------------------------------
 
         // Comprovació de si es necesita redimensionar el GLWidget
@@ -84,13 +85,13 @@ void RenderThread::run( )
         double elapsed = C.elapsed();
         if (elapsed < frame_time) {
           // Dormim fins que toqui posar el seguent frame
-          msleep(frame_time - elapsed);
+          msleep(frame_time - elapsed);       
         } else {
-          // qDebug() << "Vaig just!";
+           //qDebug() << "Vaig just!";
         }
-
+        CT.end();
         //-----------------------------------------------------------------
-        MostraTempsQT(camera[4].digitValue(), C.elapsed());
+        MostraTempsQT(camera[4].digitValue(), CT.elapsed());
         //-----------------------------------------------------------------
     }
 

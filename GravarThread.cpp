@@ -106,7 +106,6 @@ void GravarThread::paintGL()
 //Mètode de la classe GravarThread que activa el flag per parar el renderitzat
 void GravarThread::stop( )
 {
-    tancavideo();
     render_flag=false;
 }
 
@@ -145,7 +144,9 @@ void GravarThread::setgravar(bool _gravar){
 }
 
 void GravarThread::tancavideo(){
-    cvReleaseVideoWriter (&video);
+    if(video){
+        cvReleaseVideoWriter (&video);
+    }
 }
 
 void GravarThread::setconfig(QSize _resolucio,double _fps ){
