@@ -47,6 +47,7 @@ void GravarThread::run()
         if (mostrar)
         {
             paintGL();
+            realitzatransicio(frame);
         }
 
         if (gravar)
@@ -66,10 +67,45 @@ void GravarThread::run()
         // Intercanvi dels buffers del GLWidget
         glw->swapBuffers();
 
-        msleep(1000.0/fps); //sleep for 40 ms
+        msleep(1000.0/fps); //Dormim el temps necessari, segons el framerate de sortida.
     }
     tancavideo();
 }
+
+void GravarThread::realitzatransicio(IplImage* Imatgeactual)
+{
+    switch(tipustransicio)
+    {
+    case 1: //Fos a Blanc
+        IplImage* Imatgeanterior;
+        Imatgeanterior=cvCreateImage(cvSize(640,480),IPL_DEPTH_8U,3);
+        cvSet(Imatgeanterior, cvScalar(0,0,0));
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_COLOR,GL_DST_COLOR);
+        glEnable(GL_TEXTURE_2D);
+
+        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB,
+                      Imatgeanterior->width,Imatgeanterior->height,
+                      0, GL_BGR, GL_UNSIGNED_BYTE, Imatgeanterior->imageData);
+
+        glBegin(GL_QUADS);
+            glTexCoord2f(0,1); glVertex2f(0,0);
+            glTexCoord2f(1,1); glVertex2f(1,0);
+            glTexCoord2f(1,0); glVertex2f(1,1);
+            glTexCoord2f(0,0); glVertex2f(0,1);
+        glEnd();
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        break;
+
+    default:    //Transició per defecte Tall
+        //cvShowImage("PGM", Imatgeactual);
+        //qDebug()<<"Transició activada,default";
+        break;
+    }
+
+}
+
 
 //Métode de la classe GravarThread que pinta en el GLWidget
 void GravarThread::paintGL()

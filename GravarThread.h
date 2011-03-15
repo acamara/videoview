@@ -31,8 +31,9 @@ class GravarThread : public QThread
         void tancavideo();
 
     protected:
-        void resizeGL(int width, int height);
         void paintGL();
+        void resizeGL(int width, int height);
+        void realitzatransicio(IplImage* Imatgeactual);
 
    private:
         PGMWidget *glw;
