@@ -20,8 +20,8 @@ public:
     void initadquirir(CvCapture *capture,QString cam);
 
     /** The rendering thread. */
-    RenderThread *pglt;
-    PGMWidget *pPGM;
+    RenderThread *pthreadrender;
+    PGMWidget *pWPGM;
 
 signals:
     void widgetClicked();

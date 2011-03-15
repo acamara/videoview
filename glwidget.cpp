@@ -8,7 +8,7 @@
 
 //Constructor de la classe GLWidget
 GLWidget::GLWidget(PGMWidget* pgm, QWidget *parent)
-    : QGLWidget(parent), pglt(0), pPGM(pgm)
+    : QGLWidget(parent), pthreadrender(0), pWPGM(pgm)
 {
     setFormat(QGLFormat(QGL::DoubleBuffer));
 }
@@ -17,43 +17,43 @@ GLWidget::GLWidget(PGMWidget* pgm, QWidget *parent)
 void GLWidget::initRendering()
 {
     // Inici del fil de renderitzat
-    pglt = new RenderThread(this);
+    pthreadrender = new RenderThread(this);
 
     //L'intercanvi de memòria es controla en el fil de renderitzat
     setAutoBufferSwap(false);
 
-    pglt->start();
+    pthreadrender->start();
 }
 
 //Mètode de la classe GLWidget que inicia l'adquisició
 void GLWidget::initadquirir(CvCapture *capture, QString cam)
 {
-    if (pglt) {
+    if (pthreadrender) {
        finishRendering();
     }
     initRendering();
     // Inici del fil de renderitzat
-    pglt->selecfontvideo(capture);
-    pglt->seleccam(cam);
-    pglt->setadquirir(true);
+    pthreadrender->selecfontvideo(capture);
+    pthreadrender->seleccam(cam);
+    pthreadrender->setadquirir(true);
 }
 
 //Mètode de la classe GLWidget que finalitza el renderitzat
 void GLWidget::finishRendering()
 {
-  if (pglt) {
+  if (pthreadrender) {
     // Petició de parar el fil de renderitzat
-    pglt->stop();
+    pthreadrender->stop();
     // wait till the thread has exited
-    pglt->wait();
+    pthreadrender->wait();
     setAutoBufferSwap(true);
-    delete pglt;
-    pglt = 0;
+    delete pthreadrender;
+    pthreadrender = 0;
   }
 }
 
 void GLWidget::paintEvent(QPaintEvent *) {
-  if (pglt == 0) {
+  if (pthreadrender == 0) {
     updateGL();
   }
 }
@@ -71,8 +71,8 @@ void GLWidget::closeEvent( QCloseEvent * event )
 void GLWidget::resizeEvent( QResizeEvent * event )
 {
     // signal the rendering thread that a resize is needed
-    if (pglt) {
-      pglt->resizeViewport(event->size());
+    if (pthreadrender) {
+      pthreadrender->resizeViewport(event->size());
     }
 }
 
@@ -85,8 +85,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 
 void GLWidget::canviacamactiva(QString cam)
 {
-  if (pglt) {
-    pglt->camaraactiva=cam;
-  }
-  //qDebug()<<pglt->camaraactiva;
+  if (pthreadrender) {
+    pthreadrender->camaraactiva=cam;
+    }
 }

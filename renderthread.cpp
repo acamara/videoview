@@ -119,7 +119,7 @@ void RenderThread::processCam() {
     //-----------------------------------------------------------------
 
     if(camaraactiva==camera){
-      glw->pPGM->pglt->rebregravar(frame);
+      glw->pWPGM->pthreadgravar->rebregravar(frame);
     }
 }
 
