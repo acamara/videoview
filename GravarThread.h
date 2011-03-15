@@ -25,9 +25,9 @@ class GravarThread : public QThread
 
     public slots:
         void setconfig(QSize _resolucio,double _fps );
+        void setgravar(bool _gravar);
         void selectransicio(int tipusdetransicio);
         void selecduratransicio(int duradetransicio);
-        void setgravar(bool _gravar);
         void tancavideo();
 
     protected:
@@ -43,6 +43,7 @@ class GravarThread : public QThread
         QSize viewport_size;
         QSize resolucio;
         IplImage *frame;
+        IplImage *frame_ant;
         double fps;
         int duradatransicio;
         int tipustransicio;

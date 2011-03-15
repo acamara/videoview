@@ -66,7 +66,7 @@ void GravarThread::run()
         // Intercanvi dels buffers del GLWidget
         glw->swapBuffers();
 
-        msleep(40); //sleep for 40 ms
+        msleep(1000.0/fps); //sleep for 40 ms
     }
     tancavideo();
 }

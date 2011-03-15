@@ -8,7 +8,7 @@
 
 //Constructor de la classe PGMWidget
 PGMWidget::PGMWidget(QWidget *parent)
-    : QGLWidget(parent),pglt(0)
+    : QGLWidget(parent),pthreadgravar(0)
 {
     setFormat(QGLFormat(QGL::DoubleBuffer));
 }
@@ -17,40 +17,40 @@ PGMWidget::PGMWidget(QWidget *parent)
 void PGMWidget::initRendering()
 {
     // Inici del fil de renderitzat
-    pglt=new GravarThread(this);
+    pthreadgravar=new GravarThread(this);
     setAutoBufferSwap(false);
-    pglt->start();
+    pthreadgravar->start();
 }
 
 //Mètode de la classe PGMWidget que inicia la gravació
 void PGMWidget::initPGM(QSize resolucio, double fps)
 {
-    if(pglt){
+    if(pthreadgravar){
         finishRendering();
     }
     initRendering();
-    pglt->setconfig(resolucio,fps);
+    pthreadgravar->setconfig(resolucio,fps);
 }
 
 //Mètode de la classe PGMWidget que finalitza el renderitzat
 void PGMWidget::finishRendering( )
 {
-    if(pglt){
+    if(pthreadgravar){
         // Petició de parar el fil de renderitzat
-        pglt->stop();
+        pthreadgravar->stop();
         // wait till the thread has exited
-        pglt->wait();
+        pthreadgravar->wait();
         setAutoBufferSwap(true);
-        delete pglt;
-        pglt=0;
+        delete pthreadgravar;
+        pthreadgravar=0;
     }
 }
 
 //Mètode de la classe PGMWidget que finalitza la gravació
 void PGMWidget::finishGravar( )
 {
-     if(pglt){
-        pglt->setgravar(false);
+     if(pthreadgravar){
+        pthreadgravar->setgravar(false);
     }
 }
 
@@ -67,13 +67,13 @@ void PGMWidget::closeEvent( QCloseEvent * event )
 void PGMWidget::resizeEvent( QResizeEvent * event )
 {
     // signal the gravació thread that a resize is needed
-    if(pglt){
-        pglt->resizeViewport(event->size());
+    if(pthreadgravar){
+        pthreadgravar->resizeViewport(event->size());
     }
 }
 
 void PGMWidget::paintEvent(QPaintEvent *) {
-    if(pglt==0){
+    if(pthreadgravar==0){
         updateGL();
     }
 }

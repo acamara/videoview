@@ -222,8 +222,8 @@ void MainWindow::on_adquirirButton_clicked()
 
     //Inici del QThread de gravació que grava a fitxer i renderitza a PGMWidget el senyal de PGM
     glWidget_pgm->initPGM(resolucio,25);
-    connect(ui->comboBox_tipus, SIGNAL(activated (int)),glWidget_pgm->pglt,SLOT(selectransicio(int)));
-    connect(ui->spinBox_duracio, SIGNAL(valueChanged (int)),glWidget_pgm->pglt,SLOT(selecduratransicio(int)));
+    connect(ui->comboBox_tipus, SIGNAL(activated (int)),glWidget_pgm->pthreadgravar,SLOT(selectransicio(int)));
+    connect(ui->spinBox_duracio, SIGNAL(valueChanged (int)),glWidget_pgm->pthreadgravar,SLOT(selecduratransicio(int)));
 
     //-----------------------------------------------------------
     //Labels de comprovació s'han de treure en el programa final
@@ -233,9 +233,9 @@ void MainWindow::on_adquirirButton_clicked()
       TempscvQuery[k] = new QLabel();
       ui->gridLayout_3->addWidget(TempscvQuery[k],k+1,1);
       ui->gridLayout_3->addWidget(TempsQthread[k],k+1,2);
-      connect(glWidget_cam[k]->pglt, SIGNAL(MostraTempsQT(int,double)),
+      connect(glWidget_cam[k]->pthreadrender, SIGNAL(MostraTempsQT(int,double)),
               this,                  SLOT(MostraTempsQT(int,double)));
-      connect(glWidget_cam[k]->pglt, SIGNAL(MostraTempscvQuery(int,double)),
+      connect(glWidget_cam[k]->pthreadrender, SIGNAL(MostraTempscvQuery(int,double)),
               this,                  SLOT(MostraTempscvQuery(int,double)));
     }
     //-----------------------------------------------------------
@@ -274,7 +274,7 @@ void MainWindow::on_gravarButton_clicked()
     //QString nomdeprojecte = QFileDialog::getSaveFileName();
 
     //QString nomdeprojecte =("sortida.avi");
-    glWidget_pgm->pglt->setgravar(true);
+    glWidget_pgm->pthreadgravar->setgravar(true);
 }
 
 void MainWindow::on_stopButton_2_clicked()

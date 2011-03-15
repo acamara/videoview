@@ -20,7 +20,7 @@ public:
     void finishGravar();
 
     /** The rendering thread. */
-    GravarThread *pglt;
+    GravarThread *pthreadgravar;
 
 protected:
     /** Performs a save shutdown if the widget recieves a close event. */
