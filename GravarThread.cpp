@@ -53,6 +53,9 @@ void GravarThread::run()
         if (gravar){
             //Aquí ha d'anar el codi per gravar a fitxer.
             //Escalat del vídeo de sortida
+
+            glReadPixels(frame->width,frame->height,frame->width,frame->height,GL_BGR,GL_UNSIGNED_BYTE,frame->imageData);
+            
             if(frame->width!=resolucio.width()|| frame->height!=resolucio.height()) {
                IplImage *sal= cvCreateImage(cvSize(resolucio.width(),resolucio.height()),IPL_DEPTH_8U,3);
                cvResize(frame, sal);
@@ -167,7 +170,7 @@ void GravarThread::selecduratransicio(int duradetransicio)
 
 void GravarThread::rebregravar(IplImage *_frame)
 {
-    frame=_frame;
+    frame=cvCloneImage(_frame);
     mostrar=true;
     //cvNamedWindow("pvw",0);
     //cvShowImage("pvw",frame);
