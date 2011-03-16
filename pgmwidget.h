@@ -14,7 +14,7 @@ public:
     PGMWidget(QWidget *parent = 0);
     /** Starts the rendering thread. This method is called in the contructor.     */
     void initRendering();
-    void initPGM(QSize resolucio, double fps);
+    void initPGM(QSize resolucio, double fps,int duradetransicio);
     /** Stops the rendering thread of the widget. */
     void finishRendering();
     void finishGravar();

@@ -24,7 +24,9 @@ class GravarThread : public QThread
         void rebregravar(IplImage*);
 
     public slots:
-        void setconfig(QSize _resolucio,double _fps );
+        void activatransicio(bool _transicio);
+        void paratransicio();
+        void setconfig(QSize _resolucio,double _fps,int _duradetransicio);
         void setgravar(bool _gravar);
         void selectransicio(int tipusdetransicio);
         void selecduratransicio(int duradetransicio);
@@ -41,6 +43,7 @@ class GravarThread : public QThread
         bool resize_flag;
         bool gravar;
         bool mostrar;
+        bool transicio;
         QSize viewport_size;
         QSize resolucio;
         IplImage *frame;

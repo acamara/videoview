@@ -23,13 +23,13 @@ void PGMWidget::initRendering()
 }
 
 //Mètode de la classe PGMWidget que inicia la gravació
-void PGMWidget::initPGM(QSize resolucio, double fps)
+void PGMWidget::initPGM(QSize resolucio, double fps,int duradetransicio)
 {
     if(pthreadgravar){
         finishRendering();
     }
     initRendering();
-    pthreadgravar->setconfig(resolucio,fps);
+    pthreadgravar->setconfig(resolucio,fps,duradetransicio);
 }
 
 //Mètode de la classe PGMWidget que finalitza el renderitzat

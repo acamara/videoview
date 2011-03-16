@@ -38,20 +38,19 @@ void GravarThread::run()
     while(render_flag )
     {
         // Comprovació de si es necesita redimensionar el GLWidget
-        if (resize_flag)
-        {
+        if (resize_flag){
             resizeGL(viewport_size.width(), viewport_size.height());
             resize_flag = false;
         }
 
-        if (mostrar)
-        {
+        if (mostrar){
             paintGL();
+        }
+        if(transicio){
             realitzatransicio(frame);
         }
 
-        if (gravar)
-        {
+        if (gravar){
             //Aquí ha d'anar el codi per gravar a fitxer.
             //Escalat del vídeo de sortida
             if(frame->width!=resolucio.width()|| frame->height!=resolucio.height()) {
@@ -76,7 +75,7 @@ void GravarThread::realitzatransicio(IplImage* Imatgeactual)
 {
     switch(tipustransicio)
     {
-    case 1: //Fos a Blanc
+    case 1: //Fos a Negre
         IplImage* Imatgeanterior;
         Imatgeanterior=cvCreateImage(cvSize(640,480),IPL_DEPTH_8U,3);
         cvSet(Imatgeanterior, cvScalar(0,0,0));
@@ -84,7 +83,7 @@ void GravarThread::realitzatransicio(IplImage* Imatgeactual)
         glBlendFunc(GL_SRC_COLOR,GL_DST_COLOR);
         glEnable(GL_TEXTURE_2D);
 
-        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB,
+        glTexSubImage2D( GL_TEXTURE_2D, 0, GL_RGB,
                       Imatgeanterior->width,Imatgeanterior->height,
                       0, GL_BGR, GL_UNSIGNED_BYTE, Imatgeanterior->imageData);
 
@@ -185,7 +184,18 @@ void GravarThread::tancavideo(){
     }
 }
 
-void GravarThread::setconfig(QSize _resolucio,double _fps ){
+void GravarThread::setconfig(QSize _resolucio,double _fps,int _duradetransicio ){
     resolucio=_resolucio;
     fps=_fps;
+    selecduratransicio(_duradetransicio);
+}
+
+
+void GravarThread::activatransicio(bool _transicio){
+    transicio=_transicio;
+    QTimer::singleShot(duradatransicio, this, SLOT(paratransicio()));
+}
+
+void GravarThread::paratransicio(){
+    transicio=false;
 }

@@ -221,7 +221,7 @@ void MainWindow::on_adquirirButton_clicked()
     }
 
     //Inici del QThread de gravació que grava a fitxer i renderitza a PGMWidget el senyal de PGM
-    glWidget_pgm->initPGM(resolucio,25);
+    glWidget_pgm->initPGM(resolucio,25,ui->spinBox_duracio->value());
     connect(ui->comboBox_tipus, SIGNAL(activated (int)),glWidget_pgm->pthreadgravar,SLOT(selectransicio(int)));
     connect(ui->spinBox_duracio, SIGNAL(valueChanged (int)),glWidget_pgm->pthreadgravar,SLOT(selecduratransicio(int)));
 
@@ -251,7 +251,10 @@ void MainWindow::on_stopButton_clicked()
 
 //Mètode que controla el canvi de càmera
 void MainWindow::canviacamara()
-{  
+{
+    if(ui->comboBox_tipus->currentIndex()>0){
+        glWidget_pgm->pthreadgravar->activatransicio(true);
+    }
     QString nom = sender()->objectName();
 
     for (int k = 0; k < numcam; k++){
