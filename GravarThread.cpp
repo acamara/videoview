@@ -80,7 +80,7 @@ void GravarThread::realitzatransicio(IplImage* Imatgeactual)
     {
     case 1: //Fos a Negre
         IplImage* Imatgeanterior;
-        Imatgeanterior=cvCreateImage(cvSize(640,480),IPL_DEPTH_8U,3);
+        Imatgeanterior=cvCreateImage(cvSize(frame->width,frame->height),IPL_DEPTH_8U,3);
         cvSet(Imatgeanterior, cvScalar(0,0,0));
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_COLOR,GL_DST_COLOR);
