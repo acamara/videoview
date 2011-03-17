@@ -277,11 +277,13 @@ void MainWindow::on_gravarButton_clicked()
     //QString nomdeprojecte = QFileDialog::getSaveFileName();
 
     //QString nomdeprojecte =("sortida.avi");
+    ui->gravarButton->setStyleSheet("background-color: rgb(255,215,0)");
     glWidget_pgm->pthreadgravar->setgravar(true);
 }
 
 void MainWindow::on_stopButton_2_clicked()
 {
+    ui->gravarButton->setStyleSheet("background-color");
     glWidget_pgm->finishGravar();
 }
 
@@ -297,3 +299,28 @@ void MainWindow::MostraTempscvQuery(int cam,double time){
    TempscvQuery[cam]->setNum(time);
 }
 //-----------------------------------------------------------------
+
+void MainWindow::on_FontButton_clicked()
+{
+    bool ok;
+    QFont font = QFontDialog::getFont(
+                    &ok, QFont("Helvetica [Cronyx]", 10), this);
+}
+
+void MainWindow::on_moscaButton_clicked()
+{
+    QString imagefilename = QFileDialog::getOpenFileName( this,tr("Seleccioni el logo"),QDir::currentPath(),"Imatges (*.bmp *.png *.xpm *.jpg)");
+    QImage  mosca,moscaresize;
+    mosca.load (imagefilename);
+    moscaresize=mosca.scaled(ui->moscalabel->width(),ui->moscalabel->height(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+    ui->moscalabel->setPixmap(QPixmap::fromImage(moscaresize));
+}
+
+void MainWindow::on_templatesButton_clicked()
+{
+    QString imagefilename = QFileDialog::getOpenFileName( this,tr("Seleccioni el Template"),QDir::currentPath(),"Imatges (*.bmp *.png *.xpm *.jpg)");
+    QImage  templates,templateresize;
+    templates.load (imagefilename);
+    templateresize=templates.scaled(ui->templatelabel->width(),ui->templatelabel->height(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+    ui->templatelabel->setPixmap(QPixmap::fromImage(templateresize));
+}

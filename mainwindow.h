@@ -42,6 +42,9 @@ protected:
     void closeEvent(QCloseEvent *);
 
 private slots:
+    void on_templatesButton_clicked();
+    void on_moscaButton_clicked();
+    void on_FontButton_clicked();
     void on_stopButton_2_clicked();
     void on_gravarButton_clicked();
     void on_stopButton_clicked();
