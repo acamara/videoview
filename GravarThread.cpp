@@ -45,6 +45,7 @@ void GravarThread::run()
 
         if (mostrar){
             paintGL();
+            //afegeixmosca();
         }
         if(transicio){
             realitzatransicio(frame);
@@ -54,8 +55,13 @@ void GravarThread::run()
             //Aquí ha d'anar el codi per gravar a fitxer.
             //Escalat del vídeo de sortida
 
-            glReadPixels(frame->width,frame->height,frame->width,frame->height,GL_BGR,GL_UNSIGNED_BYTE,frame->imageData);
-            
+            //***********************************************************************
+            //NO FUNCIONA DEL TOT (fa pampallugues)...
+            //IplImage *imgprova=cvCreateImage(cvSize(frame->width,frame->height),IPL_DEPTH_8U,3);
+            glGetTexImage(GL_TEXTURE_2D,0,GL_BGR,GL_UNSIGNED_BYTE,frame->imageData);
+            //cvSaveImage("prova.jpg",imgprova);
+            //***********************************************************************
+
             if(frame->width!=resolucio.width()|| frame->height!=resolucio.height()) {
                IplImage *sal= cvCreateImage(cvSize(resolucio.width(),resolucio.height()),IPL_DEPTH_8U,3);
                cvResize(frame, sal);
@@ -86,9 +92,9 @@ void GravarThread::realitzatransicio(IplImage* Imatgeactual)
         glBlendFunc(GL_SRC_COLOR,GL_DST_COLOR);
         glEnable(GL_TEXTURE_2D);
 
-        glTexSubImage2D( GL_TEXTURE_2D, 0, GL_RGB,
+        glTexSubImage2D( GL_TEXTURE_2D, 0,0,0,
                       Imatgeanterior->width,Imatgeanterior->height,
-                      0, GL_BGR, GL_UNSIGNED_BYTE, Imatgeanterior->imageData);
+                      GL_BGR, GL_UNSIGNED_BYTE, Imatgeanterior->imageData);
 
         glBegin(GL_QUADS);
             glTexCoord2f(0,1); glVertex2f(0,0);
@@ -106,6 +112,25 @@ void GravarThread::realitzatransicio(IplImage* Imatgeactual)
         break;
     }
 
+}
+
+void GravarThread::afegeixmosca()
+{
+        IplImage* imatgemosca;
+        imatgemosca=cvLoadImage("mosca.png",1);
+        glEnable(GL_TEXTURE_2D);
+
+        glTexSubImage2D( GL_TEXTURE_2D, 0,0,0,
+                      imatgemosca->width,imatgemosca->height,
+                      GL_BGR, GL_UNSIGNED_BYTE, imatgemosca->imageData);
+
+        glBegin(GL_QUADS);
+            glTexCoord2f(0,1); glVertex2f(0,0);
+            glTexCoord2f(1,1); glVertex2f(1,0);
+            glTexCoord2f(1,0); glVertex2f(1,1);
+            glTexCoord2f(0,0); glVertex2f(0,1);
+        glEnd();
+        glDisable(GL_TEXTURE_2D);
 }
 
 

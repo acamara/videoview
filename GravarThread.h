@@ -25,6 +25,7 @@ class GravarThread : public QThread
 
     public slots:
         void activatransicio(bool _transicio);
+        void afegeixmosca();
         void paratransicio();
         void setconfig(QSize _resolucio,double _fps,int _duradetransicio);
         void setgravar(bool _gravar);
