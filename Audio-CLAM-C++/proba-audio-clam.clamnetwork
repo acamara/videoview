@@ -7,13 +7,28 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;"&gt;
 &lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;"&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
 
+  <processing id="AudioAmplifier" position="385,117" size="121,54" type="AudioAmplifier">
+    <MaxGain>1</MaxGain>
+    <InitGain>1</InitGain>
+    <PortsNumber>1</PortsNumber>
+  </processing>
+
   <processing id="AudioMixer" position="207,117" size="160,183" type="AudioMixer">
     <NumberOfInPorts>4</NumberOfInPorts>
     <DefaultGains size="4">1 1 1 1</DefaultGains>
   </processing>
 
-  <processing id="AudioSink" position="433,85" size="128,111" type="AudioSink">
+  <processing id="AudioSink" position="558,-19" size="128,111" type="AudioSink">
     <NSinks>1</NSinks>
+  </processing>
+
+  <processing id="Gain" position="366,32" size="169,66" type="OutControlSender">
+    <Min>0</Min>
+    <Default>1</Default>
+    <Max>2</Max>
+    <Step>0.01</Step>
+    <ControlRepresentation>Horizontal Slider</ControlRepresentation>
+    <Mapping>Linear</Mapping>
   </processing>
 
   <processing id="Gain 0" position="207,-224" size="175,67" type="OutControlSender">
@@ -58,13 +73,13 @@ p, li { white-space: pre-wrap; }
     <Loop>1</Loop>
   </processing>
 
-  <processing id="MonoAudioFileReader_1" position="-105,150" size="169,54" type="MonoAudioFileReader">
+  <processing id="MonoAudioFileReader_1" position="-100,74" size="169,54" type="MonoAudioFileReader">
     <SourceFile>D:/Users/Albert/Desktop/PFC codi/Audio-CLAM-C++/Fitxers-proba(mp3)/Floater 30.mp3</SourceFile>
     <SelectedChannel>0</SelectedChannel>
     <Loop>1</Loop>
   </processing>
 
-  <processing id="MonoAudioFileReader_2" position="-109,81" size="169,54" type="MonoAudioFileReader">
+  <processing id="MonoAudioFileReader_2" position="-101,137" size="169,54" type="MonoAudioFileReader">
     <SourceFile>D:/Users/Albert/Desktop/PFC codi/Audio-CLAM-C++/Fitxers-proba(mp3)/Face To Face 30.mp3</SourceFile>
     <SelectedChannel>0</SelectedChannel>
     <Loop>1</Loop>
@@ -76,32 +91,37 @@ p, li { white-space: pre-wrap; }
     <Loop>1</Loop>
   </processing>
 
-  <processing id="MultiChannelAudioFileWriter" position="455,372" size="187,62" type="MultiChannelAudioFileWriter">
+  <processing id="MultiChannelAudioFileWriter" position="553,279" size="187,62" type="MultiChannelAudioFileWriter">
     <TargetFile>D:/Users/Albert/Desktop/PFC codi/Audio-CLAM-C++/sortida.wav</TargetFile>
     <SampleRate>44100</SampleRate>
     <NChannels>2</NChannels>
   </processing>
 
-  <processing id="Vumeter" position="440,202" size="101,178" type="Vumeter"/>
+  <processing id="Vumeter" position="575,104" size="101,178" type="Vumeter"/>
 
   <port_connection>
-    <out>AudioMixer.Output Audio</out>
-    <in>Vumeter.Input</in>
-  </port_connection>
-
-  <port_connection>
-    <out>AudioMixer.Output Audio</out>
+    <out>AudioAmplifier.Audio Output</out>
     <in>AudioSink.1</in>
   </port_connection>
 
   <port_connection>
-    <out>AudioMixer.Output Audio</out>
+    <out>AudioAmplifier.Audio Output</out>
+    <in>Vumeter.Input</in>
+  </port_connection>
+
+  <port_connection>
+    <out>AudioAmplifier.Audio Output</out>
     <in>MultiChannelAudioFileWriter.Channel #0</in>
   </port_connection>
 
   <port_connection>
-    <out>AudioMixer.Output Audio</out>
+    <out>AudioAmplifier.Audio Output</out>
     <in>MultiChannelAudioFileWriter.Channel #1</in>
+  </port_connection>
+
+  <port_connection>
+    <out>AudioMixer.Output Audio</out>
+    <in>AudioAmplifier.Input Audio</in>
   </port_connection>
 
   <port_connection>
@@ -111,18 +131,23 @@ p, li { white-space: pre-wrap; }
 
   <port_connection>
     <out>MonoAudioFileReader_1.Samples Read</out>
-    <in>AudioMixer.Input 2</in>
+    <in>AudioMixer.Input 1</in>
   </port_connection>
 
   <port_connection>
     <out>MonoAudioFileReader_2.Samples Read</out>
-    <in>AudioMixer.Input 1</in>
+    <in>AudioMixer.Input 2</in>
   </port_connection>
 
   <port_connection>
     <out>MonoAudioFileReader_3.Samples Read</out>
     <in>AudioMixer.Input 3</in>
   </port_connection>
+
+  <control_connection>
+    <out>Gain.out</out>
+    <in>AudioAmplifier.Gain</in>
+  </control_connection>
 
   <control_connection>
     <out>Gain 0.out</out>

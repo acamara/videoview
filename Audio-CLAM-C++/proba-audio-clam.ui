@@ -6,62 +6,164 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>452</width>
     <height>300</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QPixmapRange" name="InControl__AudioMixer__Gain___0">
+  <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>40</y>
-     <width>30</width>
-     <height>170</height>
+     <x>10</x>
+     <y>10</y>
+     <width>311</width>
+     <height>211</height>
     </rect>
    </property>
+   <property name="title">
+    <string>Entrada</string>
+   </property>
+   <widget class="QPixmapRange" name="InControl__AudioMixer__Gain___1">
+    <property name="geometry">
+     <rect>
+      <x>87</x>
+      <y>20</y>
+      <width>30</width>
+      <height>170</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="Vumeter" name="OutPort__MonoAudioFileReader_3__Samples___Read">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>20</y>
+      <width>40</width>
+      <height>171</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPixmapRange" name="InControl__AudioMixer__Gain___3">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>20</y>
+      <width>30</width>
+      <height>170</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="Vumeter" name="OutPort__MonoAudioFileReader_1__Samples___Read">
+    <property name="geometry">
+     <rect>
+      <x>121</x>
+      <y>20</y>
+      <width>40</width>
+      <height>171</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="Vumeter" name="OutPort__MonoAudioFileReader__Samples___Read">
+    <property name="geometry">
+     <rect>
+      <x>42</x>
+      <y>19</y>
+      <width>40</width>
+      <height>171</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="Vumeter" name="OutPort__MonoAudioFileReader_2__Samples___Read">
+    <property name="geometry">
+     <rect>
+      <x>198</x>
+      <y>20</y>
+      <width>40</width>
+      <height>171</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPixmapRange" name="InControl__AudioMixer__Gain___0">
+    <property name="geometry">
+     <rect>
+      <x>7</x>
+      <y>20</y>
+      <width>30</width>
+      <height>170</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPixmapRange" name="InControl__AudioMixer__Gain___2">
+    <property name="geometry">
+     <rect>
+      <x>167</x>
+      <y>20</y>
+      <width>30</width>
+      <height>170</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
-  <widget class="QPixmapRange" name="InControl__AudioMixer__Gain___1">
+  <widget class="QGroupBox" name="groupBox_2">
    <property name="geometry">
     <rect>
-     <x>100</x>
-     <y>40</y>
-     <width>30</width>
-     <height>170</height>
+     <x>330</x>
+     <y>10</y>
+     <width>101</width>
+     <height>261</height>
     </rect>
    </property>
-  </widget>
-  <widget class="QPixmapRange" name="InControl__AudioMixer__Gain___2">
-   <property name="geometry">
-    <rect>
-     <x>140</x>
-     <y>40</y>
-     <width>30</width>
-     <height>170</height>
-    </rect>
+   <property name="title">
+    <string>Sortida</string>
    </property>
-  </widget>
-  <widget class="QPixmapRange" name="InControl__AudioMixer__Gain___3">
-   <property name="geometry">
-    <rect>
-     <x>180</x>
-     <y>40</y>
-     <width>30</width>
-     <height>170</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="Vumeter" name="OutPort__AudioMixer__Output___Audio">
-   <property name="geometry">
-    <rect>
-     <x>230</x>
-     <y>40</y>
-     <width>40</width>
-     <height>171</height>
-    </rect>
-   </property>
+   <widget class="Vumeter" name="OutPort__AudioAmplifier__Audio___Output">
+    <property name="geometry">
+     <rect>
+      <x>14</x>
+      <y>26</y>
+      <width>40</width>
+      <height>171</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="PauseButton">
+    <property name="geometry">
+     <rect>
+      <x>12</x>
+      <y>226</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Pause</string>
+    </property>
+   </widget>
+   <widget class="QPixmapRange" name="InControl__AudioAmplifier__Gain">
+    <property name="geometry">
+     <rect>
+      <x>54</x>
+      <y>26</y>
+      <width>30</width>
+      <height>170</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="PlayButton">
+    <property name="geometry">
+     <rect>
+      <x>12</x>
+      <y>201</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Play</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <customwidgets>
