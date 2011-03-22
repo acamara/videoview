@@ -48,6 +48,7 @@ class GravarThread : public QThread
         QSize viewport_size;
         QSize resolucio;
         IplImage *frame;
+        IplImage *frame_sortida;
         double fps;
         int duradatransicio;
         int tipustransicio;

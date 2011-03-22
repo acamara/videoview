@@ -57,19 +57,20 @@ void GravarThread::run()
 
             //***********************************************************************
             //NO FUNCIONA DEL TOT (fa pampallugues)...
-            //IplImage *imgprova=cvCreateImage(cvSize(frame->width,frame->height),IPL_DEPTH_8U,3);
-            glGetTexImage(GL_TEXTURE_2D,0,GL_BGR,GL_UNSIGNED_BYTE,frame->imageData);
+            frame_sortida=cvCreateImage(cvSize(frame->width,frame->height),IPL_DEPTH_8U,3);
+            glGetTexImage(GL_TEXTURE_2D,0,GL_BGR,GL_UNSIGNED_BYTE,frame_sortida->imageData);
             //cvSaveImage("prova.jpg",imgprova);
             //***********************************************************************
 
-            if(frame->width!=resolucio.width()|| frame->height!=resolucio.height()) {
+            if(frame_sortida->width!=resolucio.width()|| frame_sortida->height!=resolucio.height()) {
                IplImage *sal= cvCreateImage(cvSize(resolucio.width(),resolucio.height()),IPL_DEPTH_8U,3);
-               cvResize(frame, sal);
+               cvResize(frame_sortida, sal);
                cvWriteFrame(video, sal);
                cvReleaseImage(&sal);
             } else {
-              cvWriteFrame(video,frame);
+              cvWriteFrame(video,frame_sortida);
             }
+            cvReleaseImage(&frame_sortida);
         }
 
         // Intercanvi dels buffers del GLWidget
@@ -104,6 +105,7 @@ void GravarThread::realitzatransicio(IplImage* Imatgeactual)
         glEnd();
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_BLEND);
+        cvReleaseImage(&Imatgeanterior);
         break;
 
     default:    //Transició per defecte Tall
