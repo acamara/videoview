@@ -45,7 +45,7 @@ void GravarThread::run()
 
         if (mostrar){
             paintGL();
-            //afegeixmosca();
+            afegeixmosca();
         }
         if(transicio){
             realitzatransicio(frame);
@@ -118,13 +118,15 @@ void GravarThread::realitzatransicio(IplImage* Imatgeactual)
 
 void GravarThread::afegeixmosca()
 {
-        IplImage* imatgemosca;
-        imatgemosca=cvLoadImage("mosca.png",1);
+        QImage imatgemosca;
+        imatgemosca.load("mosca.png","PNG");
+        //imatgemosca.invertPixels(QImage::InvertRgba);;
         glEnable(GL_TEXTURE_2D);
-
-        glTexSubImage2D( GL_TEXTURE_2D, 0,0,0,
-                      imatgemosca->width,imatgemosca->height,
-                      GL_BGR, GL_UNSIGNED_BYTE, imatgemosca->imageData);
+        //glEnable(GL_BLEND);
+        //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glTexSubImage2D( GL_TEXTURE_2D, 0,10,10,
+                      imatgemosca.width(),imatgemosca.height(),
+                      GL_ABGR_EXT,GL_UNSIGNED_BYTE, imatgemosca.bits());
 
         glBegin(GL_QUADS);
             glTexCoord2f(0,1); glVertex2f(0,0);
@@ -133,6 +135,7 @@ void GravarThread::afegeixmosca()
             glTexCoord2f(0,0); glVertex2f(0,1);
         glEnd();
         glDisable(GL_TEXTURE_2D);
+        //glDisable(GL_BLEND);
 }
 
 
