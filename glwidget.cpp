@@ -18,6 +18,7 @@ void GLWidget::initRendering()
 {
     // Inici del fil de renderitzat
     pthreadrender = new RenderThread(this);
+    pthreadrender->resizeViewport(size());
 
     //L'intercanvi de memòria es controla en el fil de renderitzat
     setAutoBufferSwap(false);
@@ -72,7 +73,7 @@ void GLWidget::resizeEvent( QResizeEvent * event )
 {
     // signal the rendering thread that a resize is needed
     if (pthreadrender) {
-      pthreadrender->resizeViewport(event->size());
+     pthreadrender->resizeViewport(event->size());
     }
 }
 
