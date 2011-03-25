@@ -122,14 +122,14 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 //Mètode que tanca tots els GLWidgets i Layers de càmeres.
 void MainWindow::finishCameras()
 {
-  delete Label_pgm;
-  glWidget_pgm->finishRendering();
-
   for (int k = 0; k < numcam; k++) {
     glWidget_cam[k]->finishRendering();
     delete glWidget_cam[k];
     delete Label_cam[k];
-    }
+  }
+
+  delete Label_pgm;
+  glWidget_pgm->finishRendering();
   delete glWidget_pgm;
 }
 
