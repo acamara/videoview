@@ -45,7 +45,7 @@ void GravarThread::run()
 
         if (mostrar){
             paintGL();
-            afegeixmosca();
+            //afegeixmosca(); Problemes en l'espai de color.
         }
         if(transicio){
             realitzatransicio(frame);
