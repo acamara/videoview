@@ -22,8 +22,6 @@ void GLWidget::initRendering()
 
     //L'intercanvi de memòria es controla en el fil de renderitzat
     setAutoBufferSwap(false);
-
-    pthreadrender->start();
 }
 
 //Mètode de la classe GLWidget que inicia l'adquisició
@@ -37,6 +35,8 @@ void GLWidget::initadquirir(CvCapture *capture, QString cam)
     pthreadrender->selecfontvideo(capture);
     pthreadrender->seleccam(cam);
     pthreadrender->setadquirir(true);
+
+    pthreadrender->start();
 }
 
 //Mètode de la classe GLWidget que finalitza el renderitzat
@@ -54,9 +54,7 @@ void GLWidget::finishRendering()
 }
 
 void GLWidget::paintEvent(QPaintEvent *) {
-  if (pthreadrender == 0) {
-    updateGL();
-  }
+  // S'ha de repintar quan no hi ha thread... ???
 }
 
 //Mètode de la classe GLWidget que controla els events de sortida
@@ -73,7 +71,7 @@ void GLWidget::resizeEvent( QResizeEvent * event )
 {
     // signal the rendering thread that a resize is needed
     if (pthreadrender) {
-     pthreadrender->resizeViewport(event->size());
+      pthreadrender->resizeViewport(event->size());
     }
 }
 

@@ -73,7 +73,5 @@ void PGMWidget::resizeEvent( QResizeEvent * event )
 }
 
 void PGMWidget::paintEvent(QPaintEvent *) {
-    if(pthreadgravar==0){
-        updateGL();
-    }
+  // S'ha de repintar quan no hi ha thread... ???
 }
