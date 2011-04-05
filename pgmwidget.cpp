@@ -18,6 +18,7 @@ void PGMWidget::initRendering()
 {
     // Inici del fil de renderitzat
     pthreadgravar=new GravarThread(this);
+    pthreadgravar->resizeViewport(size());
     setAutoBufferSwap(false);
     pthreadgravar->start();
 }
