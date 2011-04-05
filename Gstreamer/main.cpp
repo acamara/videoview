@@ -9,7 +9,7 @@
 int main(int argc, char *argv[])
 {
     GstElement *pipeline;
-    GstElement *source, *sink;
+    GstElement *source,*sink;
 
     /* Initicialització */
     gst_init (&argc, &argv);
@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
     /* Creació gstreamer elements */
     source = gst_element_factory_make ("videotestsrc", "videotest-source");
     sink = gst_element_factory_make ("directdrawsink", "direct-output");
+
 
     if (!source || !sink) {
         std::cout<<"Un dels elements no es pot crear";
