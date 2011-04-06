@@ -124,7 +124,6 @@
     <value type="QString">VBOX_INSTALL_PATH=C:\Program Files\Oracle\VirtualBox\</value>
     <value type="QString">VS100COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools\</value>
     <value type="QString">WINDIR=C:\Windows</value>
-    <value type="QString">WIX=C:\Program Files (x86)\Windows Installer XML v3.5\</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList">
     <value type="QString">D:/Users/Albert/Desktop/PFC codi/Gstreamer/provaGstreamer.pro</value>
@@ -189,7 +188,6 @@
     <value type="QString">VBOX_INSTALL_PATH=C:\Program Files\Oracle\VirtualBox\</value>
     <value type="QString">VS100COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools\</value>
     <value type="QString">WINDIR=C:\Windows</value>
-    <value type="QString">WIX=C:\Program Files (x86)\Windows Installer XML v3.5\</value>
    </valuelist>
    <value key="abstractProcess.IgnoreReturnValue" type="bool">false</value>
    <valuelist key="abstractProcess.arguments" type="QVariantList">
