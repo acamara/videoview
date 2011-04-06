@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
     GstElement *pipeline;
     GstElement *bin;
-    GstElement *source, *sink;
+    GstElement *source,*conv, *sink;
 
     /* Initicialització */
     gst_init (&argc, &argv);
@@ -20,23 +20,26 @@ int main(int argc, char *argv[])
     bin=gst_bin_new("my-bin");
 
     /* Creació gstreamer elements */
-    source = gst_element_factory_make ("videotestsrc", "videotest-source");
+    source = gst_element_factory_make ("dshowvideosrc", "videotest-source");
+    conv= gst_element_factory_make ("ffmpegcolorspace", "color-converter");
     sink = gst_element_factory_make ("directdrawsink", "direct-output");
 
-    if (!source || !sink) {
+    if (!source|| !conv || !sink) {
         std::cout<<"Un dels elements no es pot crear";
     }
 
+
+
     /* Afegim els elements al pipeline abans de linkar-los*/
-    gst_bin_add_many (GST_BIN_CAST(pipeline), source, sink, NULL);
+    gst_bin_add_many (GST_BIN_CAST(pipeline), source, conv, sink, NULL);
 
     /* Linkem els elements */
-    if (!gst_element_link_many (source, sink, NULL)) {
+    if (!gst_element_link_many (source,conv, sink, NULL)) {
         std::cout<<"Failed to link elements!";
     }
 
     gst_element_set_state(pipeline,GST_STATE_PLAYING);
-    std::cout<<"Reproduint una video test per la sortida directdrawsink";
+    std::cout<<"Reproduint l'entrada de video dshowvideosrc per la sortida directdrawsink";
 
     gst_object_unref(GST_OBJECT_CAST(pipeline));
 
