@@ -250,7 +250,6 @@
     <value type="QString">VBOX_INSTALL_PATH=C:\Program Files\Oracle\VirtualBox\</value>
     <value type="QString">VS100COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools\</value>
     <value type="QString">WINDIR=C:\Windows</value>
-    <value type="QString">WIX=C:\Program Files (x86)\Windows Installer XML v3.5\</value>
    </valuelist>
    <value key="abstractProcess.IgnoreReturnValue" type="bool">true</value>
    <valuelist key="abstractProcess.arguments" type="QVariantList">
@@ -259,7 +258,7 @@
    </valuelist>
    <value key="abstractProcess.command" type="QString">C:/Qt/2010.01/mingw/bin/mingw32-make.exe</value>
    <value key="abstractProcess.enabled" type="bool">true</value>
-   <value key="abstractProcess.workingDirectory" type="QString">D:/Users/Albert/Desktop/provaGstreamer</value>
+   <value key="abstractProcess.workingDirectory" type="QString">D:/Users/Albert/Desktop/PFC codi/Gstreamer</value>
    <value key="cleanConfig" type="bool">true</value>
    <valuelist key="makeargs" type="QVariantList">
     <value type="QString">clean</value>

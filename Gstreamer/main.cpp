@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     g_object_set (G_OBJECT(source), "location", "music.ogg", NULL);
 
     /* Afegim els elements al pipeline abans de linkar-los*/
-    gst_bin_add_many (GST_BIN_CAST(pipeline), source, decoder, conv, sink, NULL);
+    gst_bin_add_many (GST_BIN(pipeline), source, decoder, conv, sink, NULL);
 
     /* Linkem els elements */
     if (!gst_element_link_many (source, decoder, conv, sink, NULL)) {
@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     gst_element_set_state(pipeline,GST_STATE_PLAYING);
     std::cout<<"Reproduint fitxer d'àudio per la sortida directsoundsink";
 
-    gst_object_unref(GST_OBJECT_CAST(pipeline));
+    gst_object_unref(GST_OBJECT(pipeline));
 
     QCoreApplication a(argc, argv);
     return a.exec();
