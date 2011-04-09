@@ -8,38 +8,39 @@
 
 int main(int argc, char *argv[])
 {
-    //filesrc location=music.ogg ! decodebin ! audioconvert ! directsoundsink
+    //filesrc location=music.ogg ! decodebin ! audioconvert ! audioresample
+    //! vorbisenc ! oggmux name=mux ! filesink location=file.ogg
     GstElement *pipeline;
-    GstElement *source,*decoder,*conv, *sink;
+    GstElement *source, *encoder, *mux, *sink;
 
     /* Initicialització */
     gst_init (&argc, &argv);
 
     /* Creació pipeline */
-    pipeline = gst_pipeline_new ("audio-pipeline");
+    pipeline = gst_pipeline_new ("video-pipeline");
 
     /* Creació gstreamer elements */
-    source = gst_element_factory_make ("filesrc", "file-source");
-    decoder = gst_element_factory_make ("decodebin", "audio-decode");
-    conv = gst_element_factory_make ("audioconvert", "audio-converter");
-    sink = gst_element_factory_make ("directsoundsink", "directsound-output");
+    source = gst_element_factory_make ("videotestsrc", "video-source");
+    encoder = gst_element_factory_make ("theoraenc", "video-encoder");
+    mux = gst_element_factory_make ("oggmux", "ogg-mux");
+    sink = gst_element_factory_make ("filesink", "file-output");
 
-    if (!source || !decoder|| !conv || !sink) {
+    if (!source || !encoder || !mux || !sink) {
         std::cout<<"Un dels elements no es pot crear";
     }
 
-    g_object_set (G_OBJECT(source), "location", "music.ogg", NULL);
+    g_object_set (G_OBJECT(sink), "location", "sortida.ogg", NULL);
 
     /* Afegim els elements al pipeline abans de linkar-los*/
-    gst_bin_add_many (GST_BIN(pipeline), source, decoder, conv, sink, NULL);
+    gst_bin_add_many (GST_BIN(pipeline), source, encoder, mux, sink, NULL);
 
     /* Linkem els elements */
-    if (!gst_element_link_many (source, decoder, conv, sink, NULL)) {
+    if (!gst_element_link_many (source, encoder, mux, sink, NULL)) {
         std::cout<<"No s'han pogut linkar els elements! ";
     }
 
     gst_element_set_state(pipeline,GST_STATE_PLAYING);
-    std::cout<<"Reproduint fitxer d'àudio per la sortida directsoundsink";
+    std::cout<<"Gravant fitxer...";
 
     gst_object_unref(GST_OBJECT(pipeline));
 
