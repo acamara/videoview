@@ -202,6 +202,63 @@
   <variable>buildconfiguration-Debug-cleanstep0</variable>
   <valuemap type="QVariantMap">
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
+   <valuelist key="abstractProcess.Environment" type="QVariantList">
+    <value type="QString">ALLUSERSPROFILE=C:\ProgramData</value>
+    <value type="QString">APPDATA=C:\Users\Albert\AppData\Roaming</value>
+    <value type="QString">CLAM_PLUGIN_PATH=C:\Program Files (x86)\CLAM\NetworkEditor\lib\clam</value>
+    <value type="QString">COMMONPROGRAMFILES=C:\Program Files (x86)\Common Files</value>
+    <value type="QString">COMMONPROGRAMFILES(X86)=C:\Program Files (x86)\Common Files</value>
+    <value type="QString">COMMONPROGRAMW6432=C:\Program Files\Common Files</value>
+    <value type="QString">COMPUTERNAME=ALBERT-PC</value>
+    <value type="QString">COMSPEC=C:\Windows\system32\cmd.exe</value>
+    <value type="QString">CONFIGSETROOT=C:\Windows\ConfigSetRoot</value>
+    <value type="QString">DXSDK_DIR=C:\Program Files (x86)\Microsoft DirectX 9.0 SDK (Summer 2004)\</value>
+    <value type="QString">FP_NO_HOST_CHECK=NO</value>
+    <value type="QString">G++=C:\cygnus\cygwin-b20\H-i586-cygwin32\bin</value>
+    <value type="QString">HOMEDRIVE=C:</value>
+    <value type="QString">HOMEPATH=\Users\Albert</value>
+    <value type="QString">LOCALAPPDATA=C:\Users\Albert\AppData\Local</value>
+    <value type="QString">LOGONSERVER=\\ALBERT-PC</value>
+    <value type="QString">NUMBER_OF_PROCESSORS=8</value>
+    <value type="QString">OS=Windows_NT</value>
+    <value type="QString">OSSBUILD_GSTREAMER_DIR=C:\Program Files (x86)\OSSBuild\GStreamer\v0.10.6\</value>
+    <value type="QString">OSSBUILD_GSTREAMER_SDK_DIR=C:\Program Files (x86)\OSSBuild\GStreamer\v0.10.6\sdk\</value>
+    <value type="QString">PATH=C:\Qt\2010.01\mingw\bin;C:\Qt\2010.01\qt\bin;C:\Program Files (x86)\OSSBuild\GStreamer\v0.10.6\sdk\bin;C:\Program Files (x86)\OSSBuild\GStreamer\v0.10.6\bin;C:\Perl\site\bin;C:\Perl\bin;C:\Program Files\Common Files\Microsoft Shared\Windows Live;C:\Program Files (x86)\Common Files\Microsoft Shared\Windows Live;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\ATI Technologies\ATI.ACE\Core-Static;C:\Program Files\MATLAB\R2008a\bin;C:\Program Files\MATLAB\R2008a\bin\win64;C:\OpenCV2.0\bin;C:\qt\2010.01\qt\bin;C:\Program Files (x86)\Git\cmd;C:\cygnus\cygwin-b20\H-i586-cygwin32\bin;C:\Qwt-6.0.0-rc5\lib;C:\MinGW\local\bin;C:\Python26;C:\Python26\Scripts;C:\Program Files (x86)\CLAM\NetworkEditor\bin;C:\Program Files (x86)\CLAM\NetworkEditor\lib\clam;C:\Program Files\Trend Micro\AMSP;C:\Program Files (x86)\Windows Live\Shared;C:\Program Files (x86)\Common Files\Ulead Systems\MPEG;C:\Program Files (x86)\CMake 2.8\bin;C:\MinGW\bin;C:\Program Files (x86)\GnuWin32\bin;C:\Program Files (x86)\Subversion\bin;C:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\DTS\Binn\;</value>
+    <value type="QString">PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC</value>
+    <value type="QString">PROCESSOR_ARCHITECTURE=x86</value>
+    <value type="QString">PROCESSOR_ARCHITEW6432=AMD64</value>
+    <value type="QString">PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 30 Stepping 5, GenuineIntel</value>
+    <value type="QString">PROCESSOR_LEVEL=6</value>
+    <value type="QString">PROCESSOR_REVISION=1e05</value>
+    <value type="QString">PROGRAMDATA=C:\ProgramData</value>
+    <value type="QString">PROGRAMFILES=C:\Program Files (x86)</value>
+    <value type="QString">PROGRAMFILES(X86)=C:\Program Files (x86)</value>
+    <value type="QString">PROGRAMW6432=C:\Program Files</value>
+    <value type="QString">PSMODULEPATH=C:\Windows\system32\WindowsPowerShell\v1.0\Modules\</value>
+    <value type="QString">PUBLIC=C:\Users\Public</value>
+    <value type="QString">PYTHONPATH=C:\Python26</value>
+    <value type="QString">QTDIR=C:/Qt/2010.01/qt</value>
+    <value type="QString">SESSIONNAME=Console</value>
+    <value type="QString">SVN_EDITOR=C:\Windows\notepad.exe</value>
+    <value type="QString">SYSTEMDRIVE=C:</value>
+    <value type="QString">SYSTEMROOT=C:\Windows</value>
+    <value type="QString">TEMP=C:\Users\Albert\AppData\Local\Temp</value>
+    <value type="QString">TMP=C:\Users\Albert\AppData\Local\Temp</value>
+    <value type="QString">USERDOMAIN=Albert-PC</value>
+    <value type="QString">USERNAME=Albert</value>
+    <value type="QString">USERPROFILE=C:\Users\Albert</value>
+    <value type="QString">VBOX_INSTALL_PATH=C:\Program Files\Oracle\VirtualBox\</value>
+    <value type="QString">VS100COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools\</value>
+    <value type="QString">WINDIR=C:\Windows</value>
+   </valuelist>
+   <value key="abstractProcess.IgnoreReturnValue" type="bool">true</value>
+   <valuelist key="abstractProcess.arguments" type="QVariantList">
+    <value type="QString">clean</value>
+    <value type="QString">-w</value>
+   </valuelist>
+   <value key="abstractProcess.command" type="QString">C:/Qt/2010.01/mingw/bin/mingw32-make.exe</value>
+   <value key="abstractProcess.enabled" type="bool">true</value>
+   <value key="abstractProcess.workingDirectory" type="QString">D:/Users/Albert/Desktop/PFC codi/Gstreamer/VideoMixer</value>
    <value key="cleanConfig" type="bool">true</value>
    <valuelist key="makeargs" type="QVariantList">
     <value type="QString">clean</value>
