@@ -1,29 +1,33 @@
 QT += opengl
-HEADERS += renderthread.h \
-    mainwindow.h \
-    glwidget.h \
-    configdialog.h \
-    GravarThread.h \
-    pgmwidget.h
-SOURCES += renderthread.cpp \
-    mainwindow.cpp \
+HEADERS += configdialog.h \
+    mainwindow.h
+SOURCES += mainwindow.cpp \
     main.cpp \
-    glwidget.cpp \
-    configdialog.cpp \
-    GravarThread.cpp \
-    pgmwidget.cpp
+    configdialog.cpp
 FORMS += mainwindow.ui \
     configdialog.ui
 win32 { 
-    INCLUDEPATH += "C:\OpenCV2.0\include\opencv"
-    LIBS += -L"C:\OpenCV2.0\lib" \
-        -lcv200 \
-        -lcxcore200 \
-        -lhighgui200
+    INCLUDEPATH += "C:\Program Files (x86)\OSSBuild\GStreamer\v0.10.6\sdk\include" \
+                "C:\Program Files (x86)\OSSBuild\GStreamer\v0.10.6\sdk\include\gstreamer-0.10" \
+                "C:\Program Files (x86)\OSSBuild\GStreamer\v0.10.6\sdk\include\glib-2.0" \
+                "C:\Program Files (x86)\OSSBuild\GStreamer\v0.10.6\sdk\include\libxml2"
+
+    LIBS += -L"C:\Program Files (x86)\OSSBuild\GStreamer\v0.10.6\sdk\lib" \
+        -lgstreamer-0.10 \
+        -lglib-2.0\
+        -lgobject-2.0\
+        -lgstinterfaces-0.10
+
 }
 else { 
-    INCLUDEPATH += /usr/include/opencv
+    INCLUDEPATH += /usr/include \
+                   /usr/include/gstreamer-0.10 \
+                   /usr/include/glib-2.0 \
+                   /usr/include/libxml2
+
     LIBS += -L/usr/local/lib \
-        -lhighgui \
-        -lcxcore
+        -lgstreamer-0.10 \
+        -lglib-2.0\
+        -lgobject-2.0\
+        -lgstinterfaces-0.10
 }

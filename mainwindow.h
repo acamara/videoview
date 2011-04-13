@@ -1,14 +1,9 @@
-//Declaració de la clase MainWindow
+//Declaraci? de la clase MainWindow
 
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QTime>
-
-#include "glwidget.h"
-#include "pgmwidget.h"
-
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -27,15 +22,6 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-public slots: 
-    void canviacamara();
-    //-----------------------------------------------------------
-    //Mètodes de comprovació s'han de treure en el programa final
-    //-----------------------------------------------------------
-    void MostraTempsQT(int cam,double time);
-    void MostraTempscvQuery(int cam,double time);
-    //-----------------------------------------------------------
-
 protected:
     void changeEvent(QEvent *e);
     void contextMenuEvent(QContextMenuEvent *event);
@@ -44,7 +30,6 @@ protected:
 private slots:
     void on_templatesButton_clicked();
     void on_moscaButton_clicked();
-    void on_FontButton_clicked();
     void on_stopButton_2_clicked();
     void on_gravarButton_clicked();
     void on_stopButton_clicked();
@@ -78,15 +63,8 @@ private:
     QLabel *Label_cam[numwidgets];
     QLabel *Label_pgm;
 
-    //-----------------------------------------------------------
-    QLabel *TempsQthread[numwidgets];
-    QLabel *TempscvQuery[numwidgets];
-    //-----------------------------------------------------------
-
-    GLWidget *glWidget_cam[numwidgets];
-    PGMWidget *glWidget_pgm;
-
-    CvCapture *capture[numwidgets];
+    QWidget Widget_cam[numwidgets];
+    QWidget Widget_pgm;
 };
 
 #endif // MAINWINDOW_H
