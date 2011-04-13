@@ -59,17 +59,23 @@ void MainWindow::startVideo()
 {
     GMainLoop *loop;
     GstElement *pipeline;
+
+    //Elements de les fonts d'entrada
     GstElement *bin_font1, *source_1, *tee_1, *queue_1, *sink_1;
     GstElement *bin_font2, *source_2, *tee_2, *queue_2, *sink_2;
-    GstElement *bin_pgm, *queue_12, *queue_22, *videomixer, *sink_pgm;
+    
+    //Elementa de sortida
+    GstElement *bin_pgm, *queue_12, *queue_22, *videomixer, *tee_pgm, *sink_pgm;
+    GstElement *queue_pgm, *queue_fitxer, *encoder, *mux, *conv, *sink_fitxer;
+    
     GstBus *bus;
 
     /* Initialisation */
     gst_init (NULL, NULL);
     loop = g_main_loop_new (NULL, FALSE);
 
-    /* Create gstreamer elements */
-    pipeline = gst_pipeline_new ("video-player");
+    /* Creació dels elements gstreamer*/
+    pipeline = gst_pipeline_new ("video-mixer");
 
     bin_font1 = gst_bin_new ("bin_font1");
     bin_font2 = gst_bin_new ("bin_font2");
@@ -93,6 +99,15 @@ void MainWindow::startVideo()
 
     videomixer = gst_element_factory_make("videomixer", "video-mixer");
 
+    tee_pgm = gst_element_factory_make ("tee", "tee-pgm");
+    queue_pgm = gst_element_factory_make("queue", "thread-pgm");
+    queue_fitxer = gst_element_factory_make("queue", "thread-fitxersortida");
+
+    encoder = gst_element_factory_make ("theoraenc", "video-encoder");
+    mux = gst_element_factory_make ("oggmux", "ogg-mux");
+    conv = gst_element_factory_make ("ffmpegcolorspace","color-converter");
+    sink_fitxer = gst_element_factory_make ("filesink", "file-output");
+
     g_object_set (G_OBJECT (source_2), "pattern", 1 , NULL);
 
     gst_element_set_state(sink_1, GST_STATE_READY);
@@ -101,11 +116,15 @@ void MainWindow::startVideo()
 
 
     if (!pipeline || !bin_font1 || !source_1 || !tee_1 || !queue_1 || !sink_1 ||
-                     !bin_font2 || !source_2 || !tee_2 || !queue_2 || !sink_2
-                     || !queue_12 || !queue_22 || !videomixer || !sink_pgm) {
+                     !bin_font2 || !source_2 || !tee_2 || !queue_2 || !sink_2 ||
+                     !queue_12 || !queue_22 || !videomixer || !tee_pgm ||
+                     !queue_pgm || !sink_pgm ||
+                     !queue_fitxer || !conv || !encoder || !mux || !sink_fitxer) {
         g_printerr ("One element could not be created. Exiting.\n");
     //return -1;
     }
+
+    g_object_set (G_OBJECT(sink_fitxer), "location", "sortida.ogg", NULL);
 
     /* we add a message handler */
     bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
@@ -115,10 +134,13 @@ void MainWindow::startVideo()
     /* we add all elements into the pipeline */
     /* test-source | tee | queue | video-output
        test-source | tee | queue | video-output
-                           queue | video-mixer | video-output */
+                           queue | video-mixer | tee | queue | video-output
+                                                             | conv | encoder | mux | sink*/
+
     gst_bin_add_many (GST_BIN (bin_font1), source_1, tee_1, queue_1, queue_12, sink_1, NULL);
     gst_bin_add_many (GST_BIN (bin_font2), source_2, tee_2, queue_2, queue_22, sink_2, NULL);
-    gst_bin_add_many (GST_BIN (bin_pgm),videomixer,sink_pgm, NULL);
+    gst_bin_add_many (GST_BIN (bin_pgm),videomixer, tee_pgm, queue_fitxer, queue_pgm,
+                      sink_pgm, conv, encoder, mux, sink_fitxer, NULL);
 
     /* add the bin to the pipeline */
     gst_bin_add_many (GST_BIN (pipeline), bin_font1, bin_font2, bin_pgm, NULL);
@@ -129,7 +151,9 @@ void MainWindow::startVideo()
     gst_element_link_many (source_2, tee_2, queue_2, sink_2, NULL);
     gst_element_link_many (tee_1, queue_12, videomixer, NULL);
     gst_element_link_many (tee_2, queue_22, videomixer, NULL);
-    gst_element_link_many (videomixer, sink_pgm, NULL);
+    gst_element_link_many (videomixer, tee_pgm, NULL);
+    gst_element_link_many (tee_pgm, queue_pgm, sink_pgm, NULL);
+    gst_element_link_many (tee_pgm, queue_fitxer, conv, encoder, mux, sink_fitxer, NULL);
 
     /* Set the pipeline to "playing" state*/
     g_print ("Now playing: %s\n","Mixer example");
@@ -142,10 +166,10 @@ void MainWindow::startVideo()
     //---------------------------------------------------------------
     //No acaba de funciona però això en principi hauria de servir per veure el video en el widget
     //---------------------------------------------------------------
-    gst_x_overlay_set_xwindow_id(GST_X_OVERLAY (sink_1),gulong(ui->widget->winId()));
-    gst_x_overlay_set_xwindow_id(GST_X_OVERLAY (sink_2),gulong(ui->widget_2->winId()));
-    gst_x_overlay_set_xwindow_id(GST_X_OVERLAY (sink_pgm),gulong(ui->widget_3->winId()));
-    QApplication::syncX();
+    //gst_x_overlay_set_xwindow_id(GST_X_OVERLAY (sink_1),gulong(ui->widget->winId()));
+    //gst_x_overlay_set_xwindow_id(GST_X_OVERLAY (sink_2),gulong(ui->widget_2->winId()));
+    //gst_x_overlay_set_xwindow_id(GST_X_OVERLAY (sink_pgm),gulong(ui->widget_3->winId()));
+    //QApplication::syncX();
     //---------------------------------------------------------------*/
 
     /* Iterate */
