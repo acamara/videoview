@@ -161,15 +161,16 @@ void MainWindow::startVideo()
 
     //---------------------------------------------------------------
     //Una cosa similar a això hauria de permetre fer el MIX
-    g_object_set (G_OBJECT (videomixer), "sink_0::alpha", 0 , NULL);
+    GstPad *mixerpad=gst_element_get_pad(videomixer,"sink_1");
+    g_object_set (G_OBJECT(mixerpad), "alpha",0,NULL);
 
-    //---------------------------------------------------------------
+    /*---------------------------------------------------------------
     //No acaba de funciona però això en principi hauria de servir per veure el video en el widget
     //---------------------------------------------------------------
-    //gst_x_overlay_set_xwindow_id(GST_X_OVERLAY (sink_1),gulong(ui->widget->winId()));
-    //gst_x_overlay_set_xwindow_id(GST_X_OVERLAY (sink_2),gulong(ui->widget_2->winId()));
-    //gst_x_overlay_set_xwindow_id(GST_X_OVERLAY (sink_pgm),gulong(ui->widget_3->winId()));
-    //QApplication::syncX();
+    gst_x_overlay_set_xwindow_id(GST_X_OVERLAY (sink_1),gulong(ui->widget->winId()));
+    gst_x_overlay_set_xwindow_id(GST_X_OVERLAY (sink_2),gulong(ui->widget_2->winId()));
+    gst_x_overlay_set_xwindow_id(GST_X_OVERLAY (sink_pgm),gulong(ui->widget_3->winId()));
+    QApplication::syncX();
     //---------------------------------------------------------------*/
 
     /* Iterate */
@@ -187,4 +188,3 @@ void MainWindow::stopVideo()
 {
 
 }
-
