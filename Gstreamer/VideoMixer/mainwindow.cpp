@@ -75,12 +75,12 @@ void MainWindow::startVideo()
     //Elements de les fonts d'entrada
     GstElement *bin_font1, *source_1, *tee_1, *queue_1, *sink_1;
     GstElement *bin_font2, *source_2, *tee_2, *queue_2, *sink_2;
-    GstElement *bin_font3, *source_3, *demuxer, *queue_audio_3, *queue_video_3;
-    GstElement *decoder_audio, *decoder_video, *conv_audio, *conv_video, *sink_audio_3, *sink_video_3;
+    GstElement *bin_font3, *source_3, *demuxer, *queue_audio_3, *queue_video_3, *decoder_audio, *decoder_video;
+    GstElement *conv_audio, *conv_video, *tee_3, *queue_3, *sink_audio_3, *sink_3;
     
     //Elementa de sortida
-    GstElement *bin_pgm, *queue_12, *queue_22, *videomixer, *tee_pgm, *sink_pgm;
-    GstElement *queue_pgm, *queue_fitxer, *encoder, *mux, *conv, *sink_fitxer;
+    GstElement *bin_pgm, *queue_12, *queue_22, *queue_32, *videomixer, *tee_pgm, *queue_pgm, *sink_pgm;
+    GstElement *queue_fitxer, *conv, *encoder, *mux, *sink_fitxer;
     
     GstBus *bus;
 
@@ -108,16 +108,19 @@ void MainWindow::startVideo()
     conv_audio = gst_element_factory_make ("audioconvert", "audio-converter");
     conv_video = gst_element_factory_make ("ffmpegcolorspace","video-converter");
     sink_audio_3 = gst_element_factory_make ("autoaudiosink", "audio-output");
-    sink_video_3 = gst_element_factory_make("directdrawsink", "sink");
+    sink_3 = gst_element_factory_make("directdrawsink", "sink");
 
     tee_1 = gst_element_factory_make ("tee", "tee-source1");
     tee_2 = gst_element_factory_make ("tee", "tee-source2");
+    tee_3 = gst_element_factory_make ("tee", "tee-source3");
 
     queue_1 = gst_element_factory_make("queue", "thread-video1");
     queue_2 = gst_element_factory_make("queue", "thread-video2");
+    queue_3 = gst_element_factory_make("queue", "thread-video3");
 
     queue_12 = gst_element_factory_make("queue", "thread-video12");
     queue_22 = gst_element_factory_make("queue", "thread-video22");
+    queue_32 = gst_element_factory_make("queue", "thread-video32");
 
     sink_1 = gst_element_factory_make ("directdrawsink", "sink1");
     sink_2 = gst_element_factory_make("directdrawsink", "sink2");
@@ -137,18 +140,18 @@ void MainWindow::startVideo()
     /*Comprovem que s'han pogut crear tots els elements */
     if (!pipeline || !bin_font1 || !source_1 || !tee_1 || !queue_1 || !sink_1 ||
                      !bin_font2 || !source_2 || !tee_2 || !queue_2 || !sink_2 ||
-                     !queue_12 || !queue_22 || !videomixer || !tee_pgm ||
+                     !queue_12 || !queue_22 || !queue_32 || !videomixer || !tee_pgm ||
                      !queue_pgm || !sink_pgm ||
                      !queue_fitxer || !conv || !encoder || !mux || !sink_fitxer ||
                      !bin_font3 || !source_3 || !demuxer || !queue_audio_3 ||
-                     !decoder_audio || !conv_audio || !conv_video || !sink_audio_3 ||
-                     !queue_video_3 || !decoder_video || !sink_video_3) {
+                     !decoder_audio || !conv_audio || !conv_video || !tee_3 || !queue_3|| !sink_audio_3 ||
+                     !queue_video_3 || !decoder_video || !sink_3) {
         g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
     //return -1;
     }
 
     /*Canvi de les propietats d'alguns elements */
-    g_object_set (G_OBJECT (source_2), "pattern", 1 , NULL);
+    g_object_set (G_OBJECT (source_2), "pattern", 15 , NULL);
     g_object_set (G_OBJECT (source_3), "location","video.ogg", NULL);
     g_object_set (G_OBJECT (videomixer), "background", 1 , NULL);
     g_object_set (G_OBJECT(sink_fitxer), "location", "sortida.ogg", NULL);
@@ -156,7 +159,7 @@ void MainWindow::startVideo()
     /*Establim a ready l'estat dels element de sortida */
     gst_element_set_state(sink_1, GST_STATE_READY);
     gst_element_set_state(sink_2, GST_STATE_READY);
-    gst_element_set_state(sink_video_3, GST_STATE_READY);
+    gst_element_set_state(sink_3, GST_STATE_READY);
     gst_element_set_state(sink_pgm, GST_STATE_READY);
 
 
@@ -177,9 +180,11 @@ void MainWindow::startVideo()
                       sink_pgm, conv, encoder, mux, sink_fitxer, NULL);
 
     /* file-source | ogg-demuxer | queue | vorbis-decoder | audio-converter | audio-output
-                                   queue | theora-decoder | video-converter | video-output */
-    gst_bin_add_many (GST_BIN (bin_font3),source_3, demuxer, queue_audio_3, decoder_audio, conv_audio, sink_audio_3,
-                                                          queue_video_3, decoder_video, conv_video, sink_video_3, NULL);
+                                   queue | theora-decoder | video-converter | tee | queue | video-output
+                                                                                    queue | videomixer */
+    gst_bin_add_many (GST_BIN (bin_font3),source_3, demuxer,
+                      queue_audio_3, decoder_audio, conv_audio, sink_audio_3,
+                      queue_video_3, decoder_video, conv_video, tee_3, queue_3, queue_32, sink_3, NULL);
 
     /* Afegim els bin al pipeline */
     gst_bin_add_many (GST_BIN (pipeline), bin_font1, bin_font2, bin_font3, bin_pgm, NULL);
@@ -188,7 +193,7 @@ void MainWindow::startVideo()
     /* source_1 -> tee_1 -> queue_1 -> sink_1
        source_2 -> tee_2 -> queue_2 -> sink_2
                             queue -> video-mixer -> tee -> queue -> video-output
-                                                                -> conv -> encoder -> mux -> sink*/
+                                                                 -> conv -> encoder -> mux -> sink*/
     gst_element_link_many (source_1, tee_1, queue_1, sink_1, NULL);
     gst_element_link_many (source_2, tee_2, queue_2, sink_2, NULL);
     gst_element_link_many (tee_1, queue_12, videomixer, NULL);
@@ -197,10 +202,13 @@ void MainWindow::startVideo()
     gst_element_link_many (tee_pgm, queue_pgm, sink_pgm, NULL);
     gst_element_link_many (tee_pgm, queue_fitxer, conv, encoder, mux, sink_fitxer, NULL);
 
-    /* file-source -> ogg-demuxer ~> vorbis-decoder -> converter -> audio-output */
+    /* file-source -> ogg-demuxer ~> queue -> vorbis-decoder -> converter -> audio-output
+                                  ~> queue -> theora-decoder -> converter -> tee -> queue -> video-output*/
     gst_element_link (source_3, demuxer);
     gst_element_link_many (queue_audio_3, decoder_audio, conv_audio, sink_audio_3, NULL);
-    gst_element_link_many (queue_video_3, decoder_video, conv_video, sink_video_3, NULL);
+    gst_element_link_many (queue_video_3, decoder_video, conv_video, tee_3, NULL);
+    gst_element_link_many (tee_3, queue_3, sink_3, NULL);
+    gst_element_link_many (tee_3, queue_32, videomixer, NULL);
     g_signal_connect (demuxer, "pad-added", G_CALLBACK (on_pad_added), queue_audio_3);
     g_signal_connect (demuxer, "pad-added", G_CALLBACK (on_pad_added), queue_video_3);
 
@@ -211,6 +219,8 @@ void MainWindow::startVideo()
     //---------------------------------------------------------------
     //Una cosa similar a això hauria de permetre fer el MIX
     GstPad *mixerpad=gst_element_get_pad(videomixer,"sink_1");
+    g_object_set (G_OBJECT(mixerpad), "alpha",0,NULL);
+    mixerpad=gst_element_get_pad(videomixer,"sink_2");
     g_object_set (G_OBJECT(mixerpad), "alpha",0,NULL);
 
     /*---------------------------------------------------------------
