@@ -36,7 +36,7 @@ static gboolean bus_call (GstBus *bus,GstMessage *msg,gpointer data)
     GMainLoop *loop = (GMainLoop *) data;
     switch (GST_MESSAGE_TYPE (msg)) {
         case GST_MESSAGE_EOS:
-            g_print ("End of stream\n");
+            g_print ("Final del stream\n");
             g_main_loop_quit (loop);
         break;
         case GST_MESSAGE_ERROR: {
@@ -55,6 +55,18 @@ static gboolean bus_call (GstBus *bus,GstMessage *msg,gpointer data)
     return TRUE;
 }
 
+static void on_pad_added (GstElement *element,GstPad *pad,gpointer data)
+{
+    GstPad *sinkpad;
+    GstElement *decoder = (GstElement *) data;
+
+    /* We can now link this pad with the vorbis-decoder sink pad */
+    g_print ("Dynamic pad created, linking demuxer/decoder\n");
+    sinkpad = gst_element_get_static_pad (decoder, "sink");
+    gst_pad_link (pad, sinkpad);
+    gst_object_unref (sinkpad);
+}
+
 void MainWindow::startVideo()
 {
     GMainLoop *loop;
@@ -63,6 +75,8 @@ void MainWindow::startVideo()
     //Elements de les fonts d'entrada
     GstElement *bin_font1, *source_1, *tee_1, *queue_1, *sink_1;
     GstElement *bin_font2, *source_2, *tee_2, *queue_2, *sink_2;
+    GstElement *bin_font3, *source_3, *demuxer, *queue_audio_3, *queue_video_3;
+    GstElement *decoder_audio, *decoder_video, *conv_audio, *conv_video, *sink_audio_3, *sink_video_3;
     
     //Elementa de sortida
     GstElement *bin_pgm, *queue_12, *queue_22, *videomixer, *tee_pgm, *sink_pgm;
@@ -70,7 +84,7 @@ void MainWindow::startVideo()
     
     GstBus *bus;
 
-    /* Initialisation */
+    /* Inicialització */
     gst_init (NULL, NULL);
     loop = g_main_loop_new (NULL, FALSE);
 
@@ -79,10 +93,22 @@ void MainWindow::startVideo()
 
     bin_font1 = gst_bin_new ("bin_font1");
     bin_font2 = gst_bin_new ("bin_font2");
+    bin_font3 = gst_bin_new ("bin_font3");
     bin_pgm = gst_bin_new ("bin_pgm");
 
     source_1 = gst_element_factory_make ("videotestsrc", "test-source1");
     source_2 = gst_element_factory_make ("videotestsrc", "test-source2");
+    source_3 = gst_element_factory_make ("filesrc", "file-source3");
+
+    demuxer = gst_element_factory_make ("oggdemux", "ogg-demuxer");
+    queue_audio_3 = gst_element_factory_make("queue", "thread-audio");
+    queue_video_3 = gst_element_factory_make("queue", "thread-video");
+    decoder_audio = gst_element_factory_make ("vorbisdec", "vorbis-decoder");
+    decoder_video = gst_element_factory_make ("theoradec", "theora-decoder");
+    conv_audio = gst_element_factory_make ("audioconvert", "audio-converter");
+    conv_video = gst_element_factory_make ("ffmpegcolorspace","video-converter");
+    sink_audio_3 = gst_element_factory_make ("autoaudiosink", "audio-output");
+    sink_video_3 = gst_element_factory_make("directdrawsink", "sink");
 
     tee_1 = gst_element_factory_make ("tee", "tee-source1");
     tee_2 = gst_element_factory_make ("tee", "tee-source2");
@@ -108,30 +134,38 @@ void MainWindow::startVideo()
     conv = gst_element_factory_make ("ffmpegcolorspace","color-converter");
     sink_fitxer = gst_element_factory_make ("filesink", "file-output");
 
-    g_object_set (G_OBJECT (source_2), "pattern", 1 , NULL);
-
-    gst_element_set_state(sink_1, GST_STATE_READY);
-    gst_element_set_state(sink_2, GST_STATE_READY);
-    gst_element_set_state(sink_pgm, GST_STATE_READY);
-
-
+    /*Comprovem que s'han pogut crear tots els elements */
     if (!pipeline || !bin_font1 || !source_1 || !tee_1 || !queue_1 || !sink_1 ||
                      !bin_font2 || !source_2 || !tee_2 || !queue_2 || !sink_2 ||
                      !queue_12 || !queue_22 || !videomixer || !tee_pgm ||
                      !queue_pgm || !sink_pgm ||
-                     !queue_fitxer || !conv || !encoder || !mux || !sink_fitxer) {
-        g_printerr ("One element could not be created. Exiting.\n");
+                     !queue_fitxer || !conv || !encoder || !mux || !sink_fitxer ||
+                     !bin_font3 || !source_3 || !demuxer || !queue_audio_3 ||
+                     !decoder_audio || !conv_audio || !conv_video || !sink_audio_3 ||
+                     !queue_video_3 || !decoder_video || !sink_video_3) {
+        g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
     //return -1;
     }
 
+    /*Canvi de les propietats d'alguns elements */
+    g_object_set (G_OBJECT (source_2), "pattern", 1 , NULL);
+    g_object_set (G_OBJECT (source_3), "location","video.ogg", NULL);
+    g_object_set (G_OBJECT (videomixer), "background", 1 , NULL);
     g_object_set (G_OBJECT(sink_fitxer), "location", "sortida.ogg", NULL);
 
-    /* we add a message handler */
+    /*Establim a ready l'estat dels element de sortida */
+    gst_element_set_state(sink_1, GST_STATE_READY);
+    gst_element_set_state(sink_2, GST_STATE_READY);
+    gst_element_set_state(sink_video_3, GST_STATE_READY);
+    gst_element_set_state(sink_pgm, GST_STATE_READY);
+
+
+    /* Afegim un controlador de missatges */
     bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
     gst_bus_add_watch (bus, bus_call, loop);
     gst_object_unref (bus);
 
-    /* we add all elements into the pipeline */
+    /* Afegim tots els elements al bin corresponent */
     /* test-source | tee | queue | video-output
        test-source | tee | queue | video-output
                            queue | video-mixer | tee | queue | video-output
@@ -142,11 +176,19 @@ void MainWindow::startVideo()
     gst_bin_add_many (GST_BIN (bin_pgm),videomixer, tee_pgm, queue_fitxer, queue_pgm,
                       sink_pgm, conv, encoder, mux, sink_fitxer, NULL);
 
-    /* add the bin to the pipeline */
-    gst_bin_add_many (GST_BIN (pipeline), bin_font1, bin_font2, bin_pgm, NULL);
+    /* file-source | ogg-demuxer | queue | vorbis-decoder | audio-converter | audio-output
+                                   queue | theora-decoder | video-converter | video-output */
+    gst_bin_add_many (GST_BIN (bin_font3),source_3, demuxer, queue_audio_3, decoder_audio, conv_audio, sink_audio_3,
+                                                          queue_video_3, decoder_video, conv_video, sink_video_3, NULL);
 
-    /* we link the elements together */
-    /* test-source -> tee -> queue -> video-output */
+    /* Afegim els bin al pipeline */
+    gst_bin_add_many (GST_BIN (pipeline), bin_font1, bin_font2, bin_font3, bin_pgm, NULL);
+
+    /* Linkem els elements entre ells */
+    /* source_1 -> tee_1 -> queue_1 -> sink_1
+       source_2 -> tee_2 -> queue_2 -> sink_2
+                            queue -> video-mixer -> tee -> queue -> video-output
+                                                                -> conv -> encoder -> mux -> sink*/
     gst_element_link_many (source_1, tee_1, queue_1, sink_1, NULL);
     gst_element_link_many (source_2, tee_2, queue_2, sink_2, NULL);
     gst_element_link_many (tee_1, queue_12, videomixer, NULL);
@@ -155,7 +197,14 @@ void MainWindow::startVideo()
     gst_element_link_many (tee_pgm, queue_pgm, sink_pgm, NULL);
     gst_element_link_many (tee_pgm, queue_fitxer, conv, encoder, mux, sink_fitxer, NULL);
 
-    /* Set the pipeline to "playing" state*/
+    /* file-source -> ogg-demuxer ~> vorbis-decoder -> converter -> audio-output */
+    gst_element_link (source_3, demuxer);
+    gst_element_link_many (queue_audio_3, decoder_audio, conv_audio, sink_audio_3, NULL);
+    gst_element_link_many (queue_video_3, decoder_video, conv_video, sink_video_3, NULL);
+    g_signal_connect (demuxer, "pad-added", G_CALLBACK (on_pad_added), queue_audio_3);
+    g_signal_connect (demuxer, "pad-added", G_CALLBACK (on_pad_added), queue_video_3);
+
+    /* Canviem l'estat del pipeline a "playing" */
     g_print ("Now playing: %s\n","Mixer example");
     gst_element_set_state (pipeline, GST_STATE_PLAYING);
 
@@ -173,7 +222,7 @@ void MainWindow::startVideo()
     QApplication::syncX();
     //---------------------------------------------------------------*/
 
-    /* Iterate */
+    /* Iterem */
     g_print ("Running...\n");
     g_main_loop_run (loop);
 
