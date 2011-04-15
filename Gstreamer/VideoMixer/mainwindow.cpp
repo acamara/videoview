@@ -108,7 +108,7 @@ void MainWindow::startVideo()
     conv_audio = gst_element_factory_make ("audioconvert", "audio-converter");
     conv_video = gst_element_factory_make ("ffmpegcolorspace","video-converter");
     sink_audio_3 = gst_element_factory_make ("autoaudiosink", "audio-output");
-    sink_3 = gst_element_factory_make("directdrawsink", "sink");
+    sink_3 = gst_element_factory_make("xvimagesink", "sink");
 
     tee_1 = gst_element_factory_make ("tee", "tee-source1");
     tee_2 = gst_element_factory_make ("tee", "tee-source2");
@@ -122,9 +122,9 @@ void MainWindow::startVideo()
     queue_22 = gst_element_factory_make("queue", "thread-video22");
     queue_32 = gst_element_factory_make("queue", "thread-video32");
 
-    sink_1 = gst_element_factory_make ("directdrawsink", "sink1");
-    sink_2 = gst_element_factory_make("directdrawsink", "sink2");
-    sink_pgm = gst_element_factory_make("directdrawsink", "sinkpgm");
+    sink_1 = gst_element_factory_make ("xvimagesink", "sink1");
+    sink_2 = gst_element_factory_make("xvimagesink", "sink2");
+    sink_pgm = gst_element_factory_make("xvimagesink", "sinkpgm");
 
     videomixer = gst_element_factory_make("videomixer", "video-mixer");
 
@@ -177,7 +177,7 @@ void MainWindow::startVideo()
     gst_bin_add_many (GST_BIN (bin_font1), source_1, tee_1, queue_1, queue_12, sink_1, NULL);
     gst_bin_add_many (GST_BIN (bin_font2), source_2, tee_2, queue_2, queue_22, sink_2, NULL);
     gst_bin_add_many (GST_BIN (bin_pgm),videomixer, tee_pgm, queue_fitxer, queue_pgm,
-                      sink_pgm, conv, encoder, mux, sink_fitxer, NULL);
+                      sink_pgm, encoder, mux, sink_fitxer, NULL);
 
     /* file-source | ogg-demuxer | queue | vorbis-decoder | audio-converter | audio-output
                                    queue | theora-decoder | video-converter | tee | queue | video-output
@@ -200,7 +200,7 @@ void MainWindow::startVideo()
     gst_element_link_many (tee_2, queue_22, videomixer, NULL);
     gst_element_link_many (videomixer, tee_pgm, NULL);
     gst_element_link_many (tee_pgm, queue_pgm, sink_pgm, NULL);
-    gst_element_link_many (tee_pgm, queue_fitxer, conv, encoder, mux, sink_fitxer, NULL);
+    gst_element_link_many (tee_pgm, queue_fitxer, encoder, mux, sink_fitxer, NULL);
 
     /* file-source -> ogg-demuxer ~> queue -> vorbis-decoder -> converter -> audio-output
                                   ~> queue -> theora-decoder -> converter -> tee -> queue -> video-output*/
