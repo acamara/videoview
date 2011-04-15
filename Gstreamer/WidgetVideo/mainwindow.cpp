@@ -5,6 +5,8 @@
 #include <glib.h>
 #include <gst/interfaces/xoverlay.h>
 
+#include <QFileDialog>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -81,6 +83,7 @@ void MainWindow::startVideo()
     /* Create gstreamer elements */
     pipeline = gst_pipeline_new ("video-player");
     source = gst_element_factory_make ("filesrc", "file-source");
+
     demuxer = gst_element_factory_make ("oggdemux", "avi-demuxer");
     queue_audio = gst_element_factory_make("queue", "thread-audio");
     queue_video = gst_element_factory_make("queue", "thread-video");
@@ -89,7 +92,7 @@ void MainWindow::startVideo()
     conv_audio = gst_element_factory_make ("audioconvert", "audio-converter");
     conv_video = gst_element_factory_make ("ffmpegcolorspace", "video-converter");
     sink_audio = gst_element_factory_make ("autoaudiosink", "audio-output");
-    sink_video = gst_element_factory_make("directdrawsink", "sink");
+    sink_video = gst_element_factory_make("xvimagesink", "sink");
 
     gst_element_set_state(sink_video, GST_STATE_READY);
 
@@ -102,7 +105,9 @@ void MainWindow::startVideo()
     /* Set up the pipeline */
     /* we set the input filename to the source element */
 
-    g_object_set (G_OBJECT (source), "location","mpeg2video.ogg", NULL);
+    QString nom_fitxer = QFileDialog::getOpenFileName();
+    const char *c_nom_fitxer = nom_fitxer.toStdString().c_str();
+    g_object_set (G_OBJECT (source), "location", c_nom_fitxer, NULL);
 
     /* we add a message handler */
     bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
