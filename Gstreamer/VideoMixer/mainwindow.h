@@ -20,6 +20,7 @@ private:
     Ui::MainWindow *ui;
 
 private slots:
+    void on_verticalSlider_valueChanged(int value);
     void startVideo();
     void stopVideo();
 };
