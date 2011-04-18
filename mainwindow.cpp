@@ -61,7 +61,7 @@ void MainWindow::creainterficie()
         Label_cam[k]->setFont(QFont("arial", 10, QFont::Bold));
         Label_cam[k]->setStyleSheet("background-color: rgb(255, 255, 255)");
 
-        widget_cam[k] = new QWidget;
+        widget_cam[k] = new QWidget(ui->centralWidget,0);
         widget_cam[k]->setStyleSheet("background-color: rgb(0,0,0)");
     }
 
@@ -70,7 +70,7 @@ void MainWindow::creainterficie()
 
     ui->gridLayout->addWidget(Label_pgm,1,3);
 
-    widget_pgm = new QWidget;
+    widget_pgm = new QWidget(ui->centralWidget,0);
     widget_pgm->setStyleSheet("background-color: rgb(0, 0, 0)");
 
     ui->verticalLayout_PGM->addWidget(widget_pgm);
@@ -192,11 +192,10 @@ void MainWindow::createMenus()
 //Mètode que controla el botó capturar
 void MainWindow::on_adquirirButton_clicked()
 {
-    loop = g_main_loop_new (NULL, FALSE);
-
-    /* Creaci dels elements gstreamer*/
+    /* Creacio dels elements gstreamer*/
     pipeline = gst_pipeline_new ("video-mixer");
 
+    //Elements de font d'entrada
     QString bin("bin_font%1"), source("test-source%1"), tee("tee_source%1"), queue("thread_video%1");
     QString queue_m("thread_mix%1"),sink("sink_font%1");
 
@@ -208,30 +207,55 @@ void MainWindow::on_adquirirButton_clicked()
         queue_mix[k] = gst_element_factory_make("queue", (char*)queue_m.arg(k).toStdString().c_str());
         sink_[k] = gst_element_factory_make ("xvimagesink", (char*)sink.arg(k).toStdString().c_str());
 
-        /*Comprovem que s'han pogut crear tots els elements */
+        /*Comprovem que s'han pogut crear tots els elements d'entrada*/
         if(!bin_font[k] || !source_[k] || !tee_[k] || !queue_[k] || !queue_mix[k] || !sink_[k]){
           g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
         }
 
-        /* Afegim tots els elements al bin corresponent */
+        /* Afegim tots els elements al bin_font corresponent */
         gst_bin_add_many (GST_BIN (bin_font[k]), source_[k], tee_[k], queue_[k], queue_mix[k], sink_[k], NULL);
 
-        /* Afegim els bin al pipeline */
+        /* Afegim els bin_font al pipeline */
         gst_bin_add (GST_BIN (pipeline), bin_font[k]);
     }
 
+    //Elements de mix i PGM
+    bin_pgm = gst_bin_new ("bin_pgm");
+
+    videomixer = gst_element_factory_make("videomixer", "video-mixer");
+
+    tee_pgm = gst_element_factory_make ("tee", "tee-pgm");
+    queue_pgm = gst_element_factory_make("queue", "thread-pgm");
+    sink_pgm = gst_element_factory_make("xvimagesink", "sinkpgm");
+
+    /*Comprovem que s'han pogut crear tots els elements */
+    if (!pipeline || !videomixer || !tee_pgm || !queue_pgm || !sink_pgm) {
+        g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
+    }
+
+    /*Canvi de les propietats d'alguns elements */
+    g_object_set (G_OBJECT (source_[0]), "pattern", 15 , NULL);
+
+    g_object_set (G_OBJECT (videomixer), "background", 1 , NULL);
 
 
+    /* Afegim tots els elements al bin_pgm corresponent */
+    gst_bin_add_many (GST_BIN (bin_pgm), videomixer, tee_pgm, queue_pgm, sink_pgm, NULL);
 
-    /* Linkem els elements entre ells */
+    /* Afegim el bin_pgm al pipeline */
+    gst_bin_add (GST_BIN (pipeline),bin_pgm);
+
+    /* Linkem els elements d'entrada entre ells */
     /* source_1 -> tee_1 -> queue_1 -> sink_1
        source_2 -> tee_2 -> queue_2 -> sink_2
                             queue -> video-mixer -> tee -> queue -> video-output
                                                                  -> conv -> encoder -> mux -> sink*/
     for (int k = 0; k < numcam; k++) {
         gst_element_link_many (source_[k], tee_[k], queue_[k], sink_[k], NULL);
-        //gst_element_link_many (tee_[k], queue_mix[k], videomixer, NULL);
+        gst_element_link_many (tee_[k], queue_mix[k], videomixer, NULL);
     }
+    gst_element_link(videomixer,tee_pgm);
+    gst_element_link_many (tee_pgm, queue_pgm, sink_pgm, NULL);
 
     /* Canviem l'estat del pipeline a "playing" */
     g_print ("Now playing: %s\n","Mixer example");
@@ -244,12 +268,8 @@ void MainWindow::on_adquirirButton_clicked()
         gst_x_overlay_set_xwindow_id(GST_X_OVERLAY (sink_[k]),gulong(widget_cam[k]->winId()));
         QApplication::syncX();
     }
+    gst_x_overlay_set_xwindow_id(GST_X_OVERLAY (sink_pgm),gulong(widget_pgm->winId()));
     //---------------------------------------------------------------*/
-
-    /* Iterem */
-    g_print ("Running...\n");
-    g_main_loop_run (loop);
-
  }
 
  //Mètode que controla el botó stop

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>729</width>
-    <height>557</height>
+    <width>758</width>
+    <height>602</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -227,7 +227,7 @@
       <item row="4" column="3">
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="tab">
          <attribute name="title">
@@ -244,7 +244,7 @@
             <x>10</x>
             <y>10</y>
             <width>146</width>
-            <height>43</height>
+            <height>54</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -349,7 +349,7 @@
             <rect>
              <x>10</x>
              <y>20</y>
-             <width>75</width>
+             <width>91</width>
              <height>23</height>
             </rect>
            </property>
@@ -363,7 +363,7 @@
              <x>10</x>
              <y>50</y>
              <width>146</width>
-             <height>43</height>
+             <height>51</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -413,7 +413,7 @@
           <widget class="QCheckBox" name="checkBox_3">
            <property name="geometry">
             <rect>
-             <x>130</x>
+             <x>120</x>
              <y>20</y>
              <width>70</width>
              <height>17</height>
@@ -454,7 +454,7 @@
             <rect>
              <x>10</x>
              <y>20</y>
-             <width>75</width>
+             <width>91</width>
              <height>23</height>
             </rect>
            </property>
@@ -468,7 +468,7 @@
              <x>10</x>
              <y>50</y>
              <width>146</width>
-             <height>43</height>
+             <height>51</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -564,8 +564,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>729</width>
-     <height>21</height>
+     <width>758</width>
+     <height>25</height>
     </rect>
    </property>
   </widget>

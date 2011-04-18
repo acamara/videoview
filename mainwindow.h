@@ -90,8 +90,6 @@ private:
 
     GstElement  *videomixer;
     GstElement  *pipeline;
-    GstBus *bus;
-    GMainLoop *loop;
 };
 
 #endif // MAINWINDOW_H
