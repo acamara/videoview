@@ -1,4 +1,3 @@
-QT += opengl
 HEADERS += configdialog.h \
     mainwindow.h
 SOURCES += mainwindow.cpp \
@@ -6,7 +5,8 @@ SOURCES += mainwindow.cpp \
     configdialog.cpp
 FORMS += mainwindow.ui \
     configdialog.ui
-win32 { 
+
+win32 {
     INCLUDEPATH += "C:\Program Files (x86)\OSSBuild\GStreamer\v0.10.6\sdk\include" \
                 "C:\Program Files (x86)\OSSBuild\GStreamer\v0.10.6\sdk\include\gstreamer-0.10" \
                 "C:\Program Files (x86)\OSSBuild\GStreamer\v0.10.6\sdk\include\glib-2.0" \
@@ -19,10 +19,11 @@ win32 {
         -lgstinterfaces-0.10
 
 }
-else { 
+else {
     INCLUDEPATH += /usr/include \
                    /usr/include/gstreamer-0.10 \
                    /usr/include/glib-2.0 \
+                   /usr/lib/glib-2.0/include \
                    /usr/include/libxml2
 
     LIBS += -L/usr/local/lib \
