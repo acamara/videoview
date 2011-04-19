@@ -41,6 +41,9 @@ private slots:
     void newFile();
     void about();
     void aboutQt();
+    void Entrada_test(int k);
+    void Entrada_camera(int k);
+
 
 private:
     Ui::MainWindow *ui;

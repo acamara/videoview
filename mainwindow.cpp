@@ -1,4 +1,4 @@
-//Implementaci√≥ de la clase MainWindow
+//ImplementaciÛ de la clase MainWindow
 
 #include <QtGui>
 
@@ -32,7 +32,8 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::closeEvent(QCloseEvent *) {
-
+    on_stopButton_clicked();
+    finishCameras();
 }
 
 void MainWindow::changeEvent(QEvent *e)
@@ -47,11 +48,11 @@ void MainWindow::changeEvent(QEvent *e)
     }
 }
 
-//M√®tode que genera la interf√≠cie gr√†fica segons el nombre de c√†meres
+//MËtode que genera la interfÌcie gr‡fica segons el nombre de c‡meres
 void MainWindow::creainterficie()
 {
 
-    // Declaraci√≥ variables gr√°fiques
+    // DeclaraciÛ variables gr·fiques
 
     QString nom("CAM %1");
 
@@ -63,7 +64,7 @@ void MainWindow::creainterficie()
 
         combobox_cam[k] = new QComboBox();
         QStringList list_boxcam;
-        list_boxcam<<"Video Test"<<"Fitxer"<< "Camera";
+        list_boxcam<<"VÌdeo Test"<<"Fitxer"<< "C‡mera";
         combobox_cam[k]->addItems(list_boxcam);
 
         widget_cam[k] = new QWidget(ui->centralWidget,0);
@@ -118,7 +119,7 @@ void MainWindow::creainterficie()
     ui->gridLayout->setRowMinimumHeight(5,252);
 }
 
-//M√®tode que genera el menu
+//MËtode que genera el menu
 void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 {
     QMenu menu(this);
@@ -126,7 +127,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 }
 
 
-//M√®tode que controla l'acci√≥ nou fitxer
+//MËtode que controla l'acciÛ nou fitxer
 void MainWindow::newFile()
 {
     finishCameras();
@@ -136,7 +137,7 @@ void MainWindow::newFile()
     creainterficie();
 }
 
-//M√©tode que tanca tots els Layers de c√†meres.
+//MÈtode que tanca tots els Layers de c‡meres.
 void MainWindow::finishCameras()
 {
   for (int k = 0; k < numcam; k++) {
@@ -147,43 +148,43 @@ void MainWindow::finishCameras()
   delete widget_pgm;
 }
 
-//M√®tode que controla l'acci√≥ about
+//MËtode que controla l'acciÛ about
 void MainWindow::about()
 {
     QMessageBox::about(this, tr("Ajuda"),tr("Ajuda de Capturadora"));
 }
 
-//M√®tode que controla l'acci√≥ aboutQt
+//MËtode que controla l'acciÛ aboutQt
 void MainWindow::aboutQt()
 {
     QMessageBox::about(this, tr("Sobre Capturadora"),
-            tr("Sobre capturadora, versi√≥ 1, Tots els drets reservats"));
+            tr("Sobre capturadora, versiÛ 1, Tots els drets reservats"));
 }
 
-//M√®tode que crea les diferents accions de la finestra principal
+//MËtode que crea les diferents accions de la finestra principal
 void MainWindow::createActions()
 {
     newAct = new QAction(tr("&Nova"), this);
     newAct->setShortcuts(QKeySequence::New);
-    newAct->setStatusTip(tr("Crear un nova gravaci√≥"));
+    newAct->setStatusTip(tr("Crear un nova gravaciÛ"));
     connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
 
     exitAct = new QAction(tr("Sortir"), this);
     exitAct->setShortcut(tr("Ctrl+S"));
-    exitAct->setStatusTip(tr("Sortir de l'aplicaci√≥"));
+    exitAct->setStatusTip(tr("Sortir de l'aplicaciÛ"));
     connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 
     aboutAct = new QAction(tr("Ajuda de Capturadora"), this);
-    aboutAct->setStatusTip(tr("Mostra la ajuda de l'aplicaci√≥"));
+    aboutAct->setStatusTip(tr("Mostra la ajuda de l'aplicaciÛ"));
     connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
 
     aboutQtAct = new QAction(tr("Sobre"), this);
-    aboutQtAct->setStatusTip(tr("Mostra informaci√≥ de l'aplicaci√≥"));
+    aboutQtAct->setStatusTip(tr("Mostra informaciÛ de l'aplicaciÛ"));
     connect(aboutQtAct, SIGNAL(triggered()), this, SLOT(aboutQt()));
 
 }
 
-//M√®tode que crea el menu de l'aplicaci√≥
+//MËtode que crea el menu de l'aplicaciÛ
 void MainWindow::createMenus()
 {
     fileMenu = menuBar()->addMenu(tr("&Captura"));
@@ -200,34 +201,72 @@ void MainWindow::createMenus()
 
 }
 
-//M√®tode que controla el bot√≥ capturar
+void MainWindow::Entrada_test(int k)
+{
+    //Elements de font d'entrada
+    QString bin("bin_font%1"), source("source_%1"), tee("tee_%1"), queue("queue_%1");
+    QString queue_m("queue_mix%1"),sink("sink_font%1");
+
+    bin_font[k] = gst_bin_new ((char*)bin.arg(k).toStdString().c_str());
+    source_[k] = gst_element_factory_make ("videotestsrc", (char*)source.arg(k).toStdString().c_str());
+    tee_[k] = gst_element_factory_make ("tee", (char*)tee.arg(k).toStdString().c_str());
+    queue_[k] = gst_element_factory_make("queue", (char*)queue.arg(k).toStdString().c_str());
+    queue_mix[k] = gst_element_factory_make("queue", (char*)queue_m.arg(k).toStdString().c_str());
+    sink_[k] = gst_element_factory_make ("xvimagesink", (char*)sink.arg(k).toStdString().c_str());
+
+    /*Comprovem que s'han pogut crear tots els elements d'entrada*/
+    if(!bin_font[k] || !source_[k] || !tee_[k] || !queue_[k] || !queue_mix[k] || !sink_[k]){
+        g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
+    }
+
+    /*Canvi de les propietats d'alguns elements */
+    //g_object_set (G_OBJECT (source_[k]), "pattern", 15 , NULL);
+
+    /* Afegim tots els elements al bin_font corresponent */
+    gst_bin_add_many (GST_BIN (bin_font[k]), source_[k], tee_[k], queue_[k], queue_mix[k], sink_[k], NULL);
+
+    /* Afegim els bin_font al pipeline */
+    gst_bin_add (GST_BIN (pipeline), bin_font[k]);
+}
+
+void MainWindow::Entrada_camera(int k)
+{
+    //Elements de font d'entrada
+    QString bin("bin_font%1"), source("source_%1"), tee("tee_%1"), queue("queue_%1");
+    QString queue_m("queue_mix%1"),sink("sink_font%1");
+
+    bin_font[k] = gst_bin_new ((char*)bin.arg(k).toStdString().c_str());
+    source_[k] = gst_element_factory_make ("v4l2src", (char*)source.arg(k).toStdString().c_str());
+    tee_[k] = gst_element_factory_make ("tee", (char*)tee.arg(k).toStdString().c_str());
+    queue_[k] = gst_element_factory_make("queue", (char*)queue.arg(k).toStdString().c_str());
+    queue_mix[k] = gst_element_factory_make("queue", (char*)queue_m.arg(k).toStdString().c_str());
+    sink_[k] = gst_element_factory_make ("xvimagesink", (char*)sink.arg(k).toStdString().c_str());
+
+    /*Comprovem que s'han pogut crear tots els elements d'entrada*/
+    if(!bin_font[k] || !source_[k] || !tee_[k] || !queue_[k] || !queue_mix[k] || !sink_[k]){
+      g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
+    }
+
+    /* Afegim tots els elements al bin_font corresponent */
+    gst_bin_add_many (GST_BIN (bin_font[k]), source_[k], tee_[k], queue_[k], queue_mix[k], sink_[k], NULL);
+
+    /* Afegim els bin_font al pipeline */
+    gst_bin_add (GST_BIN (pipeline), bin_font[k]);
+}
+
+//MËtode que controla el botÛ capturar
 void MainWindow::on_adquirirButton_clicked()
 {
     /* Creacio dels elements gstreamer*/
     pipeline = gst_pipeline_new ("video-mixer");
 
-    //Elements de font d'entrada
-    QString bin("bin_font%1"), source("source_%1"), tee("tee_%1"), queue("queue_%1");
-    QString queue_m("queue_mix%1"),sink("sink_font%1");
-
     for (int k = 0; k < numcam; k++) {
-        bin_font[k] = gst_bin_new ((char*)bin.arg(k).toStdString().c_str());
-        source_[k] = gst_element_factory_make ("videotestsrc", (char*)source.arg(k).toStdString().c_str());
-        tee_[k] = gst_element_factory_make ("tee", (char*)tee.arg(k).toStdString().c_str());
-        queue_[k] = gst_element_factory_make("queue", (char*)queue.arg(k).toStdString().c_str());
-        queue_mix[k] = gst_element_factory_make("queue", (char*)queue_m.arg(k).toStdString().c_str());
-        sink_[k] = gst_element_factory_make ("xvimagesink", (char*)sink.arg(k).toStdString().c_str());
-
-        /*Comprovem que s'han pogut crear tots els elements d'entrada*/
-        if(!bin_font[k] || !source_[k] || !tee_[k] || !queue_[k] || !queue_mix[k] || !sink_[k]){
-          g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
+        if(combobox_cam[k]->currentIndex()==2){
+             Entrada_camera(k);
         }
-
-        /* Afegim tots els elements al bin_font corresponent */
-        gst_bin_add_many (GST_BIN (bin_font[k]), source_[k], tee_[k], queue_[k], queue_mix[k], sink_[k], NULL);
-
-        /* Afegim els bin_font al pipeline */
-        gst_bin_add (GST_BIN (pipeline), bin_font[k]);
+        else{
+            Entrada_test(k);
+        }
     }
 
     //Elements de mix i PGM
@@ -245,8 +284,6 @@ void MainWindow::on_adquirirButton_clicked()
     }
 
     /*Canvi de les propietats d'alguns elements */
-    g_object_set (G_OBJECT (source_[0]), "pattern", 15 , NULL);
-
     g_object_set (G_OBJECT (videomixer), "background", 1 , NULL);
 
 
@@ -255,6 +292,33 @@ void MainWindow::on_adquirirButton_clicked()
 
     /* Afegim el bin_pgm al pipeline */
     gst_bin_add (GST_BIN (pipeline),bin_pgm);
+
+    //----------------------------------------------------------------------------------------------------------------------
+    //AixÚ hauria d'anar a on_gravarButton_clicked() perÚ no sÈ com es linka din‡micament
+    //----------------------------------------------------------------------------------------------------------------------
+    bin_fitxer_pgm = gst_bin_new ("bin_fitxer_pgm");
+
+    queue_fitxer = gst_element_factory_make("queue", "queue_fitxersortida");
+    conv_video_pgm = gst_element_factory_make ("ffmpegcolorspace","color-converter");
+    encoder_pgm = gst_element_factory_make ("theoraenc", "video_encoder");;
+    mux_pgm = gst_element_factory_make ("oggmux", "ogg_mux");;
+    sink_fitxer = gst_element_factory_make ("filesink", "file_output");
+
+    //Comprovem que s'han pogut crear tots els elements
+    if (!queue_fitxer || !conv_video_pgm || !encoder_pgm || !mux_pgm || !sink_fitxer) {
+        g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
+    }
+    //Establim el nom del fitxer de sortida
+    g_object_set (G_OBJECT(sink_fitxer), "location", "sortida.ogg", NULL);
+    gst_bin_add_many (GST_BIN (bin_fitxer_pgm),queue_fitxer, conv_video_pgm, encoder_pgm, mux_pgm, sink_fitxer, NULL);
+
+    // Afegim el bin_fitxer_pgm al pipeline
+    gst_bin_add (GST_BIN (pipeline),bin_fitxer_pgm);
+
+    // Linkem els elements entre ells
+    gst_element_link_many (tee_pgm, queue_fitxer, conv_video_pgm, encoder_pgm, mux_pgm, sink_fitxer, NULL);
+
+    //----------------------------------------------------------------------------------------------------------------------
 
     /* Linkem els elements d'entrada entre ells */
     /* source_1 -> tee_1 -> queue_1 -> sink_1
@@ -273,7 +337,7 @@ void MainWindow::on_adquirirButton_clicked()
     gst_element_set_state (pipeline, GST_STATE_PLAYING);
 
     //---------------------------------------------------------------
-    //No acaba de funciona per aix√≤ en principi hauria de servir per veure el video en el widget
+    //No acaba de funciona perÚ aixÚ en principi hauria de servir per veure el video en el widget
     //---------------------------------------------------------------
     for (int k = 0; k < numcam; k++) {
         gst_x_overlay_set_xwindow_id(GST_X_OVERLAY (sink_[k]),gulong(widget_cam[k]->winId()));
@@ -283,12 +347,14 @@ void MainWindow::on_adquirirButton_clicked()
     //---------------------------------------------------------------*/
  }
 
- //M√®tode que controla el bot√≥ stop
+ //MËtode que controla el botÛ stop
 void MainWindow::on_stopButton_clicked()
 {
-  for (int k = 0; k < numcam; k++) {
+    g_print ("Returned, stopping playback\n");
+    gst_element_set_state (pipeline, GST_STATE_NULL);
 
-  }
+    g_print ("Deleting pipeline\n");
+    gst_object_unref (GST_OBJECT (pipeline));
 }
 
 
@@ -298,6 +364,7 @@ void MainWindow::on_gravarButton_clicked()
 
     ui->gravarButton->setStyleSheet("background-color: rgb(255,215,0)");
 
+    /*
     bin_fitxer_pgm = gst_bin_new ("bin_fitxer_pgm");
 
     queue_fitxer = gst_element_factory_make("queue", "queue_fitxersortida");
@@ -306,19 +373,20 @@ void MainWindow::on_gravarButton_clicked()
     mux_pgm = gst_element_factory_make ("oggmux", "ogg_mux");;
     sink_fitxer = gst_element_factory_make ("filesink", "file_output");
 
-    /*Comprovem que s'han pogut crear tots els elements */
+    //Comprovem que s'han pogut crear tots els elements
     if (!queue_fitxer || !conv_video_pgm || !encoder_pgm || !mux_pgm || !sink_fitxer) {
         g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
     }
-    /*Establim el nom del fitxer de sortida */
+    //Establim el nom del fitxer de sortida
     g_object_set (G_OBJECT(sink_fitxer), "location", "sortida.ogg", NULL);
     gst_bin_add_many (GST_BIN (bin_fitxer_pgm),queue_fitxer, conv_video_pgm, encoder_pgm, mux_pgm, sink_fitxer, NULL);
 
-    /* Afegim el bin_fitxer_pgm al pipeline */
+    // Afegim el bin_fitxer_pgm al pipeline
     gst_bin_add (GST_BIN (pipeline),bin_fitxer_pgm);
 
-    /* Linkem els elements entre ells */
+    // Linkem els elements entre ells
     gst_element_link_many (tee_pgm, queue_fitxer, conv_video_pgm, encoder_pgm, mux_pgm, sink_fitxer, NULL);
+    */
 }
 
 void MainWindow::on_stopButton_2_clicked()
