@@ -1,4 +1,4 @@
-//DeclaraciÛ de la clase Dialog (Di‡leg de configuraciÛ)
+//Declaraci√≥ de la clase Dialog (Di√†leg de configuraci√≥)
 
 #ifndef DIALOG_H
 #define DIALOG_H

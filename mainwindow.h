@@ -13,6 +13,7 @@ class QAction;
 class QActionGroup;
 class QLabel;
 class QMenu;
+class QComboBox;
 QT_END_NAMESPACE
 
 namespace Ui {
@@ -65,6 +66,7 @@ private:
 
     QLabel *Label_cam[numwidgets];
     QLabel *Label_pgm;
+    QComboBox *combobox_cam[numwidgets];
 
     QWidget *widget_pgm;
     QWidget *widget_cam[numwidgets];
@@ -79,6 +81,7 @@ private:
 
     //Elements de sortida
     GstElement  *bin_pgm;
+    GstElement  *bin_fitxer_pgm;
     GstElement  *tee_pgm;
     GstElement  *queue_pgm;
     GstElement  *sink_pgm;

@@ -1,4 +1,4 @@
-//Implementació del main
+//ImplementaciÃ³ del main
 
 #include <QtGui/QApplication>
 #include "mainwindow.h"
@@ -7,7 +7,7 @@
 int main(int _argc, char* _argv[])
 {
 
-    // Inicialització de l'aplicació Qt
+    // InicialitzaciÃ³ de l'aplicaciÃ³ Qt
     QApplication app(_argc, _argv);
 
     MainWindow w;

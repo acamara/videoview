@@ -1,4 +1,4 @@
-//ImplementaciÛ de la clase MainWindow
+//Implementaci√≥ de la clase MainWindow
 
 #include <QtGui>
 
@@ -47,11 +47,11 @@ void MainWindow::changeEvent(QEvent *e)
     }
 }
 
-//MËtode que genera la interfÌcie gr‡fica segons el nombre de c‡meres
+//M√®tode que genera la interf√≠cie gr√†fica segons el nombre de c√†meres
 void MainWindow::creainterficie()
 {
 
-    // DeclaraciÛ variables gr·fiques
+    // Declaraci√≥ variables gr√°fiques
 
     QString nom("CAM %1");
 
@@ -61,8 +61,13 @@ void MainWindow::creainterficie()
         Label_cam[k]->setFont(QFont("arial", 10, QFont::Bold));
         Label_cam[k]->setStyleSheet("background-color: rgb(255, 255, 255)");
 
+        combobox_cam[k] = new QComboBox();
+        QStringList list_boxcam;
+        list_boxcam<<"Video Test"<<"Fitxer"<< "Camera";
+        combobox_cam[k]->addItems(list_boxcam);
+
         widget_cam[k] = new QWidget(ui->centralWidget,0);
-        widget_cam[k]->setStyleSheet("background-color: rgb(0,0,0)");
+        widget_cam[k]->setStyleSheet("background-color: rgb(0, 0, 0)");
     }
 
     Label_pgm = new QLabel(tr("PGM"));
@@ -70,10 +75,10 @@ void MainWindow::creainterficie()
 
     ui->gridLayout->addWidget(Label_pgm,1,3);
 
-    widget_pgm = new QWidget(ui->centralWidget,0);
+    widget_pgm = new QWidget(ui->centralWidget);
     widget_pgm->setStyleSheet("background-color: rgb(0, 0, 0)");
 
-    ui->verticalLayout_PGM->addWidget(widget_pgm);
+    ui->gridLayout->addWidget(widget_pgm,2,3);
 
     //Switch() de posicionament dels diferents widgets a la finestra
 
@@ -81,34 +86,39 @@ void MainWindow::creainterficie()
 
     {
     default:
-        ui->gridLayout->addWidget(Label_cam[3],3,2);
-        ui->gridLayout->addWidget(widget_cam[3],4,2);
+        ui->gridLayout->addWidget(Label_cam[3],4,2);
+        ui->gridLayout->addWidget(widget_cam[3],5,2);
+        ui->gridLayout->addWidget(combobox_cam[3],6,2);
 
     case 3:
-        ui->gridLayout->addWidget(Label_cam[2],3,1);
-        ui->gridLayout->addWidget(widget_cam[2],4,1);
+        ui->gridLayout->addWidget(Label_cam[2],4,1);
+        ui->gridLayout->addWidget(widget_cam[2],5,1);
+        ui->gridLayout->addWidget(combobox_cam[2],6,1);
 
     case 2:
         ui->gridLayout->addWidget(Label_cam[0],1,1);
         ui->gridLayout->addWidget(Label_cam[1],1,2);
 
-        ui->gridLayout->addWidget(widget_cam[1],2,2);
         ui->gridLayout->addWidget(widget_cam[0],2,1);
+        ui->gridLayout->addWidget(widget_cam[1],2,2);
+
+        ui->gridLayout->addWidget(combobox_cam[0],3,1);
+        ui->gridLayout->addWidget(combobox_cam[1],3,2);
         break;
     case 1:
         ui->gridLayout->addWidget(Label_cam[0],1,1,1,2);
         ui->gridLayout->addWidget(widget_cam[0],2,1,4,2);
     }
 
-    ui->gridLayout->setColumnMinimumWidth(1,400);
-    ui->gridLayout->setColumnMinimumWidth(2,400);
-    ui->gridLayout->setColumnMinimumWidth(3,400);
+    ui->gridLayout->setColumnMinimumWidth(1,336);
+    ui->gridLayout->setColumnMinimumWidth(2,336);
+    ui->gridLayout->setColumnMinimumWidth(3,336);
 
-    ui->gridLayout->setRowMinimumHeight(2,300);
-    ui->gridLayout->setRowMinimumHeight(4,300);
+    ui->gridLayout->setRowMinimumHeight(2,252);
+    ui->gridLayout->setRowMinimumHeight(5,252);
 }
 
-//MËtode que genera el menu
+//M√®tode que genera el menu
 void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 {
     QMenu menu(this);
@@ -116,7 +126,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 }
 
 
-//MËtode que controla l'acciÛ nou fitxer
+//M√®tode que controla l'acci√≥ nou fitxer
 void MainWindow::newFile()
 {
     finishCameras();
@@ -126,53 +136,54 @@ void MainWindow::newFile()
     creainterficie();
 }
 
-//MÈtode que tanca tots els Layers de c‡meres.
+//M√©tode que tanca tots els Layers de c√†meres.
 void MainWindow::finishCameras()
 {
   for (int k = 0; k < numcam; k++) {
     delete Label_cam[k];
+    delete combobox_cam[k];
     delete widget_cam[k];
   }
   delete widget_pgm;
 }
 
-//MËtode que controla l'acciÛ about
+//M√®tode que controla l'acci√≥ about
 void MainWindow::about()
 {
     QMessageBox::about(this, tr("Ajuda"),tr("Ajuda de Capturadora"));
 }
 
-//MËtode que controla l'acciÛ aboutQt
+//M√®tode que controla l'acci√≥ aboutQt
 void MainWindow::aboutQt()
 {
     QMessageBox::about(this, tr("Sobre Capturadora"),
-            tr("Sobre capturadora, versiÛ 1, Tots els drets reservats"));
+            tr("Sobre capturadora, versi√≥ 1, Tots els drets reservats"));
 }
 
-//MËtode que crea les diferents accions de la finestra principal
+//M√®tode que crea les diferents accions de la finestra principal
 void MainWindow::createActions()
 {
     newAct = new QAction(tr("&Nova"), this);
     newAct->setShortcuts(QKeySequence::New);
-    newAct->setStatusTip(tr("Crear un nova gravaciÛ"));
+    newAct->setStatusTip(tr("Crear un nova gravaci√≥"));
     connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
 
     exitAct = new QAction(tr("Sortir"), this);
     exitAct->setShortcut(tr("Ctrl+S"));
-    exitAct->setStatusTip(tr("Sortir de l'aplicaciÛ"));
+    exitAct->setStatusTip(tr("Sortir de l'aplicaci√≥"));
     connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 
     aboutAct = new QAction(tr("Ajuda de Capturadora"), this);
-    aboutAct->setStatusTip(tr("Mostra la ajuda de l'aplicaciÛ"));
+    aboutAct->setStatusTip(tr("Mostra la ajuda de l'aplicaci√≥"));
     connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
 
     aboutQtAct = new QAction(tr("Sobre"), this);
-    aboutQtAct->setStatusTip(tr("Mostra informaciÛ de l'aplicaciÛ"));
+    aboutQtAct->setStatusTip(tr("Mostra informaci√≥ de l'aplicaci√≥"));
     connect(aboutQtAct, SIGNAL(triggered()), this, SLOT(aboutQt()));
 
 }
 
-//MËtode que crea el menu de l'aplicaciÛ
+//M√®tode que crea el menu de l'aplicaci√≥
 void MainWindow::createMenus()
 {
     fileMenu = menuBar()->addMenu(tr("&Captura"));
@@ -180,7 +191,7 @@ void MainWindow::createMenus()
     fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
 
-    editMenu = menuBar()->addMenu(tr("&EdiciÛ"));
+    editMenu = menuBar()->addMenu(tr("&Edicio"));
     editMenu->addSeparator();
 
     helpMenu = menuBar()->addMenu(tr("&Ajuda"));
@@ -189,15 +200,15 @@ void MainWindow::createMenus()
 
 }
 
-//MËtode que controla el botÛ capturar
+//M√®tode que controla el bot√≥ capturar
 void MainWindow::on_adquirirButton_clicked()
 {
     /* Creacio dels elements gstreamer*/
     pipeline = gst_pipeline_new ("video-mixer");
 
     //Elements de font d'entrada
-    QString bin("bin_font%1"), source("test-source%1"), tee("tee_source%1"), queue("thread_video%1");
-    QString queue_m("thread_mix%1"),sink("sink_font%1");
+    QString bin("bin_font%1"), source("source_%1"), tee("tee_%1"), queue("queue_%1");
+    QString queue_m("queue_mix%1"),sink("sink_font%1");
 
     for (int k = 0; k < numcam; k++) {
         bin_font[k] = gst_bin_new ((char*)bin.arg(k).toStdString().c_str());
@@ -222,11 +233,11 @@ void MainWindow::on_adquirirButton_clicked()
     //Elements de mix i PGM
     bin_pgm = gst_bin_new ("bin_pgm");
 
-    videomixer = gst_element_factory_make("videomixer", "video-mixer");
+    videomixer = gst_element_factory_make("videomixer", "videomixer");
 
-    tee_pgm = gst_element_factory_make ("tee", "tee-pgm");
-    queue_pgm = gst_element_factory_make("queue", "thread-pgm");
-    sink_pgm = gst_element_factory_make("xvimagesink", "sinkpgm");
+    tee_pgm = gst_element_factory_make ("tee", "tee_pgm");
+    queue_pgm = gst_element_factory_make("queue", "queue_pgm");
+    sink_pgm = gst_element_factory_make("xvimagesink", "sink_pgm");
 
     /*Comprovem que s'han pogut crear tots els elements */
     if (!pipeline || !videomixer || !tee_pgm || !queue_pgm || !sink_pgm) {
@@ -262,7 +273,7 @@ void MainWindow::on_adquirirButton_clicked()
     gst_element_set_state (pipeline, GST_STATE_PLAYING);
 
     //---------------------------------------------------------------
-    //No acaba de funciona per aixÚ en principi hauria de servir per veure el video en el widget
+    //No acaba de funciona per aix√≤ en principi hauria de servir per veure el video en el widget
     //---------------------------------------------------------------
     for (int k = 0; k < numcam; k++) {
         gst_x_overlay_set_xwindow_id(GST_X_OVERLAY (sink_[k]),gulong(widget_cam[k]->winId()));
@@ -272,7 +283,7 @@ void MainWindow::on_adquirirButton_clicked()
     //---------------------------------------------------------------*/
  }
 
- //MËtode que controla el botÛ stop
+ //M√®tode que controla el bot√≥ stop
 void MainWindow::on_stopButton_clicked()
 {
   for (int k = 0; k < numcam; k++) {
@@ -283,12 +294,31 @@ void MainWindow::on_stopButton_clicked()
 
 void MainWindow::on_gravarButton_clicked()
 {
-    //ActivaciÛ de la gravaciÛ en el thread de gravaciÛ
-
     //QString nomdeprojecte = QFileDialog::getSaveFileName();
 
-    //QString nomdeprojecte =("sortida.avi");
     ui->gravarButton->setStyleSheet("background-color: rgb(255,215,0)");
+
+    bin_fitxer_pgm = gst_bin_new ("bin_fitxer_pgm");
+
+    queue_fitxer = gst_element_factory_make("queue", "queue_fitxersortida");
+    conv_video_pgm = gst_element_factory_make ("ffmpegcolorspace","color-converter");
+    encoder_pgm = gst_element_factory_make ("theoraenc", "video_encoder");;
+    mux_pgm = gst_element_factory_make ("oggmux", "ogg_mux");;
+    sink_fitxer = gst_element_factory_make ("filesink", "file_output");
+
+    /*Comprovem que s'han pogut crear tots els elements */
+    if (!queue_fitxer || !conv_video_pgm || !encoder_pgm || !mux_pgm || !sink_fitxer) {
+        g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
+    }
+    /*Establim el nom del fitxer de sortida */
+    g_object_set (G_OBJECT(sink_fitxer), "location", "sortida.ogg", NULL);
+    gst_bin_add_many (GST_BIN (bin_fitxer_pgm),queue_fitxer, conv_video_pgm, encoder_pgm, mux_pgm, sink_fitxer, NULL);
+
+    /* Afegim el bin_fitxer_pgm al pipeline */
+    gst_bin_add (GST_BIN (pipeline),bin_fitxer_pgm);
+
+    /* Linkem els elements entre ells */
+    gst_element_link_many (tee_pgm, queue_fitxer, conv_video_pgm, encoder_pgm, mux_pgm, sink_fitxer, NULL);
 }
 
 void MainWindow::on_stopButton_2_clicked()

@@ -1,4 +1,4 @@
-//Implementació de la clase Dialog (Diàleg de configuració)
+//ImplementaciÃ³ de la clase Dialog (DiÃ leg de configuraciÃ³)
 
 #include "configdialog.h"
 #include "ui_configdialog.h"
@@ -34,28 +34,28 @@ void Dialog::changeEvent(QEvent *e)
     }
 }
 
-//Mètode que controla el botó cancelar
+//MÃ¨tode que controla el botÃ³ cancelar
 void Dialog::on_CancelarBoton_clicked()
 {
     close ();
 
 }
 
-//Mètode que controla el botó aceptar
+//MÃ¨tode que controla el botÃ³ aceptar
 void Dialog::on_Aceptar_clicked()
 {
     /*
-    QMessageBox::information(this, "Información de depuración",
-    "Modo de edición: "+QString(ui->Modoedicion->itemText(ui->Modoedicion->currentIndex ()))
+    QMessageBox::information(this, "InformaciÃ³n de depuraciÃ³n",
+    "Modo de ediciÃ³n: "+QString(ui->Modoedicion->itemText(ui->Modoedicion->currentIndex ()))
     +"\n\nFrames segundo: "+QString(ui->Framessegundo->itemText(ui->Framessegundo->currentIndex ()))
-    +"\n\nRelación de aspecto: "+QString(ui->Aspecto->itemText(ui->Aspecto->currentIndex ()))
-    +"\n\nTamaño de cuadro: "+QString(ui->Tamanycuadre->itemText(ui->Tamanycuadre->currentIndex ()))
-    +"\n\nNúmero de cámaras: "+QString(ui->NumCam->itemText(ui->NumCam->currentIndex ())));
+    +"\n\nRelaciÃ³n de aspecto: "+QString(ui->Aspecto->itemText(ui->Aspecto->currentIndex ()))
+    +"\n\nTamaÃ±o de cuadro: "+QString(ui->Tamanycuadre->itemText(ui->Tamanycuadre->currentIndex ()))
+    +"\n\nNÃºmero de cÃ¡maras: "+QString(ui->NumCam->itemText(ui->NumCam->currentIndex ())));
     */
 
 }
 
-//Mètode que retorna l'informació obtiguda de la configuració
+//MÃ¨tode que retorna l'informaciÃ³ obtiguda de la configuraciÃ³
 void Dialog::get_config(int &numcam,QSize &resolucio)
 {
    numcam=ui->NumCam->currentIndex ()+1;
