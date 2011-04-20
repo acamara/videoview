@@ -43,6 +43,7 @@ private slots:
     void aboutQt();
     void Entrada_test(int k);
     void Entrada_camera(int k);
+    void Entrada_fitxer(int k);
 
 
 private:
@@ -81,6 +82,15 @@ private:
     GstElement  *queue_[numwidgets];
     GstElement  *sink_[numwidgets];
     GstElement  *queue_mix[numwidgets];
+
+    //Elements d'entrada de fitxer
+    GstElement  *dec_[numwidgets];
+    GstElement  *conv_audio_[numwidgets];
+    GstElement  *sink_audio_[numwidgets];
+    GstElement  *conv_video_[numwidgets];
+    GstPad  *audiopad_[numwidgets];
+    GstPad  *videopad_[numwidgets];
+
 
     //Elements de sortida
     GstElement  *bin_pgm;
