@@ -4,6 +4,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "widgetvideo.h"
+
 #include <gst/gst.h>
 #include <glib.h>
 #include <gst/interfaces/xoverlay.h>
@@ -25,6 +27,9 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+public slots:
+    void canviacamara();
 
 protected:
     void changeEvent(QEvent *e);
@@ -73,7 +78,7 @@ private:
     QComboBox *combobox_cam[numwidgets];
 
     QWidget *widget_pgm;
-    QWidget *widget_cam[numwidgets];
+    Widgetvideo *widget_cam[numwidgets];
 
     //Elements d'entrada
     GstElement  *bin_font[numwidgets];

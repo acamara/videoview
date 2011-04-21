@@ -1,10 +1,13 @@
 HEADERS += configdialog.h \
-    mainwindow.h
+    mainwindow.h \
+    widgetvideo.h
 SOURCES += mainwindow.cpp \
     main.cpp \
-    configdialog.cpp
+    configdialog.cpp \
+    widgetvideo.cpp
 FORMS += mainwindow.ui \
-    configdialog.ui
+    configdialog.ui \
+    widgetvideo.ui
 
 win32 {
     INCLUDEPATH += "C:\Program Files (x86)\OSSBuild\GStreamer\v0.10.6\sdk\include" \

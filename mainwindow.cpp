@@ -67,8 +67,10 @@ void MainWindow::creainterficie()
         list_boxcam<<"Vídeo Test"<<"Fitxer"<< "Càmera";
         combobox_cam[k]->addItems(list_boxcam);
 
-        widget_cam[k] = new QWidget(ui->centralWidget,0);
+        widget_cam[k] = new Widgetvideo(ui->centralWidget);
         widget_cam[k]->setStyleSheet("background-color: rgb(0, 0, 0)");
+        widget_cam[k]->setObjectName(nom.arg(k).toAscii());
+        QObject::connect(widget_cam[k], SIGNAL(widgetClicked()), this, SLOT(canviacamara()));
     }
 
     Label_pgm = new QLabel(tr("PGM"));
@@ -279,6 +281,8 @@ void MainWindow::Entrada_fitxer(int k)
     //Creem entrada de fitxer i el decodebin, els afegim al pipeline i els linkem.
     source_[k] = gst_element_factory_make ("filesrc", (char*)source.arg(k).toStdString().c_str());
     dec_[k] = gst_element_factory_make ("decodebin", "decoder");
+
+   //Aquí hauríem de poder enviar paràmetres problema amb gpointer i void*
     g_signal_connect (dec_[k], "new-decoded-pad", G_CALLBACK (cb_newpad_audio), NULL);
     g_signal_connect (dec_[k], "new-decoded-pad", G_CALLBACK (cb_newpad_video), NULL);
     gst_bin_add_many (GST_BIN (bin_font[k]), source_[k], dec_[k], NULL);
@@ -349,7 +353,7 @@ void MainWindow::Entrada_test(int k)
     }
 
     /*Canvi de les propietats d'alguns elements */
-    //g_object_set (G_OBJECT (source_[k]), "pattern", 15 , NULL);
+    g_object_set (G_OBJECT (source_[k]), "pattern", k , NULL);
 
     /* Afegim tots els elements al bin_font corresponent */
     gst_bin_add_many (GST_BIN (bin_font[k]), source_[k], tee_[k], queue_[k], queue_mix[k], sink_[k], NULL);
@@ -494,6 +498,28 @@ void MainWindow::on_stopButton_clicked()
     gst_object_unref (GST_OBJECT (pipeline));
 }
 
+//Mètode que controla el canvi de càmera
+void MainWindow::canviacamara()
+{
+    QString nom = sender()->objectName();
+    QString senyal("sink_%1");
+    GstPad *mixerpad;
+
+    for (int k = 0; k < numcam; k++){
+        if(k==nom[4].digitValue()){
+            mixerpad=gst_element_get_pad(videomixer,(char*)senyal.arg(k).toStdString().c_str());
+            g_object_set (G_OBJECT(mixerpad), "alpha",1.0,NULL);
+
+            Label_cam[k]->setStyleSheet("background-color: rgb(255, 0, 0)");
+        }
+        else{
+            Label_cam[k]->setStyleSheet("background-color: rgb(255, 255, 255)");
+
+            mixerpad=gst_element_get_pad(videomixer, (char*)senyal.arg(k).toStdString().c_str());
+            g_object_set (G_OBJECT(mixerpad), "alpha",0,NULL);
+        }
+    }
+}
 
 void MainWindow::on_gravarButton_clicked()
 {
