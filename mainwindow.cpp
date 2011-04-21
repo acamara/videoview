@@ -406,7 +406,7 @@ void MainWindow::on_adquirirButton_clicked()
         if(combobox_cam[k]->currentIndex()==1){
              Entrada_fitxer(k);
         }
-        else{
+        if(combobox_cam[k]->currentIndex()==0){
             Entrada_test(k);
         }
     }
