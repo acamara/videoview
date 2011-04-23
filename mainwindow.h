@@ -98,14 +98,14 @@ private:
 
 
     //Elements de sortida
-    GstElement  *bin_pgm;
+    GstElement  *bin_video_pgm;
     GstElement  *bin_fitxer_pgm;
-    GstElement  *tee_pgm;
-    GstElement  *queue_pgm;
-    GstElement  *sink_pgm;
-    GstElement  *queue_fitxer;
+    GstElement  *tee_video_pgm;
+    GstElement  *queue_video_pgm;
+    GstElement  *sink_video_pgm;
+    GstElement  *queue_video_fitxer;
     GstElement  *conv_video_pgm;
-    GstElement  *encoder_pgm;
+    GstElement  *encoder_video_pgm;
     GstElement  *mux_pgm;
     GstElement  *sink_fitxer;
 

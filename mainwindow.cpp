@@ -328,7 +328,7 @@ void MainWindow::Entrada_fitxer(int k)
     g_object_set (G_OBJECT (source_[k]), "location", c_nom_fitxer, NULL);
     gst_element_set_state(sink_[k], GST_STATE_READY);
 
-    /* Afegim el bin_pgm al pipeline */
+    /* Afegim el bin_video_pgm al pipeline */
     gst_bin_add (GST_BIN (pipeline),bin_font[k]);
 
 }
@@ -412,16 +412,16 @@ void MainWindow::on_adquirirButton_clicked()
     }
 
     //Elements de mix i PGM
-    bin_pgm = gst_bin_new ("bin_pgm");
+    bin_video_pgm = gst_bin_new ("bin_video_pgm");
 
     videomixer = gst_element_factory_make("videomixer", "videomixer");
 
-    tee_pgm = gst_element_factory_make ("tee", "tee_pgm");
-    queue_pgm = gst_element_factory_make("queue", "queue_pgm");
-    sink_pgm = gst_element_factory_make("xvimagesink", "sink_pgm");
+    tee_video_pgm = gst_element_factory_make ("tee", "tee_video_pgm");
+    queue_video_pgm = gst_element_factory_make("queue", "queue_video_pgm");
+    sink_video_pgm = gst_element_factory_make("xvimagesink", "sink_video_pgm");
 
     /*Comprovem que s'han pogut crear tots els elements */
-    if (!pipeline || !videomixer || !tee_pgm || !queue_pgm || !sink_pgm) {
+    if (!pipeline || !videomixer || !tee_video_pgm || !queue_video_pgm || !sink_video_pgm) {
         g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
     }
 
@@ -429,36 +429,36 @@ void MainWindow::on_adquirirButton_clicked()
     g_object_set (G_OBJECT (videomixer), "background", 1 , NULL);
 
 
-    /* Afegim tots els elements al bin_pgm corresponent */
-    gst_bin_add_many (GST_BIN (bin_pgm), videomixer, tee_pgm, queue_pgm, sink_pgm, NULL);
+    /* Afegim tots els elements al bin_video_pgm corresponent */
+    gst_bin_add_many (GST_BIN (bin_video_pgm), videomixer, tee_video_pgm, queue_video_pgm, sink_video_pgm, NULL);
 
-    /* Afegim el bin_pgm al pipeline */
-    gst_bin_add (GST_BIN (pipeline),bin_pgm);
+    /* Afegim el bin_video_pgm al pipeline */
+    gst_bin_add (GST_BIN (pipeline),bin_video_pgm);
 
     //----------------------------------------------------------------------------------------------------------------------
     //Això hauria d'anar a on_gravarButton_clicked() però no sé com es linka dinàmicament
     //----------------------------------------------------------------------------------------------------------------------
     bin_fitxer_pgm = gst_bin_new ("bin_fitxer_pgm");
 
-    queue_fitxer = gst_element_factory_make("queue", "queue_fitxersortida");
+    queue_video_fitxer = gst_element_factory_make("queue", "queue_video_fitxer");
     conv_video_pgm = gst_element_factory_make ("ffmpegcolorspace","color-converter");
-    encoder_pgm = gst_element_factory_make ("theoraenc", "video_encoder");;
+    encoder_video_pgm = gst_element_factory_make ("theoraenc", "video_encoder");;
     mux_pgm = gst_element_factory_make ("oggmux", "ogg_mux");;
     sink_fitxer = gst_element_factory_make ("filesink", "file_output");
 
     //Comprovem que s'han pogut crear tots els elements
-    if (!queue_fitxer || !conv_video_pgm || !encoder_pgm || !mux_pgm || !sink_fitxer) {
+    if (!queue_video_fitxer || !conv_video_pgm || !encoder_video_pgm || !mux_pgm || !sink_fitxer) {
         g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
     }
     //Establim el nom del fitxer de sortida
     g_object_set (G_OBJECT(sink_fitxer), "location", "sortida.ogg", NULL);
-    gst_bin_add_many (GST_BIN (bin_fitxer_pgm),queue_fitxer, conv_video_pgm, encoder_pgm, mux_pgm, sink_fitxer, NULL);
+    gst_bin_add_many (GST_BIN (bin_fitxer_pgm),queue_video_fitxer, conv_video_pgm, encoder_video_pgm, mux_pgm, sink_fitxer, NULL);
 
     // Afegim el bin_fitxer_pgm al pipeline
     gst_bin_add (GST_BIN (pipeline),bin_fitxer_pgm);
 
     // Linkem els elements entre ells
-    gst_element_link_many (tee_pgm, queue_fitxer, conv_video_pgm, encoder_pgm, mux_pgm, sink_fitxer, NULL);
+    gst_element_link_many (tee_video_pgm, queue_video_fitxer, conv_video_pgm, encoder_video_pgm, mux_pgm, sink_fitxer, NULL);
 
     //----------------------------------------------------------------------------------------------------------------------
 
@@ -470,8 +470,8 @@ void MainWindow::on_adquirirButton_clicked()
     for (int k = 0; k < numcam; k++) {
         gst_element_link_many (tee_[k], queue_mix[k], videomixer, NULL);
     }
-    gst_element_link(videomixer,tee_pgm);
-    gst_element_link_many (tee_pgm, queue_pgm, sink_pgm, NULL);
+    gst_element_link(videomixer,tee_video_pgm);
+    gst_element_link_many (tee_video_pgm, queue_video_pgm, sink_video_pgm, NULL);
 
     /* Canviem l'estat del pipeline a "playing" */
     g_print ("Now playing: %s\n","Mixer example");
@@ -484,7 +484,7 @@ void MainWindow::on_adquirirButton_clicked()
         gst_x_overlay_set_xwindow_id(GST_X_OVERLAY (sink_[k]),gulong(widget_cam[k]->winId()));
         QApplication::syncX();
     }
-    gst_x_overlay_set_xwindow_id(GST_X_OVERLAY (sink_pgm),gulong(widget_pgm->winId()));
+    gst_x_overlay_set_xwindow_id(GST_X_OVERLAY (sink_video_pgm),gulong(widget_pgm->winId()));
     //---------------------------------------------------------------*/
  }
 
@@ -530,25 +530,25 @@ void MainWindow::on_gravarButton_clicked()
     /*
     bin_fitxer_pgm = gst_bin_new ("bin_fitxer_pgm");
 
-    queue_fitxer = gst_element_factory_make("queue", "queue_fitxersortida");
+    queue_video_fitxer = gst_element_factory_make("queue", "queue_video_fitxer");
     conv_video_pgm = gst_element_factory_make ("ffmpegcolorspace","color-converter");
-    encoder_pgm = gst_element_factory_make ("theoraenc", "video_encoder");;
+    encoder_video_pgm = gst_element_factory_make ("theoraenc", "video_encoder");;
     mux_pgm = gst_element_factory_make ("oggmux", "ogg_mux");;
     sink_fitxer = gst_element_factory_make ("filesink", "file_output");
 
     //Comprovem que s'han pogut crear tots els elements
-    if (!queue_fitxer || !conv_video_pgm || !encoder_pgm || !mux_pgm || !sink_fitxer) {
+    if (!queue_video_fitxer || !conv_video_pgm || !encoder_video_pgm || !mux_pgm || !sink_fitxer) {
         g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
     }
     //Establim el nom del fitxer de sortida
     g_object_set (G_OBJECT(sink_fitxer), "location", "sortida.ogg", NULL);
-    gst_bin_add_many (GST_BIN (bin_fitxer_pgm),queue_fitxer, conv_video_pgm, encoder_pgm, mux_pgm, sink_fitxer, NULL);
+    gst_bin_add_many (GST_BIN (bin_fitxer_pgm),queue_video_fitxer, conv_video_pgm, encoder_video_pgm, mux_pgm, sink_fitxer, NULL);
 
     // Afegim el bin_fitxer_pgm al pipeline
     gst_bin_add (GST_BIN (pipeline),bin_fitxer_pgm);
 
     // Linkem els elements entre ells
-    gst_element_link_many (tee_pgm, queue_fitxer, conv_video_pgm, encoder_pgm, mux_pgm, sink_fitxer, NULL);
+    gst_element_link_many (tee_video_pgm, queue_video_fitxer, conv_video_pgm, encoder_video_pgm, mux_pgm, sink_fitxer, NULL);
     */
 }
 
