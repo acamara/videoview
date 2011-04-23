@@ -293,10 +293,19 @@ void MainWindow::Entrada_fitxer(int k)
     conv_audio_[k] = gst_element_factory_make ("audioconvert",(char*)conv_audio.arg(k).toStdString().c_str());
     audiopad_[k] = gst_element_get_static_pad (conv_audio_[k], "sink");
     sink_audio_[k] = gst_element_factory_make ("autoaudiosink", (char*)sink_audio.arg(k).toStdString().c_str());
-    gst_bin_add_many (GST_BIN (audio), conv_audio_[k], sink_audio_[k], NULL);
-    gst_element_link (conv_audio_[k], sink_audio_[k]);
+
+    tee_audio[k] = gst_element_factory_make ("tee", "tee_audio");
+    volume[k] = gst_element_factory_make ("volume", "volume");
+    queue_audio[k] = gst_element_factory_make("queue", "queue_audio");
+    queue_audio_mix[k] = gst_element_factory_make("queue", "queue_audio_mix");
+
+    /*Canvi de les propietats d'alguns elements */
+    g_object_set (G_OBJECT (volume[k]), "mute", true , NULL);
+
+    gst_bin_add_many (GST_BIN (audio), conv_audio_[k], tee_audio[k], queue_audio[k], queue_audio_mix[k], volume[k], sink_audio_[k],NULL);
+    gst_element_link_many (conv_audio_[k], tee_audio[k], queue_audio[k], volume[k], sink_audio_[k],NULL);
     gst_element_add_pad (audio,
-          gst_ghost_pad_new ("sink", audiopad_[k]));
+          gst_ghost_pad_new ("sink",audiopad_[k]));
     gst_object_unref (audiopad_[k]);
     gst_bin_add (GST_BIN (bin_font[k]), audio);
 
@@ -393,6 +402,40 @@ void MainWindow::Entrada_camera(int k)
     gst_element_link_many (source_[k], tee_[k], queue_[k], sink_[k], NULL);
 }
 
+void MainWindow::Entrada_audio(int k)
+{
+    //Elements de font d'entrada
+    QString bin_audio("bin_audio_font%1"), source_a("audio_source_%1"), tee_a("tee_audio%1"), queue_a("queue_audio%1");
+    QString volumen("volumen_%1"), queue_m_a("queue_mix%1"), sink_audio("sink_audio%1");
+
+    bin_audio_font[k] = gst_bin_new ((char*)bin_audio.arg(k).toStdString().c_str());
+    audio_source[k] = gst_element_factory_make("audiotestsrc", (char*)source_a.arg(k).toStdString().c_str());
+    tee_audio[k] = gst_element_factory_make ("tee", (char*)tee_a.arg(k).toStdString().c_str());
+    volume[k] = gst_element_factory_make ("volume", (char*)volumen.arg(k).toStdString().c_str());
+    queue_audio[k] = gst_element_factory_make("queue", (char*)queue_a.arg(k).toStdString().c_str());
+    queue_audio_mix[k] = gst_element_factory_make("queue", (char*)queue_m_a.arg(k).toStdString().c_str());
+    sink_audio_[k] = gst_element_factory_make ("autoaudiosink", (char*)sink_audio.arg(k).toStdString().c_str());
+
+    /*Comprovem que s'han pogut crear tots els elements d'entrada*/
+    if(!bin_audio_font[k] || !audio_source[k] || !tee_audio[k] || !queue_audio[k] || !queue_audio_mix[k] || !sink_audio_[k]){
+        g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
+    }
+
+    /*Canvi de les propietats d'alguns elements */
+    g_object_set (G_OBJECT (audio_source[k]), "wave",4 , NULL);
+    g_object_set (G_OBJECT (volume[k]), "mute", true , NULL);
+
+    /* Afegim tots els elements al bin_font corresponent */
+    gst_bin_add_many (GST_BIN (bin_audio_font[k]), audio_source[k], tee_audio[k], queue_audio[k], queue_audio_mix[k], sink_audio_[k], NULL);
+
+    /* Afegim els bin_font al pipeline */
+    gst_bin_add (GST_BIN (pipeline), bin_audio_font[k]);
+
+    /*Linkem els elements */
+    gst_element_link_many (audio_source[k], tee_audio[k], queue_audio[k], sink_audio_[k], NULL);
+
+}
+
 //Mètode que controla el botó capturar
 void MainWindow::on_adquirirButton_clicked()
 {
@@ -402,16 +445,18 @@ void MainWindow::on_adquirirButton_clicked()
     for (int k = 0; k < numcam; k++) {
         if(combobox_cam[k]->currentIndex()==2){
              Entrada_camera(k);
+             Entrada_audio(k);
         }
         if(combobox_cam[k]->currentIndex()==1){
              Entrada_fitxer(k);
         }
         if(combobox_cam[k]->currentIndex()==0){
             Entrada_test(k);
+            Entrada_audio(k);
         }
     }
 
-    //Elements de mix i PGM
+    //Elements de mix de vídeo i PGM
     bin_video_pgm = gst_bin_new ("bin_video_pgm");
 
     videomixer = gst_element_factory_make("videomixer", "videomixer");
@@ -434,6 +479,27 @@ void MainWindow::on_adquirirButton_clicked()
 
     /* Afegim el bin_video_pgm al pipeline */
     gst_bin_add (GST_BIN (pipeline),bin_video_pgm);
+
+    //Elements de mix d'àudio i PGM
+    bin_audio_pgm = gst_bin_new ("bin_audio_pgm");
+
+    audiomixer = gst_element_factory_make("liveadder", "audiomixer");
+    volume_audio_pgm = gst_element_factory_make ("volume", "volume_audio_pgm");
+
+    tee_audio_pgm = gst_element_factory_make ("tee", "tee_audio_pgm");
+    queue_audio_pgm = gst_element_factory_make("queue", "queue_audio_pgm");
+    sink_audio_pgm = gst_element_factory_make("autoaudiosink", "sink_audio_pgm");
+
+    /*Comprovem que s'han pogut crear tots els elements */
+    if (!audiomixer || !tee_audio_pgm || !queue_audio_pgm || !volume_audio_pgm || !sink_audio_pgm) {
+        g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
+    }
+
+    /* Afegim tots els elements al bin_audio_pgm corresponent */
+    gst_bin_add_many (GST_BIN (bin_audio_pgm), audiomixer, tee_audio_pgm, queue_audio_pgm, volume_audio_pgm, sink_audio_pgm, NULL);
+
+    /* Afegim el bin_audio_pgm al pipeline */
+    gst_bin_add (GST_BIN (pipeline),bin_audio_pgm);
 
     //----------------------------------------------------------------------------------------------------------------------
     //Això hauria d'anar a on_gravarButton_clicked() però no sé com es linka dinàmicament
@@ -469,9 +535,14 @@ void MainWindow::on_adquirirButton_clicked()
                                                                  -> conv -> encoder -> mux -> sink*/
     for (int k = 0; k < numcam; k++) {
         gst_element_link_many (tee_[k], queue_mix[k], videomixer, NULL);
+        gst_element_link_many (tee_audio[k], queue_audio_mix[k], audiomixer, NULL);
     }
-    gst_element_link(videomixer,tee_video_pgm);
-    gst_element_link_many (tee_video_pgm, queue_video_pgm, sink_video_pgm, NULL);
+
+    gst_element_link_many(videomixer,tee_video_pgm, queue_video_pgm, sink_video_pgm, NULL);
+
+    gst_element_link_many(audiomixer, tee_audio_pgm, queue_audio_pgm, volume_audio_pgm, sink_audio_pgm, NULL);
+
+
 
     /* Canviem l'estat del pipeline a "playing" */
     g_print ("Now playing: %s\n","Mixer example");
@@ -574,4 +645,9 @@ void MainWindow::on_templatesButton_clicked()
     templates.load (imagefilename);
     templateresize=templates.scaled(ui->templatelabel->width(),ui->templatelabel->height(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
     ui->templatelabel->setPixmap(QPixmap::fromImage(templateresize));
+}
+
+void MainWindow::on_audioSlider_valueChanged(int value)
+{
+ g_object_set (G_OBJECT (volume_audio_pgm), "volume", double(value) , NULL);
 }

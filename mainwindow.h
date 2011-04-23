@@ -37,6 +37,7 @@ protected:
     void closeEvent(QCloseEvent *);
 
 private slots:
+    void on_audioSlider_valueChanged(int value);
     void on_templatesButton_clicked();
     void on_moscaButton_clicked();
     void on_stopButton_2_clicked();
@@ -49,6 +50,7 @@ private slots:
     void Entrada_test(int k);
     void Entrada_camera(int k);
     void Entrada_fitxer(int k);
+    void Entrada_audio(int k);
 
 
 private:
@@ -88,6 +90,13 @@ private:
     GstElement  *sink_[numwidgets];
     GstElement  *queue_mix[numwidgets];
 
+    GstElement  *bin_audio_font[numwidgets];
+    GstElement  *audio_source[numwidgets];
+    GstElement  *volume[numwidgets];
+    GstElement  *tee_audio[numwidgets];
+    GstElement  *queue_audio[numwidgets];
+    GstElement  *queue_audio_mix[numwidgets];
+
     //Elements d'entrada de fitxer
     GstElement  *dec_[numwidgets];
     GstElement  *conv_audio_[numwidgets];
@@ -99,17 +108,28 @@ private:
 
     //Elements de sortida
     GstElement  *bin_video_pgm;
-    GstElement  *bin_fitxer_pgm;
     GstElement  *tee_video_pgm;
     GstElement  *queue_video_pgm;
     GstElement  *sink_video_pgm;
     GstElement  *queue_video_fitxer;
     GstElement  *conv_video_pgm;
     GstElement  *encoder_video_pgm;
+    GstElement  *videomixer;
+
+    GstElement  *bin_audio_pgm;
+    GstElement  *tee_audio_pgm;
+    GstElement  *queue_audio_pgm;
+    GstElement  *sink_audio_pgm;
+    GstElement  *queue_audio_fitxer;
+    GstElement  *conv_audio_pgm;
+    GstElement  *encoder_audio_pgm;
+    GstElement  *volume_audio_pgm;
+    GstElement  *audiomixer;
+
+    GstElement  *bin_fitxer_pgm;
     GstElement  *mux_pgm;
     GstElement  *sink_fitxer;
 
-    GstElement  *videomixer;
     GstElement  *pipeline;
 };
 
