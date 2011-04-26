@@ -282,7 +282,9 @@ void MainWindow::Entrada_fitxer(int k)
     source_[k] = gst_element_factory_make ("filesrc", (char*)source.arg(k).toStdString().c_str());
     dec_[k] = gst_element_factory_make ("decodebin", "decoder");
 
-   //Aquí hauríem de poder enviar paràmetres problema amb gpointer i void*
+    //------------------------------------------------------------------------------------------------
+    //Aquí hauríem de poder enviar paràmetres problema amb gpointer i void*
+    //------------------------------------------------------------------------------------------------
     g_signal_connect (dec_[k], "new-decoded-pad", G_CALLBACK (cb_newpad_audio), NULL);
     g_signal_connect (dec_[k], "new-decoded-pad", G_CALLBACK (cb_newpad_video), NULL);
     gst_bin_add_many (GST_BIN (bin_font[k]), source_[k], dec_[k], NULL);
@@ -303,7 +305,7 @@ void MainWindow::Entrada_fitxer(int k)
     g_object_set (G_OBJECT (volume[k]), "mute", true , NULL);
 
     gst_bin_add_many (GST_BIN (audio), conv_audio_[k], tee_audio[k], queue_audio[k], queue_audio_mix[k], volume[k], sink_audio_[k],NULL);
-    gst_element_link_many (conv_audio_[k], tee_audio[k], queue_audio[k], volume[k], sink_audio_[k],NULL);
+    gst_element_link_many (conv_audio_[k], tee_audio[k], volume[k], queue_audio[k], sink_audio_[k],NULL);
     gst_element_add_pad (audio,
           gst_ghost_pad_new ("sink",audiopad_[k]));
     gst_object_unref (audiopad_[k]);
@@ -422,17 +424,17 @@ void MainWindow::Entrada_audio(int k)
     }
 
     /*Canvi de les propietats d'alguns elements */
-    g_object_set (G_OBJECT (audio_source[k]), "wave",4 , NULL);
+    g_object_set (G_OBJECT (audio_source[k]), "wave",5, NULL);
     g_object_set (G_OBJECT (volume[k]), "mute", true , NULL);
 
     /* Afegim tots els elements al bin_font corresponent */
-    gst_bin_add_many (GST_BIN (bin_audio_font[k]), audio_source[k], tee_audio[k], queue_audio[k], queue_audio_mix[k], sink_audio_[k], NULL);
+    gst_bin_add_many (GST_BIN (bin_audio_font[k]), audio_source[k], tee_audio[k],  volume[k], queue_audio[k], queue_audio_mix[k], sink_audio_[k], NULL);
 
     /* Afegim els bin_font al pipeline */
     gst_bin_add (GST_BIN (pipeline), bin_audio_font[k]);
 
     /*Linkem els elements */
-    gst_element_link_many (audio_source[k], tee_audio[k], queue_audio[k], sink_audio_[k], NULL);
+    gst_element_link_many (audio_source[k], tee_audio[k], volume[k], queue_audio[k], sink_audio_[k], NULL);
 
 }
 
@@ -472,7 +474,6 @@ void MainWindow::on_adquirirButton_clicked()
 
     /*Canvi de les propietats d'alguns elements */
     g_object_set (G_OBJECT (videomixer), "background", 1 , NULL);
-
 
     /* Afegim tots els elements al bin_video_pgm corresponent */
     gst_bin_add_many (GST_BIN (bin_video_pgm), videomixer, tee_video_pgm, queue_video_pgm, sink_video_pgm, NULL);
