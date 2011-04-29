@@ -22,11 +22,34 @@ namespace Ui {
     class MainWindow;
 }
 
+struct EntradaVideo {
+  GstElement *bin_font, *source, *tee, *queue, *sink, *queue_mix;
+  void crea(int k, GstElement *, const char *type);
+};
+
+struct EntradaAudio {
+  GstElement *bin_font, *source, *tee, *queue, *sink, *queue_mix, *volume;
+  void crea(int k, GstElement *);
+};
+
+struct EntradaFitxer {
+  EntradaVideo v;
+  EntradaAudio a;
+
+  GstElement *dec, *conv_audio, *conv_video;
+  GstPad     *audiopad, *videopad;
+  GstElement *audiobin, *videobin;
+  void crea(int k, GstElement *);
+};
+
+
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+    enum { maxcam = 4 };
 
 public slots:
     void canviacamara();
@@ -47,11 +70,6 @@ private slots:
     void newFile();
     void about();
     void aboutQt();
-    void Entrada_test(int k);
-    void Entrada_camera(int k);
-    void Entrada_fitxer(int k);
-    void Entrada_audio(int k);
-
 
 private:
     Ui::MainWindow *ui;
@@ -73,38 +91,17 @@ private:
     int numcam;
     QSize resolucio;
 
-    enum { numwidgets = 4 };
-
-    QLabel *Label_cam[numwidgets];
+    QLabel *Label_cam[maxcam];
     QLabel *Label_pgm;
-    QComboBox *combobox_cam[numwidgets];
+    QComboBox *combobox_cam[maxcam];
 
     QWidget *widget_pgm;
-    Widgetvideo *widget_cam[numwidgets];
+    Widgetvideo *widget_cam[maxcam];
 
-    //Elements d'entrada
-    GstElement  *bin_font[numwidgets];
-    GstElement  *source_[numwidgets];
-    GstElement  *tee_[numwidgets];
-    GstElement  *queue_[numwidgets];
-    GstElement  *sink_[numwidgets];
-    GstElement  *queue_mix[numwidgets];
-
-    GstElement  *bin_audio_font[numwidgets];
-    GstElement  *audio_source[numwidgets];
-    GstElement  *volume[numwidgets];
-    GstElement  *tee_audio[numwidgets];
-    GstElement  *queue_audio[numwidgets];
-    GstElement  *queue_audio_mix[numwidgets];
-
-    //Elements d'entrada de fitxer
-    GstElement  *dec_[numwidgets];
-    GstElement  *conv_audio_[numwidgets];
-    GstElement  *sink_audio_[numwidgets];
-    GstElement  *conv_video_[numwidgets];
-    GstPad  *audiopad_[numwidgets];
-    GstPad  *videopad_[numwidgets];
-
+    // Grups d'Elements
+    EntradaVideo  ventrades[maxcam];
+    EntradaAudio  aentrades[maxcam];
+    EntradaFitxer fentrades[maxcam];
 
     //Elements de sortida
     GstElement  *bin_video_pgm;
