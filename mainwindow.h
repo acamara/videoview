@@ -36,7 +36,7 @@ struct EntradaFitxer {
   EntradaVideo v;
   EntradaAudio a;
 
-  GstElement *dec, *conv_audio, *conv_video;
+  GstElement *bin_font, *source, *dec, *conv_audio, *conv_video;
   GstPad     *audiopad, *videopad;
   GstElement *audiobin, *videobin;
   void crea(int k, GstElement *);
