@@ -23,7 +23,7 @@ namespace Ui {
 }
 
 struct EntradaVideo {
-  GstElement *bin_font, *source, *tee, *queue, *sink, *queue_mix;
+  GstElement *bin_font, *source, *videorate, *tee, *queue, *sink, *queue_mix;
   void crea(int k, GstElement *, const char *type);
 };
 
@@ -42,6 +42,15 @@ struct EntradaFitxer {
   void crea(int k, GstElement *);
 };
 
+struct SortidaPGM {
+  GstElement  *bin_pgm,*tee, *queue, *sink, *mixer, *volum;
+  void crea(GstElement *,const char *type,const char *typesink, bool audio);
+};
+
+struct SortidaFitxer {
+    GstElement  *bin_fitxer, *queue, *conv, *encoder;
+    void crea(GstElement *);
+};
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -98,35 +107,19 @@ private:
     QWidget *widget_pgm;
     Widgetvideo *widget_cam[maxcam];
 
-    // Grups d'Elements
+    // Grups d'elements d'entrada
     EntradaVideo  ventrades[maxcam];
     EntradaAudio  aentrades[maxcam];
     EntradaFitxer fentrades[maxcam];
 
-    //Elements de sortida
-    GstElement  *bin_video_pgm;
-    GstElement  *tee_video_pgm;
-    GstElement  *queue_video_pgm;
-    GstElement  *sink_video_pgm;
-    GstElement  *queue_video_fitxer;
-    GstElement  *conv_video_pgm;
-    GstElement  *encoder_video_pgm;
-    GstElement  *videomixer;
+    //Grup d'elements de sortida
+    SortidaPGM  vpgm;
+    SortidaPGM  apgm;
+    SortidaFitxer vfitxer;
+    SortidaFitxer afitxer;
 
-    GstElement  *bin_audio_pgm;
-    GstElement  *tee_audio_pgm;
-    GstElement  *queue_audio_pgm;
-    GstElement  *sink_audio_pgm;
-    GstElement  *queue_audio_fitxer;
-    GstElement  *conv_audio_pgm;
-    GstElement  *encoder_audio_pgm;
-    GstElement  *volume_audio_pgm;
-    GstElement  *audiomixer;
-
-    GstElement  *bin_fitxer_pgm;
     GstElement  *mux_pgm;
     GstElement  *sink_fitxer;
-
     GstElement  *pipeline;
 };
 
