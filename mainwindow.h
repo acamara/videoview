@@ -16,6 +16,7 @@ class QActionGroup;
 class QLabel;
 class QMenu;
 class QComboBox;
+class QSlider;
 QT_END_NAMESPACE
 
 namespace Ui {
@@ -28,7 +29,7 @@ struct EntradaVideo {
 };
 
 struct EntradaAudio {
-  GstElement *bin_font, *source, *tee, *queue, *sink, *queue_mix, *volume;
+  GstElement *bin_font, *source, *tee, *queue, *sink, *queue_mix, *volume, *volume_mix;
   void crea(int k, GstElement *);
 };
 
@@ -62,6 +63,7 @@ public:
 
 public slots:
     void canviacamara();
+    void canviavolum(int);
 
 protected:
     void changeEvent(QEvent *e);
@@ -107,6 +109,7 @@ private:
 
     QWidget *widget_pgm;
     Widgetvideo *widget_cam[maxcam];
+    QSlider *slideraudio[maxcam];
 
     // Grups d'elements d'entrada
     EntradaVideo  ventrades[maxcam];

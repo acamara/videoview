@@ -71,6 +71,12 @@ void MainWindow::creainterficie()
         widget_cam[k]->setStyleSheet("background-color: rgb(0, 0, 0)");
         widget_cam[k]->setObjectName(nom.arg(k).toAscii());
         QObject::connect(widget_cam[k], SIGNAL(widgetClicked()), this, SLOT(canviacamara()));
+
+        slideraudio[k] = new QSlider(Qt::Vertical,0);
+        slideraudio[k]->setRange(0,10);
+        slideraudio[k]->setObjectName(nom.arg(k).toAscii());
+        ui->horizontalLayout_audio->addWidget(slideraudio[k]);
+        QObject::connect(slideraudio[k], SIGNAL(valueChanged(int)), this, SLOT(canviavolum(int)));
     }
 
     Label_pgm = new QLabel(tr("PGM"));
@@ -146,6 +152,7 @@ void MainWindow::finishCameras()
     delete Label_cam[k];
     delete combobox_cam[k];
     delete widget_cam[k];
+    delete slideraudio[k];
   }
   delete widget_pgm;
 }
@@ -318,7 +325,7 @@ void EntradaFitxer::crea(int k, GstElement *pipeline)
     //Elements de font d'entrada de fitxer
     QString sbin("bin_font%1");
     QString sabin("audiobin%1"), svbin("videobin%1");
-    QString stee("tee_%1"), squeue("queue_%1"), squeue_m("queue_mix%1"), ssink("sink_%1");
+    QString stee("tee_%1"), squeue("queue_%1"), squeue_m("queue_mix%1"), ssink("sink_%1"), svolumen_m("volumen_mix%1");
     QString satee("tee_audio%1"), saqueue("queue_audio%1"), saqueue_m("queue_audio_mix%1"), sasink("sink_audio%1"), svolume("volume%1");
     QString saconv("conv_audio%1"), sconv("conv_video%1");
     QString ssource("source_%1"), sdec("decoder%1");
@@ -341,25 +348,27 @@ void EntradaFitxer::crea(int k, GstElement *pipeline)
     gst_element_link (source, dec);
 
     //Creem l'entrada d'àudio
-    audiobin =    gst_bin_new ((char*)sabin.arg(k).toStdString().c_str());
-    conv_audio =  gst_element_factory_make("audioconvert",(char*)saconv.arg(k).toStdString().c_str());
-    audiopad =    gst_element_get_static_pad (conv_audio, "sink");
-    a.sink =      gst_element_factory_make("autoaudiosink", (char*)sasink.arg(k).toStdString().c_str());
-    a.tee =       gst_element_factory_make("tee",    (char*)satee.arg(k).toStdString().c_str());
-    a.volume =    gst_element_factory_make("volume", (char*)svolume.arg(k).toStdString().c_str());
-    a.queue =     gst_element_factory_make("queue",  (char*)saqueue.arg(k).toStdString().c_str());
-    a.queue_mix = gst_element_factory_make("queue",  (char*)saqueue_m.arg(k).toStdString().c_str());
+    audiobin =      gst_bin_new ((char*)sabin.arg(k).toStdString().c_str());
+    conv_audio =    gst_element_factory_make("audioconvert",(char*)saconv.arg(k).toStdString().c_str());
+    audiopad =      gst_element_get_static_pad (conv_audio, "sink");
+    a.sink =        gst_element_factory_make("autoaudiosink", (char*)sasink.arg(k).toStdString().c_str());
+    a.tee =         gst_element_factory_make("tee",    (char*)satee.arg(k).toStdString().c_str());
+    a.volume =      gst_element_factory_make("volume", (char*)svolume.arg(k).toStdString().c_str());
+    a.volume_mix =  gst_element_factory_make("volume", (char*)svolumen_m.arg(k).toStdString().c_str());
+    a.queue =       gst_element_factory_make("queue",  (char*)saqueue.arg(k).toStdString().c_str());
+    a.queue_mix =   gst_element_factory_make("queue",  (char*)saqueue_m.arg(k).toStdString().c_str());
 
     //Comprovem que s'han pogut crear tots els elements d'entrada
-    if( !audiopad ||!audiobin || !conv_audio || !a.tee || !a.queue || !a.queue_mix || !a.volume || !a.sink){
+    if( !audiopad ||!audiobin || !conv_audio || !a.tee || !a.queue || !a.queue_mix || !a.volume || !a.volume_mix || !a.sink){
       g_printerr ("Un dels elements de l'entrada de fitxer d'àudio no s'ha pogut crear. Sortint.\n");
     }
 
     //Canvi de les propietats d'alguns elements
     g_object_set (G_OBJECT (a.volume), "mute", true , NULL);
 
-    gst_bin_add_many (GST_BIN (audiobin), conv_audio, a.tee, a.queue, a.queue_mix, a.volume, a.sink, NULL);
+    gst_bin_add_many (GST_BIN (audiobin), conv_audio, a.tee, a.queue, a.volume, a.queue_mix, a.volume_mix, a.sink, NULL);
     gst_element_link_many (conv_audio, a.tee, a.queue, a.volume, a.sink, NULL);
+    gst_element_link_many (a.tee,a.queue_mix, a.volume_mix, NULL);
     gst_element_add_pad (audiobin, gst_ghost_pad_new ("sink", audiopad));
     gst_object_unref (audiopad);
     gst_bin_add (GST_BIN (bin_font), audiobin);
@@ -398,18 +407,19 @@ void EntradaAudio::crea(int k, GstElement *pipeline)
 {
     //Elements de font d'entrada d'àudio
     QString sbin_audio("bin_audio_font%1"), ssource_a("audio_source_%1"), stee_a("tee_audio%1"), squeue_a("queue_audio%1");
-    QString svolumen("volumen_%1"), squeue_m_a("queue_mix%1"), ssink_audio("sink_audio%1");
+    QString svolumen("volumen_%1"), svolumen_m("volumen_mix%1"), squeue_m_a("queue_mix%1"), ssink_audio("sink_audio%1");
 
-    bin_font =  gst_bin_new ((char*)sbin_audio.arg(k).toStdString().c_str());
-    source =    gst_element_factory_make("audiotestsrc", (char*)ssource_a.arg(k).toStdString().c_str());
-    tee =       gst_element_factory_make("tee", (char*)stee_a.arg(k).toStdString().c_str());
-    volume =    gst_element_factory_make("volume", (char*)svolumen.arg(k).toStdString().c_str());
-    queue =     gst_element_factory_make("queue", (char*)squeue_a.arg(k).toStdString().c_str());
-    queue_mix = gst_element_factory_make("queue", (char*)squeue_m_a.arg(k).toStdString().c_str());
-    sink =      gst_element_factory_make("autoaudiosink", (char*)ssink_audio.arg(k).toStdString().c_str());
+    bin_font =      gst_bin_new ((char*)sbin_audio.arg(k).toStdString().c_str());
+    source =        gst_element_factory_make("audiotestsrc", (char*)ssource_a.arg(k).toStdString().c_str());
+    tee =           gst_element_factory_make("tee", (char*)stee_a.arg(k).toStdString().c_str());
+    volume =        gst_element_factory_make("volume", (char*)svolumen.arg(k).toStdString().c_str());
+    volume_mix =    gst_element_factory_make("volume", (char*)svolumen_m.arg(k).toStdString().c_str());
+    queue =         gst_element_factory_make("queue", (char*)squeue_a.arg(k).toStdString().c_str());
+    queue_mix =     gst_element_factory_make("queue", (char*)squeue_m_a.arg(k).toStdString().c_str());
+    sink =          gst_element_factory_make("autoaudiosink", (char*)ssink_audio.arg(k).toStdString().c_str());
 
     //Comprovem que s'han pogut crear tots els elements d'entrada
-    if (!bin_font || !source || !tee || !queue || !queue_mix || !sink){
+    if (!bin_font || !source || !tee || !volume || !volume_mix || !queue || !queue_mix || !sink){
         g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
     }
 
@@ -418,13 +428,14 @@ void EntradaAudio::crea(int k, GstElement *pipeline)
     g_object_set (G_OBJECT (volume), "mute", true , NULL);
 
     //Afegim tots els elements al bin_font corresponent
-    gst_bin_add_many (GST_BIN (bin_font), source, tee,  volume, queue, queue_mix, sink, NULL);
+    gst_bin_add_many (GST_BIN (bin_font), source, tee,  volume, queue, queue_mix, volume_mix, sink, NULL);
 
     //Afegim els bin_font al pipeline
     gst_bin_add (GST_BIN (pipeline), bin_font);
 
     //Linkem els elements
     gst_element_link_many (source, tee, volume, queue, sink, NULL);
+    gst_element_link_many (tee, queue_mix, volume_mix,NULL);
 
 }
 
@@ -543,11 +554,11 @@ void MainWindow::on_adquirirButton_clicked()
     for (int k = 0; k < numcam; k++) {
         if(combobox_cam[k]->currentIndex()==1){
             gst_element_link_many (fentrades[k].v.tee, fentrades[k].v.queue_mix, vpgm.mixer, NULL);
-            gst_element_link_many (fentrades[k].a.tee, fentrades[k].a.queue_mix, apgm.mixer, NULL);
+            gst_element_link_many (fentrades[k].a.volume_mix, apgm.mixer, NULL);
         }
         else{
             gst_element_link_many (ventrades[k].tee, ventrades[k].queue_mix, vpgm.mixer, NULL);
-            gst_element_link_many (aentrades[k].tee, aentrades[k].queue_mix, apgm.mixer, NULL);
+            gst_element_link_many (aentrades[k].volume_mix, apgm.mixer, NULL);
         }
     }
 
@@ -605,6 +616,20 @@ void MainWindow::canviacamara()
             g_object_set (G_OBJECT(mixerpad), "alpha",0,NULL);
         }
     }
+}
+
+void MainWindow::canviavolum(int valor)
+{
+    QString nom = sender()->objectName();
+    int k=nom[4].digitValue();
+
+    if(combobox_cam[k]->currentIndex()==1){
+       g_object_set(G_OBJECT(fentrades[k].a.volume_mix), "volume", double(valor), NULL);
+    }
+    else{
+        g_object_set(G_OBJECT(aentrades[k].volume_mix), "volume", double(valor), NULL);
+    }
+
 }
 
 void MainWindow::on_gravarButton_clicked()

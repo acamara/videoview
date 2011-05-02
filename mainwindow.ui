@@ -271,14 +271,30 @@
          </font>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>1</number>
         </property>
-        <widget class="QWidget" name="tab">
+        <widget class="QWidget" name="tab_transicions">
          <attribute name="title">
           <string>Transicions</string>
          </attribute>
         </widget>
-        <widget class="QWidget" name="tab_3">
+        <widget class="QWidget" name="tab_audio">
+         <attribute name="title">
+          <string>Àudio</string>
+         </attribute>
+         <widget class="QWidget" name="horizontalLayoutWidget">
+          <property name="geometry">
+           <rect>
+            <x>6</x>
+            <y>10</y>
+            <width>251</width>
+            <height>191</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_audio"/>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="tab_titols">
          <attribute name="title">
           <string>Títols</string>
          </attribute>
@@ -372,7 +388,7 @@
           </property>
          </widget>
         </widget>
-        <widget class="QWidget" name="tab_2">
+        <widget class="QWidget" name="tab_grafics">
          <attribute name="title">
           <string>Gràfics</string>
          </attribute>
