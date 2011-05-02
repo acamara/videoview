@@ -56,7 +56,7 @@ void Dialog::on_Aceptar_clicked()
 }
 
 //Mètode que retorna l'informació obtiguda de la configuració
-void Dialog::get_config(int &numcam,QSize &resolucio)
+void Dialog::get_config(int &numcam,QSize &resolucio, int &framerate)
 {
    numcam=ui->NumCam->currentIndex ()+1;
 
@@ -77,6 +77,12 @@ void Dialog::get_config(int &numcam,QSize &resolucio)
            resolucio.setWidth(1920);
            resolucio.setHeight(1080);
         break;
-    }
+   }
+   if(ui->Framessegundo->currentIndex()==1){
+       framerate=30;
+   }
+   else{
+        framerate=25;
+   }
 }
 

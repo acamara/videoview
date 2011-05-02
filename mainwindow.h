@@ -24,7 +24,7 @@ namespace Ui {
 
 struct EntradaVideo {
   GstElement *bin_font, *source, *videorate, *tee, *queue, *sink, *queue_mix;
-  void crea(int k, GstElement *, const char *type);
+  void crea(int k, GstElement *, const char *type,QSize resolucio, int framerate);
 };
 
 struct EntradaAudio {
@@ -48,8 +48,8 @@ struct SortidaPGM {
 };
 
 struct SortidaFitxer {
-    GstElement  *bin_fitxer, *queue, *conv, *encoder;
-    void crea(GstElement *);
+    GstElement  *bin_fitxer, *valve, *queue, *conv, *encoder;
+    void crea(GstElement *, GstElement *, GstElement *, const char* type, const char* typeconverter, const char* typeencoder);
 };
 
 class MainWindow : public QMainWindow {
@@ -98,6 +98,7 @@ private:
     QAction *aboutQtAct;
 
     int numcam;
+    int framerate;
     QSize resolucio;
 
     QLabel *Label_cam[maxcam];

@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     Dialog *configdialog = new Dialog;
     configdialog->exec();
-    configdialog->get_config(numcam,resolucio);
+    configdialog->get_config(numcam,resolucio,framerate);
     creainterficie();
 
     /* Inicialitzacio Gstreamer */
@@ -135,7 +135,7 @@ void MainWindow::newFile()
     finishCameras();
     Dialog *configdialog = new Dialog;
     configdialog->exec();
-    configdialog->get_config(numcam,resolucio);
+    configdialog->get_config(numcam,resolucio,framerate);
     creainterficie();
 }
 
@@ -203,6 +203,28 @@ void MainWindow::createMenus()
 
 }
 
+static gboolean link_elements_with_filter (GstElement *element1, GstElement *element2, QSize resolucio, int framerate)
+{
+  gboolean link_ok;
+  GstCaps *caps;
+
+  caps = gst_caps_new_simple ("video/x-raw-yuv",
+              "format", GST_TYPE_FOURCC, GST_MAKE_FOURCC ('I', '4', '2', '0'),
+              "width", G_TYPE_INT, resolucio.width(),
+              "height", G_TYPE_INT, resolucio.height(),
+              "framerate", GST_TYPE_FRACTION,framerate, 1,
+              NULL);
+
+  link_ok = gst_element_link_filtered (element1, element2, caps);
+  gst_caps_unref (caps);
+
+  if (!link_ok) {
+    g_warning ("Failed to link element1 and element2!");
+  }
+
+  return link_ok;
+}
+
 static void cb_newpad_audio (GstElement *decodebin, GstPad *pad, gboolean last, gpointer data)
 {
   EntradaFitxer *grup = (EntradaFitxer*)data;
@@ -263,7 +285,7 @@ static void cb_newpad_video (GstElement *decodebin, GstPad *pad, gboolean last, 
   g_object_unref (videopad);
 }
 
-void EntradaVideo::crea(int k, GstElement *pipeline, const char* type) {
+void EntradaVideo::crea(int k, GstElement *pipeline, const char* type, QSize resolucio, int framerate) {
   //Elements de font d'entrada
   QString sbin("bin_font%1"), ssource("source_%1"), stee("tee_%1"), squeue("queue_%1");
   QString squeue_m("queue_mix%1"),ssink("sink_%1");
@@ -287,12 +309,13 @@ void EntradaVideo::crea(int k, GstElement *pipeline, const char* type) {
   gst_bin_add (GST_BIN (pipeline), bin_font);
 
   //Linkem els elements
-  gst_element_link_many (source, tee, queue, sink, NULL);
+  link_elements_with_filter (source,tee,resolucio,framerate);
+  gst_element_link_many (tee, queue, sink, NULL);
 }
 
 void EntradaFitxer::crea(int k, GstElement *pipeline)
 {
-    //Elements de font d'entrada
+    //Elements de font d'entrada de fitxer
     QString sbin("bin_font%1");
     QString sabin("audiobin%1"), svbin("videobin%1");
     QString stee("tee_%1"), squeue("queue_%1"), squeue_m("queue_mix%1"), ssink("sink_%1");
@@ -373,7 +396,7 @@ void EntradaFitxer::crea(int k, GstElement *pipeline)
 
 void EntradaAudio::crea(int k, GstElement *pipeline)
 {
-    //Elements de font d'entrada
+    //Elements de font d'entrada d'àudio
     QString sbin_audio("bin_audio_font%1"), ssource_a("audio_source_%1"), stee_a("tee_audio%1"), squeue_a("queue_audio%1");
     QString svolumen("volumen_%1"), squeue_m_a("queue_mix%1"), ssink_audio("sink_audio%1");
 
@@ -407,7 +430,6 @@ void EntradaAudio::crea(int k, GstElement *pipeline)
 
 void SortidaPGM::crea(GstElement *pipeline, const char* type, const char* typesink,bool audio){
 
-    //Elements de font d'entrada
     QString sbin("bin_"), smixer("mixer"),stee("tee_"), squeue("queue_"), ssink("sink_");
 
     bin_pgm = gst_bin_new ((char*)sbin.append(type).toStdString().c_str());
@@ -442,23 +464,65 @@ void SortidaPGM::crea(GstElement *pipeline, const char* type, const char* typesi
     }
 }
 
+void SortidaFitxer::crea(GstElement *pipeline, GstElement *tee,  GstElement *mux_pgm,
+                         const char* type, const char* typeconverter, const char* typeencoder)
+{
+    QString sbin("bin_fitxer_"), squeue("queue_fitxer_"), sconv("conv_fitxer_"), sencoder("encoder_");
+
+    bin_fitxer = gst_bin_new ((char*)sbin.append(type).toStdString().c_str());
+
+    queue =     gst_element_factory_make("queue",       (char*)squeue.append(type).toStdString().c_str());
+    conv =      gst_element_factory_make(typeconverter, (char*)sconv.append(typeconverter).toStdString().c_str());
+    encoder =   gst_element_factory_make(typeencoder,   (char*)sencoder.append(typeencoder).toStdString().c_str());
+
+    //Comprovem que s'han pogut crear tots els elements d'entrada
+    if(!bin_fitxer || !queue || !conv || !encoder){
+      g_printerr ("Un dels elements de la sortida a fitxer no s'ha pogut crear. Sortint.\n");
+    }
+
+    //Afegim tots els elements al bin_font corresponent//Comprovem que s'han pogut crear tots els elements d'entrada
+    if(!bin_fitxer || !queue || !conv || !encoder){
+      g_printerr ("Un dels elements de la sortida a fitxer no s'ha pogut crear. Sortint.\n");
+    }
+
+    //Afegim tots els elements al bin_font corresponent
+    gst_bin_add_many (GST_BIN (bin_fitxer), queue, conv, encoder, NULL);
+
+    //Afegim els bin_fitxer al pipeline
+    gst_bin_add (GST_BIN (pipeline), bin_fitxer);
+
+    //Linkem els elements
+    gst_element_link_many (tee, queue, conv, encoder, mux_pgm, NULL);
+}
+
 //Mètode que controla el botó capturar
 void MainWindow::on_adquirirButton_clicked()
 {
     //Creacio dels elements gstreamer
     pipeline = gst_pipeline_new ("video-mixer");
 
+    mux_pgm =       gst_element_factory_make("oggmux",   "multiplexorfitxer");
+    sink_fitxer =   gst_element_factory_make("filesink", "fitxerdesortida");
+
+    //Comprovem que s'han pogut crear tots els elements d'entrada
+    if(!pipeline || !mux_pgm || !sink_fitxer){
+      g_printerr ("El pipeline, el multiplexor o el sink_fitxer no s'ha pogut crear. Sortint.\n");
+    }
+
+    //Afegim els elements al pipeline corresponent
+    gst_bin_add_many (GST_BIN (pipeline), mux_pgm, sink_fitxer, NULL);
+
     for (int k = 0; k < numcam; k++) {
 
         if(combobox_cam[k]->currentIndex()==2){
-          ventrades[k].crea(k, pipeline, "v4l2src");
+          ventrades[k].crea(k, pipeline, "v4l2src",resolucio,framerate);
           aentrades[k].crea(k, pipeline);
         }
         if(combobox_cam[k]->currentIndex()==1){
           fentrades[k].crea(k, pipeline);
         }
         if(combobox_cam[k]->currentIndex()==0){
-          ventrades[k].crea(k, pipeline, "videotestsrc");
+          ventrades[k].crea(k, pipeline, "videotestsrc",resolucio,framerate);
           aentrades[k].crea(k, pipeline);
           //Canvi de el tipus d'imatge test d'alguns elements
           g_object_set (G_OBJECT (ventrades[k].source), "pattern", k , NULL);
@@ -468,8 +532,12 @@ void MainWindow::on_adquirirButton_clicked()
     vpgm.crea(pipeline,"videomixer","xvimagesink", false);
     apgm.crea(pipeline,"liveadder","autoaudiosink",true);
 
+    vfitxer.crea(pipeline, vpgm.tee, mux_pgm, "video","ffmpegcolorspace","theoraenc");
+    afitxer.crea(pipeline, apgm.tee, mux_pgm, "audio","audioconvert","vorbisenc");
+
     //Canvi de les propietats d'alguns elements
     g_object_set (G_OBJECT (vpgm.mixer), "background", 1 , NULL);
+    g_object_set (G_OBJECT (sink_fitxer), "location","sortida" , NULL);
 
     //Linkem els elements d'entrada amb els de sortida
     for (int k = 0; k < numcam; k++) {
@@ -482,6 +550,8 @@ void MainWindow::on_adquirirButton_clicked()
             gst_element_link_many (aentrades[k].tee, aentrades[k].queue_mix, apgm.mixer, NULL);
         }
     }
+
+    gst_element_link(mux_pgm, sink_fitxer);
 
     //Canviem l'estat del pipeline a "playing"
     g_print ("Now playing: %s\n","Mixer example");
@@ -539,10 +609,7 @@ void MainWindow::canviacamara()
 
 void MainWindow::on_gravarButton_clicked()
 {
-    //QString nomdeprojecte = QFileDialog::getSaveFileName();
-
-    ui->gravarButton->setStyleSheet("background-color: rgb(255,215,0)");
-
+   ui->gravarButton->setStyleSheet("background-color: rgb(255,215,0)");
 }
 
 void MainWindow::on_stopButton_2_clicked()
