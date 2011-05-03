@@ -737,6 +737,29 @@
      <height>25</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuCaptura">
+    <property name="title">
+     <string>Captura</string>
+    </property>
+    <addaction name="actionNova"/>
+    <addaction name="actionSortir_2"/>
+   </widget>
+   <widget class="QMenu" name="menuEdicio">
+    <property name="title">
+     <string>Edició</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuAjuda">
+    <property name="title">
+     <string>Ajuda</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionAjuda_de_Capturadora"/>
+    <addaction name="actionSobre"/>
+   </widget>
+   <addaction name="menuCaptura"/>
+   <addaction name="menuEdicio"/>
+   <addaction name="menuAjuda"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNou">
@@ -747,6 +770,26 @@
   <action name="actionSortir">
    <property name="text">
     <string>Sortir</string>
+   </property>
+  </action>
+  <action name="actionNova">
+   <property name="text">
+    <string>Nova</string>
+   </property>
+  </action>
+  <action name="actionSortir_2">
+   <property name="text">
+    <string>Sortir</string>
+   </property>
+  </action>
+  <action name="actionAjuda_de_Capturadora">
+   <property name="text">
+    <string>Ajuda de Capturadora</string>
+   </property>
+  </action>
+  <action name="actionSobre">
+   <property name="text">
+    <string>Sobre</string>
    </property>
   </action>
  </widget>

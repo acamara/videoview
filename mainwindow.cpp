@@ -14,7 +14,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     createActions();
-    createMenus();
 
     Dialog *configdialog = new Dialog;
     configdialog->exec();
@@ -51,7 +50,6 @@ void MainWindow::changeEvent(QEvent *e)
 //Mètode que genera la interfície gràfica segons el nombre de càmeres
 void MainWindow::creainterficie()
 {
-
     // Declaració variables gráfiques
 
     QString nom("CAM %1");
@@ -128,13 +126,6 @@ void MainWindow::creainterficie()
     ui->gridLayout->setRowMinimumHeight(5,252);
 }
 
-//Mètode que genera el menú
-void MainWindow::contextMenuEvent(QContextMenuEvent *event)
-{
-    QMenu menu(this);
-    menu.exec(event->globalPos());
-}
-
 //Mètode que controla l'acció nou fitxer
 void MainWindow::newFile()
 {
@@ -143,18 +134,6 @@ void MainWindow::newFile()
     configdialog->exec();
     configdialog->get_config(numcam,resolucio,framerate);
     creainterficie();
-}
-
-//Métode que tanca tots els Layers de càmeres.
-void MainWindow::finishCameras()
-{
-  for (int k = 0; k < numcam; k++) {
-    delete Label_cam[k];
-    delete combobox_cam[k];
-    delete widget_cam[k];
-    delete slideraudio[k];
-  }
-  delete widget_pgm;
 }
 
 //Mètode que controla l'acció about
@@ -173,41 +152,22 @@ void MainWindow::aboutQt()
 //Mètode que crea les diferents accions de la finestra principal
 void MainWindow::createActions()
 {
-    newAct = new QAction(tr("&Nova"), this);
-    newAct->setShortcuts(QKeySequence::New);
-    newAct->setStatusTip(tr("Crear un nova gravació"));
-    connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
-
-    exitAct = new QAction(tr("Sortir"), this);
-    exitAct->setShortcut(tr("Ctrl+S"));
-    exitAct->setStatusTip(tr("Sortir de l'aplicació"));
-    connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
-
-    aboutAct = new QAction(tr("Ajuda de Capturadora"), this);
-    aboutAct->setStatusTip(tr("Mostra la ajuda de l'aplicació"));
-    connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
-
-    aboutQtAct = new QAction(tr("Sobre"), this);
-    aboutQtAct->setStatusTip(tr("Mostra informació de l'aplicació"));
-    connect(aboutQtAct, SIGNAL(triggered()), this, SLOT(aboutQt()));
-
+    connect(ui->actionNova, SIGNAL(triggered()), this, SLOT(newFile()));
+    connect(ui->actionSortir_2, SIGNAL(triggered()), this, SLOT(close()));
+    connect(ui->actionAjuda_de_Capturadora, SIGNAL(triggered()), this, SLOT(about()));
+    connect(ui->actionSobre, SIGNAL(triggered()), this, SLOT(aboutQt()));
 }
 
-//Mètode que crea el menu de l'aplicació
-void MainWindow::createMenus()
+//Métode que tanca tots els Layers de càmeres.
+void MainWindow::finishCameras()
 {
-    fileMenu = menuBar()->addMenu(tr("&Captura"));
-    fileMenu->addAction(newAct);
-    fileMenu->addSeparator();
-    fileMenu->addAction(exitAct);
-
-    editMenu = menuBar()->addMenu(tr("&Edicio"));
-    editMenu->addSeparator();
-
-    helpMenu = menuBar()->addMenu(tr("&Ajuda"));
-    helpMenu->addAction(aboutAct);
-    helpMenu->addAction(aboutQtAct);
-
+  for (int k = 0; k < numcam; k++) {
+    delete Label_cam[k];
+    delete combobox_cam[k];
+    delete widget_cam[k];
+    delete slideraudio[k];
+  }
+  delete widget_pgm;
 }
 
 static gboolean link_elements_with_filter (GstElement *element1, GstElement *element2, QSize resolucio, int framerate)
@@ -309,33 +269,34 @@ void ElementsComuns::creacomuns(int k, QString ref)
 
 void EntradaVideo::crea(int k, GstElement *pipeline, const char* type, QSize resolucio, int framerate) {
   //Elements de font d'entrada
-  QString ssource("source_%1"), ssink("sink_%1");
+  QString ssource("source_%1"), ssink("sink_%1"), svconv("colorconverter_%1");
 
   creacomuns(k,"video");
-  source =  gst_element_factory_make(type,          (char*)ssource.arg(k).toStdString().c_str());
-  sink =    gst_element_factory_make("xvimagesink", (char*)ssink.arg(k).toStdString().c_str());
+  source =      gst_element_factory_make(type,          (char*)ssource.arg(k).toStdString().c_str());
+  sink =        gst_element_factory_make("xvimagesink", (char*)ssink.arg(k).toStdString().c_str());
+  color_conv =  gst_element_factory_make("ffmpegcolorspace",  (char*)svconv.arg(k).toStdString().c_str());
 
   //Comprovem que s'han pogut crear tots els elements d'entrada
-  if(!source || !sink){
+  if(!source || !color_conv || !sink){
     g_printerr ("Un dels elements de l'entrada de vídeo no s'ha pogut crear. Sortint.\n");
   }
 
   //Afegim tots els elements al bin corresponent
-  gst_bin_add_many (GST_BIN (bin), source, tee, queue, queue_mix, sink, NULL);
+  gst_bin_add_many (GST_BIN (bin), source, tee, queue, color_conv, queue_mix, sink, NULL);
 
   //Afegim els bin al pipeline
   gst_bin_add (GST_BIN (pipeline), bin);
 
   //Linkem els elements
-  link_elements_with_filter (source,tee,resolucio,framerate);
-  gst_element_link_many (tee, queue, sink, NULL);
+  //link_elements_with_filter (source,tee,resolucio,framerate);
+  gst_element_link_many (source,tee, queue, sink, NULL);
 }
 
 void EntradaFitxer::crea(int k, GstElement *pipeline)
 {
     //Elements de font d'entrada de fitxer
     QString sbin("bin_font%1"),  ssource("source_%1"), sdec("decoder%1"), svolumen_m("volumen_mix%1"), svolume("volume%1");
-    QString saconv("conv_audio%1"), sasink("sink_audio%1"), sconv("conv_video%1"), ssink("sink_%1");
+    QString saconv("conv_audio%1"), sasink("sink_audio%1"), sconv("conv_video%1"), ssink("sink_%1"), svconv("colorconverter_%1");
 
     //Creem entrada de fitxer i el decodebin, els afegim al pipeline i els linkem.
     bin_font = gst_bin_new ((char*)sbin.arg(k).toStdString().c_str());
@@ -379,14 +340,15 @@ void EntradaFitxer::crea(int k, GstElement *pipeline)
     v.creacomuns(k,"video_fitxer");
     conv_video =    gst_element_factory_make ("ffmpegcolorspace", (char*)sconv.arg(k).toStdString().c_str());
     videopad =      gst_element_get_static_pad (conv_video, "sink");
+    v.color_conv =  gst_element_factory_make("ffmpegcolorspace",  (char*)svconv.arg(k).toStdString().c_str());
     v.sink =        gst_element_factory_make ("xvimagesink",(char*)ssink.arg(k).toStdString().c_str());
 
     //Comprovem que s'han pogut crear tots els elements d'entrada
-    if( !videopad || !conv_video || !v.sink){
+    if( !videopad || !conv_video || !v.color_conv || !v.sink){
       g_printerr ("Un dels elements de l'entrada de fitxer d'àudio no s'ha pogut crear. Sortint.\n");
     }
 
-    gst_bin_add_many (GST_BIN (v.bin), conv_video, v.tee, v.queue, v.queue_mix, v.sink, NULL);
+    gst_bin_add_many (GST_BIN (v.bin), conv_video, v.tee, v.queue, v.queue_mix, v.color_conv, v.sink, NULL);
     gst_element_link_many (conv_video, v.tee, v.queue, v.sink, NULL);
     gst_element_add_pad (v.bin, gst_ghost_pad_new ("sink", videopad));
     gst_object_unref (videopad);
@@ -539,11 +501,11 @@ void MainWindow::on_adquirirButton_clicked()
     //Linkem els elements d'entrada amb els de sortida
     for (int k = 0; k < numcam; k++) {
         if(combobox_cam[k]->currentIndex()==1){
-            gst_element_link_many (fentrades[k].v.tee, fentrades[k].v.queue_mix, vpgm.mixer, NULL);
+            gst_element_link_many (fentrades[k].v.tee, fentrades[k].v.queue_mix, fentrades[k].v.color_conv, vpgm.mixer, NULL);
             gst_element_link_many (fentrades[k].a.volume_mix, apgm.mixer, NULL);
         }
         else{
-            gst_element_link_many (ventrades[k].tee, ventrades[k].queue_mix, vpgm.mixer, NULL);
+            gst_element_link_many (ventrades[k].tee, ventrades[k].queue_mix, ventrades[k].color_conv, vpgm.mixer, NULL);
             gst_element_link_many (aentrades[k].volume_mix, apgm.mixer, NULL);
         }
     }
@@ -575,8 +537,8 @@ void MainWindow::on_adquirirButton_clicked()
 void MainWindow::on_stopButton_clicked()
 {
     g_print ("Returned, stopping playback\n");
-    gst_element_set_state (pipeline, GST_STATE_NULL);
 
+    gst_element_set_state (pipeline, GST_STATE_NULL);
     g_print ("Deleting pipeline\n");
     gst_object_unref (GST_OBJECT (pipeline));
 }
@@ -618,6 +580,11 @@ void MainWindow::canviavolum(int valor)
 
 }
 
+void MainWindow::on_audioSlider_valueChanged(int value)
+{
+    g_object_set (G_OBJECT (apgm.volum), "volume", double(value) , NULL);
+}
+
 void MainWindow::on_gravarButton_clicked()
 {
    ui->gravarButton->setStyleSheet("background-color: rgb(255,215,0)");
@@ -646,7 +613,4 @@ void MainWindow::on_templatesButton_clicked()
     ui->templatelabel->setPixmap(QPixmap::fromImage(templateresize));
 }
 
-void MainWindow::on_audioSlider_valueChanged(int value)
-{
-    g_object_set (G_OBJECT (apgm.volum), "volume", double(value) , NULL);
-}
+

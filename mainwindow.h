@@ -11,10 +11,7 @@
 #include <gst/interfaces/xoverlay.h>
 
 QT_BEGIN_NAMESPACE
-class QAction;
-class QActionGroup;
 class QLabel;
-class QMenu;
 class QComboBox;
 class QSlider;
 QT_END_NAMESPACE
@@ -29,7 +26,7 @@ struct ElementsComuns {
 };
 
 struct EntradaVideo: public ElementsComuns {
-  GstElement *source, *sink;
+  GstElement *source, *color_conv, *sink;
   void crea(int k, GstElement *, const char *type,QSize resolucio, int framerate);
 };
 
@@ -63,7 +60,7 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    enum { maxcam = 4 };
+    enum { maxcam = 8 };
 
 public slots:
     void canviacamara();
@@ -71,7 +68,6 @@ public slots:
 
 protected:
     void changeEvent(QEvent *e);
-    void contextMenuEvent(QContextMenuEvent *event);
     void closeEvent(QCloseEvent *);
 
 private slots:
@@ -90,18 +86,8 @@ private:
     Ui::MainWindow *ui;
 
     void createActions();
-    void createMenus();
     void creainterficie();
     void finishCameras();
-
-    QMenu *fileMenu;
-    QMenu *editMenu;
-    QMenu *helpMenu;
-
-    QAction *newAct;
-    QAction *exitAct;
-    QAction *aboutAct;
-    QAction *aboutQtAct;
 
     int numcam;
     int framerate;
