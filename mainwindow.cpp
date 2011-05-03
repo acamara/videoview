@@ -240,7 +240,7 @@ static void cb_newpad_audio (GstElement *decodebin, GstPad *pad, gboolean last, 
   GstPad *audiopad;
 
   //Linkem només una vegada
-  audiopad = gst_element_get_static_pad (grup->audiobin, "sink");
+  audiopad = gst_element_get_static_pad (grup->a.bin, "sink");
   if (GST_PAD_IS_LINKED (audiopad)) {
     g_object_unref (audiopad);
     return;
@@ -270,7 +270,7 @@ static void cb_newpad_video (GstElement *decodebin, GstPad *pad, gboolean last, 
   GstPad *videopad;
 
   //Linkem només una vegada
-  videopad = gst_element_get_static_pad (grup->videobin, "sink");
+  videopad = gst_element_get_static_pad (grup->v.bin, "sink");
   if (GST_PAD_IS_LINKED (videopad)) {
     g_object_unref (videopad);
     return;
@@ -292,28 +292,39 @@ static void cb_newpad_video (GstElement *decodebin, GstPad *pad, gboolean last, 
   g_object_unref (videopad);
 }
 
+void ElementsComuns::creacomuns(int k, QString ref)
+{
+    QString sbin("bin_%1"), stee("tee_%1"), squeue("queue_%1"),squeue_m("queue_mix%1");
+
+    bin =       gst_bin_new ((char*)(sbin+ref).arg(k).toStdString().c_str());
+    tee =       gst_element_factory_make("tee",     ((char*)(stee+ref).arg(k).toStdString().c_str()));
+    queue =     gst_element_factory_make("queue",   ((char*)(squeue+ref).arg(k).toStdString().c_str()));
+    queue_mix = gst_element_factory_make("queue",   ((char*)(squeue_m+ref).arg(k).toStdString().c_str()));
+
+    //Comprovem que s'han pogut crear tots els elements d'entrada
+    if(!tee || !queue || !queue_mix){
+      g_printerr ("Un dels elements de comuns no s'ha pogut crear. Sortint.\n");
+    }
+}
+
 void EntradaVideo::crea(int k, GstElement *pipeline, const char* type, QSize resolucio, int framerate) {
   //Elements de font d'entrada
-  QString sbin("bin_font%1"), ssource("source_%1"), stee("tee_%1"), squeue("queue_%1");
-  QString squeue_m("queue_mix%1"),ssink("sink_%1");
+  QString ssource("source_%1"), ssink("sink_%1");
 
-  bin_font =  gst_bin_new ((char*)sbin.arg(k).toStdString().c_str());
-  source =    gst_element_factory_make(type,          (char*)ssource.arg(k).toStdString().c_str());
-  tee =       gst_element_factory_make("tee",         (char*)stee.arg(k).toStdString().c_str());
-  queue =     gst_element_factory_make("queue",       (char*)squeue.arg(k).toStdString().c_str());
-  queue_mix = gst_element_factory_make("queue",       (char*)squeue_m.arg(k).toStdString().c_str());
-  sink =      gst_element_factory_make("xvimagesink", (char*)ssink.arg(k).toStdString().c_str());
+  creacomuns(k,"video");
+  source =  gst_element_factory_make(type,          (char*)ssource.arg(k).toStdString().c_str());
+  sink =    gst_element_factory_make("xvimagesink", (char*)ssink.arg(k).toStdString().c_str());
 
   //Comprovem que s'han pogut crear tots els elements d'entrada
-  if(!bin_font || !source || !tee || !queue || !queue_mix || !sink){
+  if(!source || !sink){
     g_printerr ("Un dels elements de l'entrada de vídeo no s'ha pogut crear. Sortint.\n");
   }
 
-  //Afegim tots els elements al bin_font corresponent
-  gst_bin_add_many (GST_BIN (bin_font), source, tee, queue, queue_mix, sink, NULL);
+  //Afegim tots els elements al bin corresponent
+  gst_bin_add_many (GST_BIN (bin), source, tee, queue, queue_mix, sink, NULL);
 
-  //Afegim els bin_font al pipeline
-  gst_bin_add (GST_BIN (pipeline), bin_font);
+  //Afegim els bin al pipeline
+  gst_bin_add (GST_BIN (pipeline), bin);
 
   //Linkem els elements
   link_elements_with_filter (source,tee,resolucio,framerate);
@@ -323,17 +334,11 @@ void EntradaVideo::crea(int k, GstElement *pipeline, const char* type, QSize res
 void EntradaFitxer::crea(int k, GstElement *pipeline)
 {
     //Elements de font d'entrada de fitxer
-    QString sbin("bin_font%1");
-    QString sabin("audiobin%1"), svbin("videobin%1");
-    QString stee("tee_%1"), squeue("queue_%1"), squeue_m("queue_mix%1"), ssink("sink_%1"), svolumen_m("volumen_mix%1");
-    QString satee("tee_audio%1"), saqueue("queue_audio%1"), saqueue_m("queue_audio_mix%1"), sasink("sink_audio%1"), svolume("volume%1");
-    QString saconv("conv_audio%1"), sconv("conv_video%1");
-    QString ssource("source_%1"), sdec("decoder%1");
-
-    //Creem el bin_font
-    bin_font = gst_bin_new ((char*)sbin.arg(k).toStdString().c_str());
+    QString sbin("bin_font%1"),  ssource("source_%1"), sdec("decoder%1"), svolumen_m("volumen_mix%1"), svolume("volume%1");
+    QString saconv("conv_audio%1"), sasink("sink_audio%1"), sconv("conv_video%1"), ssink("sink_%1");
 
     //Creem entrada de fitxer i el decodebin, els afegim al pipeline i els linkem.
+    bin_font = gst_bin_new ((char*)sbin.arg(k).toStdString().c_str());
     source = gst_element_factory_make ("filesrc", (char*)ssource.arg(k).toStdString().c_str());
     dec = gst_element_factory_make ("decodebin", (char*)sdec.arg(k).toStdString().c_str());
 
@@ -348,50 +353,44 @@ void EntradaFitxer::crea(int k, GstElement *pipeline)
     gst_element_link (source, dec);
 
     //Creem l'entrada d'àudio
-    audiobin =      gst_bin_new ((char*)sabin.arg(k).toStdString().c_str());
+    a.creacomuns(k,"audio_fitxer");
     conv_audio =    gst_element_factory_make("audioconvert",(char*)saconv.arg(k).toStdString().c_str());
     audiopad =      gst_element_get_static_pad (conv_audio, "sink");
     a.sink =        gst_element_factory_make("autoaudiosink", (char*)sasink.arg(k).toStdString().c_str());
-    a.tee =         gst_element_factory_make("tee",    (char*)satee.arg(k).toStdString().c_str());
     a.volume =      gst_element_factory_make("volume", (char*)svolume.arg(k).toStdString().c_str());
     a.volume_mix =  gst_element_factory_make("volume", (char*)svolumen_m.arg(k).toStdString().c_str());
-    a.queue =       gst_element_factory_make("queue",  (char*)saqueue.arg(k).toStdString().c_str());
-    a.queue_mix =   gst_element_factory_make("queue",  (char*)saqueue_m.arg(k).toStdString().c_str());
 
     //Comprovem que s'han pogut crear tots els elements d'entrada
-    if( !audiopad ||!audiobin || !conv_audio || !a.tee || !a.queue || !a.queue_mix || !a.volume || !a.volume_mix || !a.sink){
+    if( !audiopad || !conv_audio || !a.volume || !a.volume_mix || !a.sink){
       g_printerr ("Un dels elements de l'entrada de fitxer d'àudio no s'ha pogut crear. Sortint.\n");
     }
 
     //Canvi de les propietats d'alguns elements
     g_object_set (G_OBJECT (a.volume), "mute", true , NULL);
 
-    gst_bin_add_many (GST_BIN (audiobin), conv_audio, a.tee, a.queue, a.volume, a.queue_mix, a.volume_mix, a.sink, NULL);
+    gst_bin_add_many (GST_BIN (a.bin), conv_audio, a.tee, a.queue, a.volume, a.queue_mix, a.volume_mix, a.sink, NULL);
     gst_element_link_many (conv_audio, a.tee, a.queue, a.volume, a.sink, NULL);
     gst_element_link_many (a.tee,a.queue_mix, a.volume_mix, NULL);
-    gst_element_add_pad (audiobin, gst_ghost_pad_new ("sink", audiopad));
+    gst_element_add_pad (a.bin, gst_ghost_pad_new ("sink", audiopad));
     gst_object_unref (audiopad);
-    gst_bin_add (GST_BIN (bin_font), audiobin);
+    gst_bin_add (GST_BIN (bin_font), a.bin);
 
     //Creem l'entrada de vídeo
-    videobin =      gst_bin_new ((char*)svbin.arg(k).toStdString().c_str());
+    v.creacomuns(k,"video_fitxer");
     conv_video =    gst_element_factory_make ("ffmpegcolorspace", (char*)sconv.arg(k).toStdString().c_str());
     videopad =      gst_element_get_static_pad (conv_video, "sink");
-    v.tee =         gst_element_factory_make ("tee", (char*)stee.arg(k).toStdString().c_str());
-    v.queue =       gst_element_factory_make("queue", (char*)squeue.arg(k).toStdString().c_str());
-    v.queue_mix =   gst_element_factory_make("queue", (char*)squeue_m.arg(k).toStdString().c_str());
     v.sink =        gst_element_factory_make ("xvimagesink",(char*)ssink.arg(k).toStdString().c_str());
 
     //Comprovem que s'han pogut crear tots els elements d'entrada
-    if( !videopad ||!videobin || !conv_video || !v.tee || !v.queue || !v.queue_mix || !v.sink){
+    if( !videopad || !conv_video || !v.sink){
       g_printerr ("Un dels elements de l'entrada de fitxer d'àudio no s'ha pogut crear. Sortint.\n");
     }
 
-    gst_bin_add_many (GST_BIN (videobin), conv_video, v.tee, v.queue, v.queue_mix, v.sink, NULL);
+    gst_bin_add_many (GST_BIN (v.bin), conv_video, v.tee, v.queue, v.queue_mix, v.sink, NULL);
     gst_element_link_many (conv_video, v.tee, v.queue, v.sink, NULL);
-    gst_element_add_pad (videobin, gst_ghost_pad_new ("sink", videopad));
+    gst_element_add_pad (v.bin, gst_ghost_pad_new ("sink", videopad));
     gst_object_unref (videopad);
-    gst_bin_add (GST_BIN (bin_font), videobin);
+    gst_bin_add (GST_BIN (bin_font), v.bin);
 
     //Seleccionem el fitxer d'entrada
     QString nom_fitxer = QFileDialog::getOpenFileName();
@@ -406,20 +405,17 @@ void EntradaFitxer::crea(int k, GstElement *pipeline)
 void EntradaAudio::crea(int k, GstElement *pipeline)
 {
     //Elements de font d'entrada d'àudio
-    QString sbin_audio("bin_audio_font%1"), ssource_a("audio_source_%1"), stee_a("tee_audio%1"), squeue_a("queue_audio%1");
-    QString svolumen("volumen_%1"), svolumen_m("volumen_mix%1"), squeue_m_a("queue_mix%1"), ssink_audio("sink_audio%1");
+    QString ssource_a("audio_source_%1"), svolumen("volumen_%1"), svolumen_m("volumen_mix%1"), ssink_audio("sink_audio%1");
 
-    bin_font =      gst_bin_new ((char*)sbin_audio.arg(k).toStdString().c_str());
+    creacomuns(k,"audio");
+
     source =        gst_element_factory_make("audiotestsrc", (char*)ssource_a.arg(k).toStdString().c_str());
-    tee =           gst_element_factory_make("tee", (char*)stee_a.arg(k).toStdString().c_str());
     volume =        gst_element_factory_make("volume", (char*)svolumen.arg(k).toStdString().c_str());
     volume_mix =    gst_element_factory_make("volume", (char*)svolumen_m.arg(k).toStdString().c_str());
-    queue =         gst_element_factory_make("queue", (char*)squeue_a.arg(k).toStdString().c_str());
-    queue_mix =     gst_element_factory_make("queue", (char*)squeue_m_a.arg(k).toStdString().c_str());
     sink =          gst_element_factory_make("autoaudiosink", (char*)ssink_audio.arg(k).toStdString().c_str());
 
     //Comprovem que s'han pogut crear tots els elements d'entrada
-    if (!bin_font || !source || !tee || !volume || !volume_mix || !queue || !queue_mix || !sink){
+    if (!source || !volume || !volume_mix || !sink){
         g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
     }
 
@@ -428,43 +424,39 @@ void EntradaAudio::crea(int k, GstElement *pipeline)
     g_object_set (G_OBJECT (volume), "mute", true , NULL);
 
     //Afegim tots els elements al bin_font corresponent
-    gst_bin_add_many (GST_BIN (bin_font), source, tee,  volume, queue, queue_mix, volume_mix, sink, NULL);
+    gst_bin_add_many (GST_BIN (bin), source, tee,  volume, queue, queue_mix, volume_mix, sink, NULL);
 
     //Afegim els bin_font al pipeline
-    gst_bin_add (GST_BIN (pipeline), bin_font);
+    gst_bin_add (GST_BIN (pipeline), bin);
 
     //Linkem els elements
     gst_element_link_many (source, tee, volume, queue, sink, NULL);
     gst_element_link_many (tee, queue_mix, volume_mix,NULL);
-
 }
 
-void SortidaPGM::crea(GstElement *pipeline, const char* type, const char* typesink,bool audio){
+void SortidaPGM::crea(int k, GstElement *pipeline, const char* type, const char* typesink,bool audio){
 
-    QString sbin("bin_"), smixer("mixer"),stee("tee_"), squeue("queue_"), ssink("sink_");
+    QString smixer("mixer"), ssink("sink_");
 
-    bin_pgm = gst_bin_new ((char*)sbin.append(type).toStdString().c_str());
-
+    creacomuns(k,"mixer");
     mixer =    gst_element_factory_make(type ,    (char*)smixer.append(type).toStdString().c_str());
-    tee =      gst_element_factory_make ("tee",   (char*)stee.append(type).toStdString().c_str());
-    queue =    gst_element_factory_make("queue",  (char*)squeue.append(type).toStdString().c_str());
     sink =     gst_element_factory_make(typesink, (char*)ssink.append(typesink).toStdString().c_str());
 
     //Comprovem que s'han pogut crear tots els elements
-    if (!mixer || !tee || !queue || !sink) {
+    if (!mixer || !sink) {
        g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
     }
 
     //Afegim tots els elements al bin_pgm corresponent
-    gst_bin_add_many (GST_BIN (bin_pgm), mixer, tee, queue, sink, NULL);
+    gst_bin_add_many (GST_BIN (bin), mixer, tee, queue, queue_mix, sink, NULL);
 
     if(audio){
         volum = gst_element_factory_make("volume","volumen_pgm");
-        gst_bin_add(GST_BIN (bin_pgm), volum);
+        gst_bin_add(GST_BIN (bin), volum);
     }
 
     //Afegim el bin_pgm al pipeline
-    gst_bin_add (GST_BIN (pipeline),bin_pgm);
+    gst_bin_add (GST_BIN (pipeline),bin);
 
     //Linkem els elements
     if(audio){
@@ -473,37 +465,31 @@ void SortidaPGM::crea(GstElement *pipeline, const char* type, const char* typesi
     else{
         gst_element_link_many(mixer, tee, queue, sink, NULL);
     }
+    gst_element_link(tee, queue_mix);
 }
 
-void SortidaFitxer::crea(GstElement *pipeline, GstElement *tee,  GstElement *mux_pgm,
+void SortidaFitxer::crea(GstElement *pipeline, GstElement *queue,  GstElement *mux_pgm,
                          const char* type, const char* typeconverter, const char* typeencoder)
 {
-    QString sbin("bin_fitxer_"), squeue("queue_fitxer_"), sconv("conv_fitxer_"), sencoder("encoder_");
+    QString sbin("bin_fitxer_"), sconv("conv_fitxer_"), sencoder("encoder_");
 
     bin_fitxer = gst_bin_new ((char*)sbin.append(type).toStdString().c_str());
-
-    queue =     gst_element_factory_make("queue",       (char*)squeue.append(type).toStdString().c_str());
     conv =      gst_element_factory_make(typeconverter, (char*)sconv.append(typeconverter).toStdString().c_str());
     encoder =   gst_element_factory_make(typeencoder,   (char*)sencoder.append(typeencoder).toStdString().c_str());
 
     //Comprovem que s'han pogut crear tots els elements d'entrada
-    if(!bin_fitxer || !queue || !conv || !encoder){
+    if(!bin_fitxer || !conv || !encoder){
       g_printerr ("Un dels elements de la sortida a fitxer no s'ha pogut crear. Sortint.\n");
     }
 
-    //Afegim tots els elements al bin_font corresponent//Comprovem que s'han pogut crear tots els elements d'entrada
-    if(!bin_fitxer || !queue || !conv || !encoder){
-      g_printerr ("Un dels elements de la sortida a fitxer no s'ha pogut crear. Sortint.\n");
-    }
-
-    //Afegim tots els elements al bin_font corresponent
-    gst_bin_add_many (GST_BIN (bin_fitxer), queue, conv, encoder, NULL);
+    //Afegim tots els elements al bin corresponent
+    gst_bin_add_many (GST_BIN (bin_fitxer), conv, encoder, NULL);
 
     //Afegim els bin_fitxer al pipeline
     gst_bin_add (GST_BIN (pipeline), bin_fitxer);
 
     //Linkem els elements
-    gst_element_link_many (tee, queue, conv, encoder, mux_pgm, NULL);
+    gst_element_link_many (queue, conv, encoder, mux_pgm, NULL);
 }
 
 //Mètode que controla el botó capturar
@@ -540,11 +526,11 @@ void MainWindow::on_adquirirButton_clicked()
         }
     }
 
-    vpgm.crea(pipeline,"videomixer","xvimagesink", false);
-    apgm.crea(pipeline,"liveadder","autoaudiosink",true);
+    vpgm.crea(0, pipeline,"videomixer","xvimagesink", false);
+    apgm.crea(1, pipeline,"liveadder","autoaudiosink",true);
 
-    vfitxer.crea(pipeline, vpgm.tee, mux_pgm, "video","ffmpegcolorspace","theoraenc");
-    afitxer.crea(pipeline, apgm.tee, mux_pgm, "audio","audioconvert","vorbisenc");
+    vfitxer.crea(pipeline, vpgm.queue_mix, mux_pgm, "video","ffmpegcolorspace","theoraenc");
+    afitxer.crea(pipeline, apgm.queue_mix, mux_pgm, "audio","audioconvert","vorbisenc");
 
     //Canvi de les propietats d'alguns elements
     g_object_set (G_OBJECT (vpgm.mixer), "background", 1 , NULL);

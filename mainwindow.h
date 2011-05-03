@@ -23,13 +23,18 @@ namespace Ui {
     class MainWindow;
 }
 
-struct EntradaVideo {
-  GstElement *bin_font, *source, *videorate, *tee, *queue, *sink, *queue_mix;
+struct ElementsComuns {
+  GstElement *bin, *tee, *queue, *queue_mix;
+  void creacomuns(int k, QString ref);
+};
+
+struct EntradaVideo: public ElementsComuns {
+  GstElement *source, *sink;
   void crea(int k, GstElement *, const char *type,QSize resolucio, int framerate);
 };
 
-struct EntradaAudio {
-  GstElement *bin_font, *source, *tee, *queue, *sink, *queue_mix, *volume, *volume_mix;
+struct EntradaAudio: public ElementsComuns {
+  GstElement *source, *volume, *volume_mix, *sink;
   void crea(int k, GstElement *);
 };
 
@@ -39,17 +44,16 @@ struct EntradaFitxer {
 
   GstElement *bin_font, *source, *dec, *conv_audio, *conv_video;
   GstPad     *audiopad, *videopad;
-  GstElement *audiobin, *videobin;
   void crea(int k, GstElement *);
 };
 
-struct SortidaPGM {
-  GstElement  *bin_pgm,*tee, *queue, *sink, *mixer, *volum;
-  void crea(GstElement *,const char *type,const char *typesink, bool audio);
+struct SortidaPGM: public ElementsComuns {
+  GstElement  *sink, *mixer, *volum;
+  void crea(int k, GstElement *,const char *type,const char *typesink, bool audio);
 };
 
 struct SortidaFitxer {
-    GstElement  *bin_fitxer, *valve, *queue, *conv, *encoder;
+    GstElement  *bin_fitxer, *conv, *encoder;
     void crea(GstElement *, GstElement *, GstElement *, const char* type, const char* typeconverter, const char* typeencoder);
 };
 
