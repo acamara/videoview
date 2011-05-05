@@ -192,6 +192,26 @@ static gboolean link_elements_with_filter (GstElement *element1, GstElement *ele
   return link_ok;
 }
 
+static gboolean link_elements_with_resolucio (GstElement *element1, GstElement *element2, QSize resolucio)
+{
+  gboolean link_ok;
+  GstCaps *caps;
+
+  caps = gst_caps_new_simple ("video/x-raw-yuv",
+              "width", G_TYPE_INT, resolucio.width(),
+              "height", G_TYPE_INT, resolucio.height(),
+              NULL);
+
+  link_ok = gst_element_link_filtered (element1, element2, caps);
+  gst_caps_unref (caps);
+
+  if (!link_ok) {
+    g_warning ("Failed to link element1 and element2!");
+  }
+
+  return link_ok;
+}
+
 static void cb_newpad_audio (GstElement *decodebin, GstPad *pad, gboolean last, gpointer data)
 {
   EntradaFitxer *grup = (EntradaFitxer*)data;
@@ -258,8 +278,8 @@ void ElementsComuns::creacomuns(int k, QString ref)
 
     bin =       gst_bin_new ((char*)(sbin+ref).arg(k).toStdString().c_str());
     tee =       gst_element_factory_make("tee",     ((char*)(stee+ref).arg(k).toStdString().c_str()));
-    queue =     gst_element_factory_make("queue",   ((char*)(squeue+ref).arg(k).toStdString().c_str()));
-    queue_mix = gst_element_factory_make("queue",   ((char*)(squeue_m+ref).arg(k).toStdString().c_str()));
+    queue =     gst_element_factory_make("queue2",   ((char*)(squeue+ref).arg(k).toStdString().c_str()));
+    queue_mix = gst_element_factory_make("queue2",   ((char*)(squeue_m+ref).arg(k).toStdString().c_str()));
 
     //Comprovem que s'han pogut crear tots els elements d'entrada
     if(!tee || !queue || !queue_mix){
@@ -269,39 +289,54 @@ void ElementsComuns::creacomuns(int k, QString ref)
 
 void EntradaVideo::crea(int k, GstElement *pipeline, const char* type, QSize resolucio, int framerate) {
   //Elements de font d'entrada
-  QString ssource("source_%1"), ssink("sink_%1"), svconv("colorconverter_%1");
+  QString ssource("source_%1"), ssink("sink_%1");
 
   creacomuns(k,"video");
-  source =      gst_element_factory_make(type,          (char*)ssource.arg(k).toStdString().c_str());
-  sink =        gst_element_factory_make("xvimagesink", (char*)ssink.arg(k).toStdString().c_str());
-  color_conv =  gst_element_factory_make("ffmpegcolorspace",  (char*)svconv.arg(k).toStdString().c_str());
+  creatransformadors(k);
+  source =      gst_element_factory_make(type,              (char*)ssource.arg(k).toStdString().c_str());
+  sink =        gst_element_factory_make("xvimagesink",     (char*)ssink.arg(k).toStdString().c_str());
 
   //Comprovem que s'han pogut crear tots els elements d'entrada
-  if(!source || !color_conv || !sink){
+  if(!source || !sink){
     g_printerr ("Un dels elements de l'entrada de vídeo no s'ha pogut crear. Sortint.\n");
   }
 
   //Afegim tots els elements al bin corresponent
-  gst_bin_add_many (GST_BIN (bin), source, tee, queue, color_conv, queue_mix, sink, NULL);
+  gst_bin_add_many (GST_BIN (bin), source, tee, queue, color_conv, scale, sink, queue_mix, scale_mix, NULL);
 
   //Afegim els bin al pipeline
   gst_bin_add (GST_BIN (pipeline), bin);
 
   //Linkem els elements
-  //link_elements_with_filter (source,tee,resolucio,framerate);
-  gst_element_link_many (source,tee, queue, sink, NULL);
+  link_elements_with_filter (source,tee,resolucio,framerate);
+  gst_element_link_many (tee, queue, scale, sink, NULL);
+}
+
+void EntradaVideo::creatransformadors(int k)
+{
+    QString svconv("colorconverter_%1"), svscale("videoscale_%1"), svscale_m("videoscale_mix_%1");
+
+    color_conv =    gst_element_factory_make("ffmpegcolorspace",(char*)svconv.arg(k).toStdString().c_str());
+    scale =         gst_element_factory_make("videoscale",      (char*)svscale.arg(k).toStdString().c_str());
+    scale_mix =     gst_element_factory_make("videoscale",      (char*)svscale_m.arg(k).toStdString().c_str());
+
+    //Comprovem que s'han pogut crear tots els elements d'entrada
+    if(!color_conv || !scale || !scale_mix){
+      g_printerr ("Un dels elements transformadors de vídeo no s'ha pogut crear. Sortint.\n");
+    }
+
 }
 
 void EntradaFitxer::crea(int k, GstElement *pipeline)
 {
     //Elements de font d'entrada de fitxer
     QString sbin("bin_font%1"),  ssource("source_%1"), sdec("decoder%1"), svolumen_m("volumen_mix%1"), svolume("volume%1");
-    QString saconv("conv_audio%1"), sasink("sink_audio%1"), sconv("conv_video%1"), ssink("sink_%1"), svconv("colorconverter_%1");
+    QString saconv("conv_audio%1"), sasink("sink_audio%1"), sconv("conv_video%1"), ssink("sink_%1");
 
     //Creem entrada de fitxer i el decodebin, els afegim al pipeline i els linkem.
     bin_font = gst_bin_new ((char*)sbin.arg(k).toStdString().c_str());
     source = gst_element_factory_make ("filesrc", (char*)ssource.arg(k).toStdString().c_str());
-    dec = gst_element_factory_make ("decodebin", (char*)sdec.arg(k).toStdString().c_str());
+    dec = gst_element_factory_make ("decodebin2", (char*)sdec.arg(k).toStdString().c_str());
 
     //Comprovem que s'han pogut crear tots els elements d'entrada
     if(!bin_font || !source || !dec){
@@ -338,18 +373,18 @@ void EntradaFitxer::crea(int k, GstElement *pipeline)
 
     //Creem l'entrada de vídeo
     v.creacomuns(k,"video_fitxer");
-    conv_video =    gst_element_factory_make ("ffmpegcolorspace", (char*)sconv.arg(k).toStdString().c_str());
-    videopad =      gst_element_get_static_pad (conv_video, "sink");
-    v.color_conv =  gst_element_factory_make("ffmpegcolorspace",  (char*)svconv.arg(k).toStdString().c_str());
-    v.sink =        gst_element_factory_make ("xvimagesink",(char*)ssink.arg(k).toStdString().c_str());
+    v.creatransformadors(k);
+    conv_video =    gst_element_factory_make ("ffmpegcolorspace",   (char*)sconv.arg(k).toStdString().c_str());
+    videopad =      gst_element_get_static_pad (conv_video,         "sink");
+    v.sink =        gst_element_factory_make ("xvimagesink",        (char*)ssink.arg(k).toStdString().c_str());
 
     //Comprovem que s'han pogut crear tots els elements d'entrada
-    if( !videopad || !conv_video || !v.color_conv || !v.sink){
-      g_printerr ("Un dels elements de l'entrada de fitxer d'àudio no s'ha pogut crear. Sortint.\n");
+    if( !videopad || !conv_video || !v.sink){
+      g_printerr ("Un dels elements de l'entrada de fitxer de vídeo no s'ha pogut crear. Sortint.\n");
     }
 
-    gst_bin_add_many (GST_BIN (v.bin), conv_video, v.tee, v.queue, v.queue_mix, v.color_conv, v.sink, NULL);
-    gst_element_link_many (conv_video, v.tee, v.queue, v.sink, NULL);
+    gst_bin_add_many (GST_BIN (v.bin), conv_video, v.tee, v.queue, v.scale, v.sink, v.queue_mix, v.color_conv, v.scale_mix, NULL);
+    gst_element_link_many (conv_video, v.tee, v.queue, v.scale, v.sink, NULL);
     gst_element_add_pad (v.bin, gst_ghost_pad_new ("sink", videopad));
     gst_object_unref (videopad);
     gst_bin_add (GST_BIN (bin_font), v.bin);
@@ -484,7 +519,7 @@ void MainWindow::on_adquirirButton_clicked()
           ventrades[k].crea(k, pipeline, "videotestsrc",resolucio,framerate);
           aentrades[k].crea(k, pipeline);
           //Canvi de el tipus d'imatge test d'alguns elements
-          g_object_set (G_OBJECT (ventrades[k].source), "pattern", k , NULL);
+          //g_object_set (G_OBJECT (ventrades[k].source), "pattern", k ,"is-live", true, NULL);
         }
     }
 
@@ -501,11 +536,13 @@ void MainWindow::on_adquirirButton_clicked()
     //Linkem els elements d'entrada amb els de sortida
     for (int k = 0; k < numcam; k++) {
         if(combobox_cam[k]->currentIndex()==1){
-            gst_element_link_many (fentrades[k].v.tee, fentrades[k].v.queue_mix, fentrades[k].v.color_conv, vpgm.mixer, NULL);
+            gst_element_link_many (fentrades[k].v.tee, fentrades[k].v.queue_mix, fentrades[k].v.color_conv, fentrades[k].v.scale_mix, NULL);
+            link_elements_with_resolucio(fentrades[k].v.scale_mix, vpgm.mixer,resolucio);
             gst_element_link_many (fentrades[k].a.volume_mix, apgm.mixer, NULL);
         }
         else{
-            gst_element_link_many (ventrades[k].tee, ventrades[k].queue_mix, ventrades[k].color_conv, vpgm.mixer, NULL);
+            gst_element_link_many (ventrades[k].tee, ventrades[k].queue_mix, ventrades[k].color_conv, ventrades[k].scale_mix, NULL);
+            link_elements_with_resolucio(ventrades[k].scale_mix, vpgm.mixer, resolucio);
             gst_element_link_many (aentrades[k].volume_mix, apgm.mixer, NULL);
         }
     }

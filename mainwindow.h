@@ -26,8 +26,9 @@ struct ElementsComuns {
 };
 
 struct EntradaVideo: public ElementsComuns {
-  GstElement *source, *color_conv, *sink;
+  GstElement *source, *color_conv, *scale, *scale_mix, *sink;
   void crea(int k, GstElement *, const char *type,QSize resolucio, int framerate);
+  void creatransformadors(int k);
 };
 
 struct EntradaAudio: public ElementsComuns {
@@ -45,7 +46,7 @@ struct EntradaFitxer {
 };
 
 struct SortidaPGM: public ElementsComuns {
-  GstElement  *sink, *mixer, *volum;
+  GstElement  *mixer, *volum, *sink;
   void crea(int k, GstElement *,const char *type,const char *typesink, bool audio);
 };
 
