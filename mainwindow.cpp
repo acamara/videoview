@@ -272,14 +272,18 @@ static void cb_newpad_video (GstElement *decodebin, GstPad *pad, gboolean last, 
   g_object_unref (videopad);
 }
 
+inline char *gennom(QString s, int k) {
+  return (char*)s.arg(k).toStdString().c_str();
+}
+
 void ElementsComuns::creacomuns(int k, QString ref)
 {
     QString sbin("bin_%1"), stee("tee_%1"), squeue("queue_%1"),squeue_m("queue_mix%1");
 
-    bin =       gst_bin_new ((char*)(sbin+ref).arg(k).toStdString().c_str());
-    tee =       gst_element_factory_make("tee",     ((char*)(stee+ref).arg(k).toStdString().c_str()));
-    queue =     gst_element_factory_make("queue2",   ((char*)(squeue+ref).arg(k).toStdString().c_str()));
-    queue_mix = gst_element_factory_make("queue2",   ((char*)(squeue_m+ref).arg(k).toStdString().c_str()));
+    bin =       gst_bin_new (gennom(sbin+ref, k));
+    tee =       gst_element_factory_make("tee",    gennom(stee+ref, k));
+    queue =     gst_element_factory_make("queue2", gennom(squeue+ref, k));
+    queue_mix = gst_element_factory_make("queue2", gennom(squeue_m+ref, k));
 
     //Comprovem que s'han pogut crear tots els elements d'entrada
     if(!tee || !queue || !queue_mix){
@@ -293,8 +297,8 @@ void EntradaVideo::crea(int k, GstElement *pipeline, const char* type, QSize res
 
   creacomuns(k,"video");
   creatransformadors(k);
-  source =      gst_element_factory_make(type,              (char*)ssource.arg(k).toStdString().c_str());
-  sink =        gst_element_factory_make("xvimagesink",     (char*)ssink.arg(k).toStdString().c_str());
+  source =      gst_element_factory_make(type,          gennom(ssource, k));
+  sink =        gst_element_factory_make("xvimagesink", gennom(ssink, k));
 
   //Comprovem que s'han pogut crear tots els elements d'entrada
   if(!source || !sink){
@@ -316,9 +320,9 @@ void EntradaVideo::creatransformadors(int k)
 {
     QString svconv("colorconverter_%1"), svscale("videoscale_%1"), svscale_m("videoscale_mix_%1");
 
-    color_conv =    gst_element_factory_make("ffmpegcolorspace",(char*)svconv.arg(k).toStdString().c_str());
-    scale =         gst_element_factory_make("videoscale",      (char*)svscale.arg(k).toStdString().c_str());
-    scale_mix =     gst_element_factory_make("videoscale",      (char*)svscale_m.arg(k).toStdString().c_str());
+    color_conv =    gst_element_factory_make("ffmpegcolorspace",gennom(svconv, k));
+    scale =         gst_element_factory_make("videoscale",      gennom(svscale, k));
+    scale_mix =     gst_element_factory_make("videoscale",      gennom(svscale_m, k));
 
     //Comprovem que s'han pogut crear tots els elements d'entrada
     if(!color_conv || !scale || !scale_mix){
@@ -334,9 +338,9 @@ void EntradaFitxer::crea(int k, GstElement *pipeline)
     QString saconv("conv_audio%1"), sasink("sink_audio%1"), sconv("conv_video%1"), ssink("sink_%1");
 
     //Creem entrada de fitxer i el decodebin, els afegim al pipeline i els linkem.
-    bin_font = gst_bin_new ((char*)sbin.arg(k).toStdString().c_str());
-    source = gst_element_factory_make ("filesrc", (char*)ssource.arg(k).toStdString().c_str());
-    dec = gst_element_factory_make ("decodebin2", (char*)sdec.arg(k).toStdString().c_str());
+    bin_font = gst_bin_new (gennom(sbin, k));
+    source = gst_element_factory_make ("filesrc", gennom(ssource, k));
+    dec = gst_element_factory_make ("decodebin2", gennom(sdec, k));
 
     //Comprovem que s'han pogut crear tots els elements d'entrada
     if(!bin_font || !source || !dec){
@@ -350,11 +354,11 @@ void EntradaFitxer::crea(int k, GstElement *pipeline)
 
     //Creem l'entrada d'àudio
     a.creacomuns(k,"audio_fitxer");
-    conv_audio =    gst_element_factory_make("audioconvert",(char*)saconv.arg(k).toStdString().c_str());
+    conv_audio =    gst_element_factory_make("audioconvert",gennom(saconv, k));
     audiopad =      gst_element_get_static_pad (conv_audio, "sink");
-    a.sink =        gst_element_factory_make("autoaudiosink", (char*)sasink.arg(k).toStdString().c_str());
-    a.volume =      gst_element_factory_make("volume", (char*)svolume.arg(k).toStdString().c_str());
-    a.volume_mix =  gst_element_factory_make("volume", (char*)svolumen_m.arg(k).toStdString().c_str());
+    a.sink =        gst_element_factory_make("autoaudiosink", gennom(sasink, k));
+    a.volume =      gst_element_factory_make("volume", gennom(svolume, k));
+    a.volume_mix =  gst_element_factory_make("volume", gennom(svolumen_m, k));
 
     //Comprovem que s'han pogut crear tots els elements d'entrada
     if( !audiopad || !conv_audio || !a.volume || !a.volume_mix || !a.sink){
@@ -374,9 +378,9 @@ void EntradaFitxer::crea(int k, GstElement *pipeline)
     //Creem l'entrada de vídeo
     v.creacomuns(k,"video_fitxer");
     v.creatransformadors(k);
-    conv_video =    gst_element_factory_make ("ffmpegcolorspace",   (char*)sconv.arg(k).toStdString().c_str());
+    conv_video =    gst_element_factory_make ("ffmpegcolorspace",   gennom(sconv, k));
     videopad =      gst_element_get_static_pad (conv_video,         "sink");
-    v.sink =        gst_element_factory_make ("xvimagesink",        (char*)ssink.arg(k).toStdString().c_str());
+    v.sink =        gst_element_factory_make ("xvimagesink",        gennom(ssink, k));
 
     //Comprovem que s'han pogut crear tots els elements d'entrada
     if( !videopad || !conv_video || !v.sink){
@@ -406,10 +410,10 @@ void EntradaAudio::crea(int k, GstElement *pipeline)
 
     creacomuns(k,"audio");
 
-    source =        gst_element_factory_make("audiotestsrc", (char*)ssource_a.arg(k).toStdString().c_str());
-    volume =        gst_element_factory_make("volume", (char*)svolumen.arg(k).toStdString().c_str());
-    volume_mix =    gst_element_factory_make("volume", (char*)svolumen_m.arg(k).toStdString().c_str());
-    sink =          gst_element_factory_make("autoaudiosink", (char*)ssink_audio.arg(k).toStdString().c_str());
+    source =        gst_element_factory_make("audiotestsrc", gennom(ssource_a, k));
+    volume =        gst_element_factory_make("volume", gennom(svolumen, k));
+    volume_mix =    gst_element_factory_make("volume", gennom(svolumen_m, k));
+    sink =          gst_element_factory_make("autoaudiosink", gennom(ssink_audio, k));
 
     //Comprovem que s'han pogut crear tots els elements d'entrada
     if (!source || !volume || !volume_mix || !sink){
@@ -589,7 +593,7 @@ void MainWindow::canviacamara()
 
     for (int k = 0; k < numcam; k++){
         if(k==nom[4].digitValue()){
-            mixerpad=gst_element_get_pad(vpgm.mixer,(char*)senyal.arg(k).toStdString().c_str());
+            mixerpad=gst_element_get_pad(vpgm.mixer,gennom(senyal, k));
             g_object_set (G_OBJECT(mixerpad), "alpha",1.0,NULL);
 
             Label_cam[k]->setStyleSheet("background-color: rgb(255, 0, 0)");
@@ -597,7 +601,7 @@ void MainWindow::canviacamara()
         else{
             Label_cam[k]->setStyleSheet("background-color: rgb(255, 255, 255)");
 
-            mixerpad=gst_element_get_pad(vpgm.mixer, (char*)senyal.arg(k).toStdString().c_str());
+            mixerpad=gst_element_get_pad(vpgm.mixer, gennom(senyal, k));
             g_object_set (G_OBJECT(mixerpad), "alpha",0,NULL);
         }
     }
