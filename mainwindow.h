@@ -42,7 +42,7 @@ struct EntradaFitxer {
 
   GstElement *bin_font, *source, *dec, *conv_audio, *conv_video;
   GstPad     *audiopad, *videopad;
-  void crea(int k, GstElement *);
+  void crea(int k, GstElement *,QString nomfitxer);
 };
 
 struct SortidaPGM: public ElementsComuns {
@@ -72,6 +72,7 @@ protected:
     void closeEvent(QCloseEvent *);
 
 private slots:
+    void on_addButton_clicked();
     void on_audioSlider_valueChanged(int value);
     void on_templatesButton_clicked();
     void on_moscaButton_clicked();
@@ -93,6 +94,7 @@ private:
     int numcam;
     int framerate;
     QSize resolucio;
+    QStringList fontvideo;
 
     QLabel *Label_cam[maxcam];
     QLabel *Label_pgm;

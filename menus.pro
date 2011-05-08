@@ -35,3 +35,6 @@ else {
         -lgobject-2.0\
         -lgstinterfaces-0.10
 }
+
+RESOURCES += \
+    recursos.qrc

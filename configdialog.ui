@@ -7,11 +7,15 @@
     <x>0</x>
     <y>0</y>
     <width>419</width>
-    <height>319</height>
+    <height>347</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="recursos.qrc">
+    <normaloff>:/iconos/images/iconovideocamara.png</normaloff>:/iconos/images/iconovideocamara.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout_4">
    <item row="0" column="0">
@@ -257,7 +261,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="recursos.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>Aceptar</sender>

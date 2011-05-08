@@ -333,7 +333,7 @@ void EntradaVideo::creatransformadors(int k)
 
 }
 
-void EntradaFitxer::crea(int k, GstElement *pipeline)
+void EntradaFitxer::crea(int k, GstElement *pipeline, QString nom_fitxer)
 {
     //Elements de font d'entrada de fitxer
     QString sbin("bin_font%1"),  ssource("source_%1"), sdec("decoder%1"), svolumen_m("volumen_mix%1"), svolume("volume%1");
@@ -397,7 +397,6 @@ void EntradaFitxer::crea(int k, GstElement *pipeline)
     gst_bin_add (GST_BIN (bin_font), v.bin);
 
     //Seleccionem el fitxer d'entrada
-    QString nom_fitxer = QFileDialog::getOpenFileName();
     const char *c_nom_fitxer = nom_fitxer.toStdString().c_str();
     g_object_set (G_OBJECT (source), "location", c_nom_fitxer, NULL);
     gst_element_set_state(v.sink, GST_STATE_READY);
@@ -514,13 +513,12 @@ void MainWindow::on_adquirirButton_clicked()
     gst_bin_add_many (GST_BIN (pipeline), mux_pgm, sink_fitxer, NULL);
 
     for (int k = 0; k < numcam; k++) {
-
         if(combobox_cam[k]->currentIndex()==2){
           ventrades[k].crea(k, pipeline, "v4l2src",resolucio,framerate);
           aentrades[k].crea(k, pipeline);
         }
         if(combobox_cam[k]->currentIndex()==1){
-          fentrades[k].crea(k, pipeline);
+          fentrades[k].crea(k, pipeline,fontvideo.at(k));
         }
         if(combobox_cam[k]->currentIndex()==0){
           ventrades[k].crea(k, pipeline, "videotestsrc",resolucio,framerate);
@@ -657,4 +655,12 @@ void MainWindow::on_templatesButton_clicked()
     ui->templatelabel->setPixmap(QPixmap::fromImage(templateresize));
 }
 
+void MainWindow::on_addButton_clicked()
+{
+    fontvideo = QFileDialog::getOpenFileNames(this, tr("Selecciona les fonts de Vídeo"),QDir::currentPath(),"Multimedia (*.avi *.mp4 *.mpg *.rm *.ogg *.mov *.asf *.wmv)");
+    for (int i = 0; i < fontvideo.size(); ++i){
+        QString fitxer=fontvideo.at(i);
+        ui->listWidget->addItem(fitxer.remove(0,fitxer.lastIndexOf("/")));
+    }
+}
 
