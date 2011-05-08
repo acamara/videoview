@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/iconos">
+        <file>images/iconosuma.png</file>
+        <file>images/iconostreaming.png</file>
+        <file>images/iconovideocamara.png</file>
+    </qresource>
+</RCC>
