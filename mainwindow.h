@@ -69,12 +69,13 @@ public:
     enum { maxcam = 8 };
 
 public slots:
-    void canviacamara();
+    void canviacamara(int);
     void canviavolum(int);
 
 protected:
     void changeEvent(QEvent *e);
     void closeEvent(QCloseEvent *);
+    void keyPressEvent( QKeyEvent * event );
 
 private slots:
     void on_checkBox_2_stateChanged(int );

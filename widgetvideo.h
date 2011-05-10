@@ -16,7 +16,7 @@ public:
     ~Widgetvideo();
 
 signals:
-    void widgetClicked();
+    void widgetClicked(int);
 
 protected:
     void mousePressEvent(QMouseEvent *event);

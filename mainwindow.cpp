@@ -47,6 +47,15 @@ void MainWindow::changeEvent(QEvent *e)
     }
 }
 
+//Mètode que controla si s'ha clicat el nùmero del widget, per fer el canvi de càmera
+void MainWindow::keyPressEvent ( QKeyEvent * event )
+{
+    int k=event->key();
+    if(48<k && k<(49+numcam)){
+        canviacamara(k-49);
+    }
+}
+
 //Mètode que genera la interfície gràfica segons el nombre de càmeres
 void MainWindow::creainterficie()
 {
@@ -68,7 +77,7 @@ void MainWindow::creainterficie()
         widget_cam[k] = new Widgetvideo(ui->centralWidget);
         widget_cam[k]->setStyleSheet("background-color: rgb(0, 0, 0)");
         widget_cam[k]->setObjectName(nom.arg(k).toAscii());
-        QObject::connect(widget_cam[k], SIGNAL(widgetClicked()), this, SLOT(canviacamara()));
+        QObject::connect(widget_cam[k], SIGNAL(widgetClicked(int)), this, SLOT(canviacamara(int)));
 
         slideraudio[k] = new QSlider(Qt::Vertical,0);
         slideraudio[k]->setRange(0,10);
@@ -591,11 +600,16 @@ void MainWindow::on_adquirirButton_clicked()
     gst_x_overlay_set_xwindow_id(GST_X_OVERLAY (vpgm.sink),gulong(widget_pgm->winId()));
     QApplication::syncX();
     //---------------------------------------------------------------*/
- }
+    Label_cam[numcam-1]->setStyleSheet("background-color: rgb(255, 0, 0)");
+}
 
 //Mètode que controla el botó stop
 void MainWindow::on_stopButton_clicked()
 {
+    for (int k = 0; k < numcam; k++){
+        Label_cam[k]->setStyleSheet("background-color: rgb(255, 255, 255)");
+    }
+
     g_print ("Returned, stopping playback\n");
 
     gst_element_set_state (pipeline, GST_STATE_NULL);
@@ -604,14 +618,13 @@ void MainWindow::on_stopButton_clicked()
 }
 
 //Mètode que controla el canvi de càmera
-void MainWindow::canviacamara()
+void MainWindow::canviacamara(int camactiva)
 {
-    QString nom = sender()->objectName();
     QString senyal("sink_%1");
     GstPad *mixerpad;
 
     for (int k = 0; k < numcam; k++){
-        if(k==nom[4].digitValue()){
+        if(k==camactiva){
             mixerpad=gst_element_get_pad(vpgm.mixer,(char*)senyal.arg(k).toStdString().c_str());
             g_object_set (G_OBJECT(mixerpad), "alpha",1.0,NULL);
 

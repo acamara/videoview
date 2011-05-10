@@ -6,7 +6,6 @@ Widgetvideo::Widgetvideo(QWidget *parent) :
     ui(new Ui::Widgetvideo)
 {
     ui->setupUi(this);
-
 }
 
 Widgetvideo::~Widgetvideo()
@@ -17,6 +16,7 @@ Widgetvideo::~Widgetvideo()
 //Mètode que controla si s'ha clicat el widget, per fer el canvi de càmera
 void Widgetvideo::mousePressEvent(QMouseEvent *event)
 {
- emit widgetClicked();
- QWidget::mousePressEvent(event);
+    QString nom = objectName();
+    emit widgetClicked(nom[4].digitValue());
+    QWidget::mousePressEvent(event);
 }
