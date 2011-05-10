@@ -45,9 +45,14 @@ struct EntradaFitxer {
   void crea(int k, GstElement *,QString nomfitxer);
 };
 
-struct SortidaPGM: public ElementsComuns {
+struct VideoPGM: public ElementsComuns {
+  GstElement  *mixer, *textoverlay, *sink;
+  void crea(int k, GstElement *);
+};
+
+struct AudioPGM: public ElementsComuns {
   GstElement  *mixer, *volum, *sink;
-  void crea(int k, GstElement *,const char *type,const char *typesink, bool audio);
+  void crea(int k, GstElement *);
 };
 
 struct SortidaFitxer {
@@ -72,6 +77,7 @@ protected:
     void closeEvent(QCloseEvent *);
 
 private slots:
+    void on_checkBox_2_stateChanged(int );
     void on_addButton_clicked();
     void on_audioSlider_valueChanged(int value);
     void on_templatesButton_clicked();
@@ -110,11 +116,12 @@ private:
     EntradaFitxer fentrades[maxcam];
 
     //Grup d'elements de sortida
-    SortidaPGM  vpgm;
-    SortidaPGM  apgm;
+    VideoPGM  vpgm;
+    AudioPGM  apgm;
     SortidaFitxer vfitxer;
     SortidaFitxer afitxer;
 
+    GstElement  *textoverlay;
     GstElement  *mux_pgm;
     GstElement  *sink_fitxer;
     GstElement  *pipeline;

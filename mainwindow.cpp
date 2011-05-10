@@ -437,37 +437,55 @@ void EntradaAudio::crea(int k, GstElement *pipeline)
     gst_element_link_many (tee, queue_mix, volume_mix,NULL);
 }
 
-void SortidaPGM::crea(int k, GstElement *pipeline, const char* type, const char* typesink,bool audio){
+void VideoPGM::crea(int k, GstElement *pipeline){
 
-    QString smixer("_mixer_%1"), ssink("_sink_%1");
+    QString smixer("videomixer_%1"), ssink("pgm_sink_%1");
 
-    creacomuns(k,"mixer");
-    mixer =    gst_element_factory_make(type ,    (char*)smixer.prepend(type).arg(k).toStdString().c_str());
-    sink =     gst_element_factory_make(typesink, (char*)ssink.prepend(typesink).arg(k).toStdString().c_str());
+    creacomuns(k,"videomixer");
+    mixer =         gst_element_factory_make("videomixer" , (char*)smixer.arg(k).toStdString().c_str());
+    textoverlay =   gst_element_factory_make("textoverlay", "textoverlay");
+    sink =          gst_element_factory_make("xvimagesink", (char*)ssink.arg(k).toStdString().c_str());
 
     //Comprovem que s'han pogut crear tots els elements
-    if (!mixer || !sink) {
+    if (!mixer || !textoverlay || !sink) {
        g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
     }
 
-    //Afegim tots els elements al bin_pgm corresponent
-    gst_bin_add_many (GST_BIN (bin), mixer, tee, queue, queue_mix, sink, NULL);
+    g_object_set(G_OBJECT(textoverlay),"silent",true, NULL);
 
-    if(audio){
-        volum = gst_element_factory_make("volume","volumen_pgm");
-        gst_bin_add(GST_BIN (bin), volum);
-    }
+    //Afegim tots els elements al bin_pgm corresponent
+    gst_bin_add_many (GST_BIN (bin), mixer, textoverlay, tee, queue, queue_mix, sink, NULL);
 
     //Afegim el bin_pgm al pipeline
     gst_bin_add (GST_BIN (pipeline),bin);
 
     //Linkem els elements
-    if(audio){
-        gst_element_link_many(mixer, tee, queue, volum, sink, NULL);
+    gst_element_link_many(mixer, textoverlay, tee, queue, sink, NULL);
+    gst_element_link(tee, queue_mix);
+}
+
+void AudioPGM::crea(int k, GstElement *pipeline){
+
+    QString smixer("audiomixer_%1"), ssink("pgm_sink_%1");
+
+    creacomuns(k,"audiomixer");
+    mixer =    gst_element_factory_make("liveadder" ,    (char*)smixer.arg(k).toStdString().c_str());
+    volum =    gst_element_factory_make("volume",        "volum_pgm");
+    sink =     gst_element_factory_make("autoaudiosink", (char*)ssink.arg(k).toStdString().c_str());
+
+    //Comprovem que s'han pogut crear tots els elements
+    if (!mixer || !volum || !sink) {
+       g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
     }
-    else{
-        gst_element_link_many(mixer, tee, queue, sink, NULL);
-    }
+
+    //Afegim tots els elements al bin_pgm corresponent
+    gst_bin_add_many (GST_BIN (bin), mixer, tee, queue, queue_mix, volum, sink, NULL);
+
+    //Afegim el bin_pgm al pipeline
+    gst_bin_add (GST_BIN (pipeline),bin);
+
+    //Linkem els elements
+    gst_element_link_many(mixer, tee, queue, volum, sink, NULL);
     gst_element_link(tee, queue_mix);
 }
 
@@ -528,8 +546,8 @@ void MainWindow::on_adquirirButton_clicked()
         }
     }
 
-    vpgm.crea(0, pipeline,"videomixer","xvimagesink", false);
-    apgm.crea(1, pipeline,"liveadder","autoaudiosink",true);
+    vpgm.crea(0, pipeline);
+    apgm.crea(1, pipeline);
 
     vfitxer.crea(pipeline, vpgm.queue_mix, mux_pgm, "video","ffmpegcolorspace","theoraenc");
     afitxer.crea(pipeline, apgm.queue_mix, mux_pgm, "audio","audioconvert","vorbisenc");
@@ -664,3 +682,15 @@ void MainWindow::on_addButton_clicked()
     }
 }
 
+void MainWindow::on_checkBox_2_stateChanged(int check)
+{
+    if(check==0){
+        g_object_set(G_OBJECT(vpgm.textoverlay),"silent",true,NULL);
+    }
+    if(check==2){
+        g_object_set(G_OBJECT(vpgm.textoverlay),"silent",false,"font-desc","Ubuntu,PANGO_STYLE_NORMAL,20.0", "text","Hola món!!!" ,NULL);
+    }
+    else{
+        return;
+    }
+}
