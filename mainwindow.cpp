@@ -545,7 +545,12 @@ void MainWindow::on_adquirirButton_clicked()
           aentrades[k].crea(k, pipeline);
         }
         if(combobox_cam[k]->currentIndex()==1){
-          fentrades[k].crea(k, pipeline,fontvideo.at(k));
+          if(fontvideo.size()<=k){
+                fentrades[k].crea(k, pipeline,fontvideo.at(0));
+          }
+          else{
+            fentrades[k].crea(k, pipeline,fontvideo.at(k));
+          }
         }
         if(combobox_cam[k]->currentIndex()==0){
           ventrades[k].crea(k, pipeline, "videotestsrc",resolucio,framerate);
@@ -695,7 +700,7 @@ void MainWindow::on_addButton_clicked()
     }
 }
 
-void MainWindow::on_checkBox_2_stateChanged(int check)
+void MainWindow::on_checkBox_insereixtitol_stateChanged(int check)
 {
     if(check==0){
         g_object_set(G_OBJECT(vpgm.textoverlay),"silent",true,NULL);

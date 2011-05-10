@@ -78,7 +78,7 @@ protected:
     void keyPressEvent( QKeyEvent * event );
 
 private slots:
-    void on_checkBox_2_stateChanged(int );
+    void on_checkBox_insereixtitol_stateChanged(int );
     void on_addButton_clicked();
     void on_audioSlider_valueChanged(int value);
     void on_templatesButton_clicked();

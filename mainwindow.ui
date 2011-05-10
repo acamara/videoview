@@ -275,7 +275,7 @@
          </font>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>3</number>
         </property>
         <widget class="QWidget" name="tab_transicions">
          <attribute name="title">
@@ -400,7 +400,7 @@
            <string>Font</string>
           </property>
          </widget>
-         <widget class="QCheckBox" name="checkBox_2">
+         <widget class="QCheckBox" name="checkBox_insereixtitol">
           <property name="geometry">
            <rect>
             <x>170</x>
