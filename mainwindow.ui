@@ -267,6 +267,50 @@
         </property>
        </widget>
       </item>
+      <item row="3" column="3">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QPushButton" name="gravarButton">
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Gravar</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="stopButton_2">
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Stop</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="streamButton">
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Stream</string>
+          </property>
+          <property name="icon">
+           <iconset resource="recursos.qrc">
+            <normaloff>:/iconos/images/iconostreaming.png</normaloff>:/iconos/images/iconostreaming.png</iconset>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
       <item row="5" column="3">
        <widget class="QTabWidget" name="tab_fitxers">
         <property name="font">
@@ -275,7 +319,7 @@
          </font>
         </property>
         <property name="currentIndex">
-         <number>3</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="tab_transicions">
          <attribute name="title">
@@ -339,8 +383,8 @@
            <rect>
             <x>10</x>
             <y>10</y>
-            <width>146</width>
-            <height>54</height>
+            <width>168</width>
+            <height>52</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -366,7 +410,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="lineEdit_7"/>
+              <widget class="QDoubleSpinBox" name="doubleSpinBox_ypos"/>
              </item>
              <item>
               <widget class="QLabel" name="label_21">
@@ -381,7 +425,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="lineEdit_8"/>
+              <widget class="QDoubleSpinBox" name="doubleSpinBox_xpos"/>
              </item>
             </layout>
            </item>
@@ -390,9 +434,9 @@
          <widget class="QPushButton" name="FontButton">
           <property name="geometry">
            <rect>
-            <x>170</x>
+            <x>190</x>
             <y>10</y>
-            <width>75</width>
+            <width>80</width>
             <height>23</height>
            </rect>
           </property>
@@ -403,9 +447,9 @@
          <widget class="QCheckBox" name="checkBox_insereixtitol">
           <property name="geometry">
            <rect>
-            <x>170</x>
+            <x>190</x>
             <y>40</y>
-            <width>81</width>
+            <width>86</width>
             <height>17</height>
            </rect>
           </property>
@@ -719,50 +763,6 @@
          </widget>
         </widget>
        </widget>
-      </item>
-      <item row="3" column="3">
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QPushButton" name="gravarButton">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Gravar</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="stopButton_2">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Stop</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="streamButton">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Stream</string>
-          </property>
-          <property name="icon">
-           <iconset resource="recursos.qrc">
-            <normaloff>:/iconos/images/iconostreaming.png</normaloff>:/iconos/images/iconostreaming.png</iconset>
-          </property>
-         </widget>
-        </item>
-       </layout>
       </item>
      </layout>
     </item>

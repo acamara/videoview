@@ -185,7 +185,6 @@ static gboolean link_elements_with_filter (GstElement *element1, GstElement *ele
   GstCaps *caps;
 
   caps = gst_caps_new_simple ("video/x-raw-yuv",
-              "format", GST_TYPE_FOURCC, GST_MAKE_FOURCC ('I', '4', '2', '0'),
               "width", G_TYPE_INT, resolucio.width(),
               "height", G_TYPE_INT, resolucio.height(),
               "framerate", GST_TYPE_FRACTION,framerate, 1,
@@ -216,6 +215,25 @@ static gboolean link_elements_with_resolucio (GstElement *element1, GstElement *
 
   if (!link_ok) {
     g_warning ("Failed to link element1 and element2 amb resolucio!");
+  }
+
+  return link_ok;
+}
+
+static gboolean link_elements_with_espaidecolor (GstElement *element1, GstElement *element2)
+{
+  gboolean link_ok;
+  GstCaps *caps;
+
+  caps = gst_caps_new_simple ("video/x-raw-yuv",
+              "format", GST_TYPE_FOURCC, GST_MAKE_FOURCC ('A', 'Y', 'U', 'V'),
+              NULL);
+
+  link_ok = gst_element_link_filtered (element1, element2, caps);
+  gst_caps_unref (caps);
+
+  if (!link_ok) {
+    g_warning ("Failed to link element1 and element2 amb espaidecolor!");
   }
 
   return link_ok;
@@ -452,24 +470,25 @@ void VideoPGM::crea(int k, GstElement *pipeline){
 
     creacomuns(k,"videomixer");
     mixer =         gst_element_factory_make("videomixer" , (char*)smixer.arg(k).toStdString().c_str());
+    color_conv =    gst_element_factory_make("ffmpegcolorspace","color_converer_pgm");
     textoverlay =   gst_element_factory_make("textoverlay", "textoverlay");
     sink =          gst_element_factory_make("xvimagesink", (char*)ssink.arg(k).toStdString().c_str());
 
     //Comprovem que s'han pogut crear tots els elements
-    if (!mixer || !textoverlay || !sink) {
+    if (!mixer || !color_conv || !textoverlay || !sink) {
        g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
     }
 
     g_object_set(G_OBJECT(textoverlay),"silent",true, NULL);
 
     //Afegim tots els elements al bin_pgm corresponent
-    gst_bin_add_many (GST_BIN (bin), mixer, textoverlay, tee, queue, queue_mix, sink, NULL);
+    gst_bin_add_many (GST_BIN (bin), mixer, color_conv, textoverlay, tee, queue, queue_mix, sink, NULL);
 
     //Afegim el bin_pgm al pipeline
     gst_bin_add (GST_BIN (pipeline),bin);
 
     //Linkem els elements
-    gst_element_link_many(mixer, textoverlay, tee, queue, sink, NULL);
+    gst_element_link_many(mixer, color_conv, textoverlay, tee, queue, sink, NULL);
     gst_element_link(tee, queue_mix);
 }
 
@@ -573,13 +592,16 @@ void MainWindow::on_adquirirButton_clicked()
     //Linkem els elements d'entrada amb els de sortida
     for (int k = 0; k < numcam; k++) {
         if(combobox_cam[k]->currentIndex()==1){
-            gst_element_link_many (fentrades[k].v.tee, fentrades[k].v.queue_mix, fentrades[k].v.color_conv, fentrades[k].v.scale_mix, NULL);
+            gst_element_link_many (fentrades[k].v.tee, fentrades[k].v.queue_mix, fentrades[k].v.color_conv, NULL);
+            link_elements_with_espaidecolor (fentrades[k].v.color_conv, fentrades[k].v.scale_mix);
             link_elements_with_resolucio(fentrades[k].v.scale_mix, vpgm.mixer,resolucio);
             gst_element_link_many (fentrades[k].a.volume_mix, apgm.mixer, NULL);
         }
         else{
-            gst_element_link_many (ventrades[k].tee, ventrades[k].queue_mix, ventrades[k].color_conv, ventrades[k].scale_mix, NULL);
+            gst_element_link_many (ventrades[k].tee, ventrades[k].queue_mix, ventrades[k].color_conv, NULL);
+            link_elements_with_espaidecolor (ventrades[k].color_conv, ventrades[k].scale_mix);
             link_elements_with_resolucio(ventrades[k].scale_mix, vpgm.mixer, resolucio);
+            gst_element_link_many (ventrades[k].scale_mix, vpgm.mixer, NULL);
             gst_element_link_many (aentrades[k].volume_mix, apgm.mixer, NULL);
         }
     }
@@ -680,6 +702,7 @@ void MainWindow::on_moscaButton_clicked()
     mosca.load (imagefilename);
     moscaresize=mosca.scaled(ui->moscalabel->width(),ui->moscalabel->height(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
     ui->moscalabel->setPixmap(QPixmap::fromImage(moscaresize));
+
 }
 
 void MainWindow::on_templatesButton_clicked()
@@ -706,7 +729,8 @@ void MainWindow::on_checkBox_insereixtitol_stateChanged(int check)
         g_object_set(G_OBJECT(vpgm.textoverlay),"silent",true,NULL);
     }
     if(check==2){
-        g_object_set(G_OBJECT(vpgm.textoverlay),"silent",false,"font-desc","Ubuntu,PANGO_STYLE_NORMAL,20.0", "text","Hola món!!!" ,NULL);
+        g_object_set(G_OBJECT(vpgm.textoverlay),"silent",false,"font-desc","Calibri,PANGO_STYLE_NORMAL,25.0", "text","Hola món!!!", NULL);
+        g_object_set(G_OBJECT(vpgm.textoverlay),"halignment", 1 ,"valignment", 2 , NULL);
     }
     else{
         return;

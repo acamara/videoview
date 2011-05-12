@@ -46,7 +46,7 @@ struct EntradaFitxer {
 };
 
 struct VideoPGM: public ElementsComuns {
-  GstElement  *mixer, *textoverlay, *sink;
+  GstElement  *mixer, *color_conv, *textoverlay, *sink;
   void crea(int k, GstElement *);
 };
 
@@ -122,7 +122,10 @@ private:
     SortidaFitxer vfitxer;
     SortidaFitxer afitxer;
 
-    GstElement  *textoverlay;
+    GstElement *bin_logo;
+    GstElement *source_logo;
+    GstElement *dec_logo;
+
     GstElement  *mux_pgm;
     GstElement  *sink_fitxer;
     GstElement  *pipeline;
