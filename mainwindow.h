@@ -45,6 +45,11 @@ struct EntradaFitxer {
   void crea(int k, GstElement *,QString nomfitxer);
 };
 
+struct EntradaLogo {
+  GstElement *bin_logo, *source, *dec, *imagefreeze, *conv_logo;
+  void crea(GstElement *,QString nomfitxer);
+};
+
 struct VideoPGM: public ElementsComuns {
   GstElement  *mixer, *color_conv, *textoverlay, *sink;
   void crea(int k, GstElement *);
@@ -101,6 +106,7 @@ private:
     int numcam;
     int framerate;
     QSize resolucio;
+    QString imagelogo;
     QStringList fontvideo;
 
     QLabel *Label_cam[maxcam];
@@ -115,16 +121,13 @@ private:
     EntradaVideo  ventrades[maxcam];
     EntradaAudio  aentrades[maxcam];
     EntradaFitxer fentrades[maxcam];
+    EntradaLogo   lentrada;
 
     //Grup d'elements de sortida
     VideoPGM  vpgm;
     AudioPGM  apgm;
     SortidaFitxer vfitxer;
     SortidaFitxer afitxer;
-
-    GstElement *bin_logo;
-    GstElement *source_logo;
-    GstElement *dec_logo;
 
     GstElement  *mux_pgm;
     GstElement  *sink_fitxer;

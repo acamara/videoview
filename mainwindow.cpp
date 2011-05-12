@@ -464,6 +464,32 @@ void EntradaAudio::crea(int k, GstElement *pipeline)
     gst_element_link_many (tee, queue_mix, volume_mix,NULL);
 }
 
+void EntradaLogo::crea(GstElement *pipeline, QString nomfitxer)
+{
+    //Creem entrada de fitxer
+    bin_logo = gst_bin_new ("bin_logo");
+    source =        gst_element_factory_make ("filesrc", "fitxer_logo");
+    dec =           gst_element_factory_make ("pngdec", "decoder_logo");
+    imagefreeze =   gst_element_factory_make("imagefreeze", "imagefreeze_logo");
+    conv_logo =     gst_element_factory_make("ffmpegcolorspace", "color_conv_logo");
+
+    //Comprovem que s'han pogut crear tots els elements d'entrada
+    if(!bin_logo || !source || !dec || !imagefreeze || !conv_logo){
+      g_printerr ("Un dels elements de l'entrada de logo no s'ha pogut crear. Sortint.\n");
+    }
+
+    gst_bin_add_many (GST_BIN (bin_logo), source, dec, imagefreeze, conv_logo, NULL);
+
+    const char *c_nom_fitxer = nomfitxer.toStdString().c_str();
+    g_object_set (G_OBJECT (source), "location", c_nom_fitxer, NULL);
+
+    //Afegim els elements al pipeline corresponent
+    gst_bin_add_many (GST_BIN (pipeline),bin_logo, NULL);
+
+    //Linkem els elements
+    gst_element_link_many(source, dec, imagefreeze, conv_logo, NULL);
+}
+
 void VideoPGM::crea(int k, GstElement *pipeline){
 
     QString smixer("videomixer_%1"), ssink("pgm_sink_%1");
@@ -579,6 +605,9 @@ void MainWindow::on_adquirirButton_clicked()
         }
     }
 
+    //--------------------------------------Serveix per insertar el logo
+    //lentrada.crea(pipeline,imagelogo);
+    //--------------------------------------
     vpgm.crea(0, pipeline);
     apgm.crea(1, pipeline);
 
@@ -605,7 +634,9 @@ void MainWindow::on_adquirirButton_clicked()
             gst_element_link_many (aentrades[k].volume_mix, apgm.mixer, NULL);
         }
     }
-
+    //----------------------------------------------------------------------Serveix per insertar el logo
+    //link_elements_with_espaidecolor(lentrada.conv_logo,vpgm.mixer);
+    //-----------------------------------------------------------------------
     gst_element_link(mux_pgm, sink_fitxer);
 
     //Canviem l'estat del pipeline a "playing"
@@ -697,9 +728,9 @@ void MainWindow::on_stopButton_2_clicked()
 
 void MainWindow::on_moscaButton_clicked()
 {
-    QString imagefilename = QFileDialog::getOpenFileName( this,tr("Seleccioni el logo"),QDir::currentPath(),"Imatges (*.bmp *.png *.xpm *.jpg)");
+    imagelogo = QFileDialog::getOpenFileName( this,tr("Seleccioni el logo"),QDir::currentPath(),"Imatges (*.bmp *.png *.xpm *.jpg)");
     QImage  mosca,moscaresize;
-    mosca.load (imagefilename);
+    mosca.load (imagelogo);
     moscaresize=mosca.scaled(ui->moscalabel->width(),ui->moscalabel->height(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
     ui->moscalabel->setPixmap(QPixmap::fromImage(moscaresize));
 
