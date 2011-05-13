@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->stopButton->setEnabled(false);
 
     createActions();
 
@@ -22,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     /* Inicialitzacio Gstreamer */
     gst_init (NULL, NULL);
+    pipeline = NULL;
 }
 
 //Destructor de la clase MainWindow
@@ -575,6 +577,7 @@ void MainWindow::on_adquirirButton_clicked()
 {
     //Creacio dels elements gstreamer
     pipeline = gst_pipeline_new ("video-mixer");
+    ui->stopButton->setEnabled(true);
 
     mux_pgm =       gst_element_factory_make("oggmux",   "multiplexorfitxer");
     sink_fitxer =   gst_element_factory_make("filesink", "fitxerdesortida");
@@ -668,14 +671,16 @@ void MainWindow::on_adquirirButton_clicked()
 void MainWindow::on_stopButton_clicked()
 {
     for (int k = 0; k < numcam; k++){
-        Label_cam[k]->setStyleSheet("background-color: rgb(255, 255, 255)");
+      Label_cam[k]->setStyleSheet("background-color: rgb(255, 255, 255)");
     }
-
-    g_print ("Returned, stopping playback\n");
-
-    gst_element_set_state (pipeline, GST_STATE_NULL);
-    g_print ("Deleting pipeline\n");
-    gst_object_unref (GST_OBJECT (pipeline));
+    if (pipeline != NULL) {
+      g_print ("Returned, stopping playback\n");
+      gst_element_set_state (pipeline, GST_STATE_NULL);
+      g_print ("Deleting pipeline\n");
+      gst_object_unref (GST_OBJECT (pipeline));
+      pipeline = NULL;
+      ui->stopButton->setEnabled(false);
+    }
 }
 
 //Mètode que controla el canvi de càmera
