@@ -46,7 +46,7 @@ struct EntradaFitxer {
 };
 
 struct EntradaLogo {
-  GstElement *bin_logo, *source, *dec, *imagefreeze, *conv_logo;
+  GstElement *bin_logo, *source, *dec, *imagefreeze, *queue, *conv_logo;
   void crea(GstElement *,QString nomfitxer);
 };
 

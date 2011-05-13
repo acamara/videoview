@@ -471,14 +471,15 @@ void EntradaLogo::crea(GstElement *pipeline, QString nomfitxer)
     source =        gst_element_factory_make ("filesrc", "fitxer_logo");
     dec =           gst_element_factory_make ("pngdec", "decoder_logo");
     imagefreeze =   gst_element_factory_make("imagefreeze", "imagefreeze_logo");
+    queue =         gst_element_factory_make("queue2","queue_logo");
     conv_logo =     gst_element_factory_make("ffmpegcolorspace", "color_conv_logo");
 
     //Comprovem que s'han pogut crear tots els elements d'entrada
-    if(!bin_logo || !source || !dec || !imagefreeze || !conv_logo){
+    if(!bin_logo || !source || !dec || !imagefreeze || !queue || !conv_logo){
       g_printerr ("Un dels elements de l'entrada de logo no s'ha pogut crear. Sortint.\n");
     }
 
-    gst_bin_add_many (GST_BIN (bin_logo), source, dec, imagefreeze, conv_logo, NULL);
+    gst_bin_add_many (GST_BIN (bin_logo), source, dec, imagefreeze, queue, conv_logo, NULL);
 
     const char *c_nom_fitxer = nomfitxer.toStdString().c_str();
     g_object_set (G_OBJECT (source), "location", c_nom_fitxer, NULL);
@@ -487,7 +488,7 @@ void EntradaLogo::crea(GstElement *pipeline, QString nomfitxer)
     gst_bin_add_many (GST_BIN (pipeline),bin_logo, NULL);
 
     //Linkem els elements
-    gst_element_link_many(source, dec, imagefreeze, conv_logo, NULL);
+    gst_element_link_many(source, dec, imagefreeze, queue, conv_logo, NULL);
 }
 
 void VideoPGM::crea(int k, GstElement *pipeline){
@@ -531,6 +532,8 @@ void AudioPGM::crea(int k, GstElement *pipeline){
     if (!mixer || !volum || !sink) {
        g_printerr ("Un dels elements no s'ha pogut crear. Sortint.\n");
     }
+
+    g_object_set(G_OBJECT(mixer),"latency",30, NULL);
 
     //Afegim tots els elements al bin_pgm corresponent
     gst_bin_add_many (GST_BIN (bin), mixer, tee, queue, queue_mix, volum, sink, NULL);
