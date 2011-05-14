@@ -32,7 +32,7 @@ struct EntradaVideo: public ElementsComuns {
 };
 
 struct EntradaAudio: public ElementsComuns {
-  GstElement *source, *volume, *volume_mix, *sink;
+  GstElement *source, *volume_mix;
   void crea(int k, GstElement *);
 };
 
