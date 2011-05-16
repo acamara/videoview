@@ -748,11 +748,28 @@ void MainWindow::on_templatesButton_clicked()
 
 void MainWindow::on_addButton_clicked()
 {
-    fontvideo = QFileDialog::getOpenFileNames(this, tr("Selecciona les fonts de Vídeo"),QDir::currentPath(),"Multimedia (*.avi *.mp4 *.mpg *.rm *.ogg *.mov *.asf *.wmv)");
-    for (int i = 0; i < fontvideo.size(); ++i){
-        QString fitxer=fontvideo.at(i);
-        ui->listWidget->addItem(fitxer.remove(0,fitxer.lastIndexOf("/")));
+    if(fontvideo.empty()){
+        fontvideo = QFileDialog::getOpenFileNames(this, tr("Selecciona les fonts de Vídeo"),QDir::currentPath(),"Multimedia (*.avi *.mp4 *.mpg *.rm *.ogg *.mov *.asf *.wmv)");
+        for (int i = 0; i < fontvideo.size(); ++i){
+            QString fitxer=fontvideo.at(i);
+            ui->listWidget->addItem(fitxer.remove(0,fitxer.lastIndexOf("/")));
+        }
     }
+    else{
+        QStringList aux=QFileDialog::getOpenFileNames(this, tr("Selecciona les fonts de Vídeo"),QDir::currentPath(),"Multimedia (*.avi *.mp4 *.mpg *.rm *.ogg *.mov *.asf *.wmv)");
+        fontvideo=fontvideo+aux;
+        for (int i = 0; i < aux.size(); ++i){
+            QString fitxer=aux.at(i);
+            ui->listWidget->addItem(fitxer.remove(0,fitxer.lastIndexOf("/")));
+        }
+    }
+}
+
+void MainWindow::on_removeButton_clicked()
+{   if(!fontvideo.empty()){
+        fontvideo.removeAt(ui->listWidget->currentRow());
+        delete ui->listWidget->takeItem(ui->listWidget->currentRow());
+        }
 }
 
 void MainWindow::on_checkBox_insereixtitol_stateChanged(int check)
@@ -768,3 +785,5 @@ void MainWindow::on_checkBox_insereixtitol_stateChanged(int check)
         return;
     }
 }
+
+
