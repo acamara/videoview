@@ -22,6 +22,7 @@ namespace Ui {
 
 struct ElementsComuns {
   GstElement *bin, *tee, *queue, *queue_mix;
+  GstCaps *caps;
   void creacomuns(int k, QString ref);
 };
 
@@ -130,6 +131,8 @@ private:
     SortidaFitxer vfitxer;
     SortidaFitxer afitxer;
 
+    GstCaps *caps_resolucio;
+    GstCaps *caps_color;
     GstElement  *mux_pgm;
     GstElement  *sink_fitxer;
     GstElement  *pipeline;

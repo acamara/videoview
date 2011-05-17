@@ -181,61 +181,14 @@ void MainWindow::finishCameras()
   delete widget_pgm;
 }
 
-static gboolean link_elements_with_filter (GstElement *element1, GstElement *element2, QSize resolucio, int framerate)
+static gboolean link_elements_with_filter (GstElement *element1, GstElement *element2, GstCaps *caps)
 {
   gboolean link_ok;
-  GstCaps *caps;
-
-  caps = gst_caps_new_simple ("video/x-raw-yuv",
-              "width", G_TYPE_INT, resolucio.width(),
-              "height", G_TYPE_INT, resolucio.height(),
-              "framerate", GST_TYPE_FRACTION,framerate, 1,
-              NULL);
 
   link_ok = gst_element_link_filtered (element1, element2, caps);
-  gst_caps_unref (caps);
 
   if (!link_ok) {
-    g_warning ("No s'ha pogut linkar element1 i element2 amb el framerate i la resolució demanada");
-  }
-
-  return link_ok;
-}
-
-static gboolean link_elements_with_resolucio (GstElement *element1, GstElement *element2, QSize resolucio)
-{
-  gboolean link_ok;
-  GstCaps *caps;
-
-  caps = gst_caps_new_simple ("video/x-raw-yuv",
-              "width", G_TYPE_INT, resolucio.width(),
-              "height", G_TYPE_INT, resolucio.height(),
-              NULL);
-
-  link_ok = gst_element_link_filtered (element1, element2, caps);
-  gst_caps_unref (caps);
-
-  if (!link_ok) {
-    g_warning ("Failed to link element1 and element2 amb resolucio!");
-  }
-
-  return link_ok;
-}
-
-static gboolean link_elements_with_espaidecolor (GstElement *element1, GstElement *element2)
-{
-  gboolean link_ok;
-  GstCaps *caps;
-
-  caps = gst_caps_new_simple ("video/x-raw-yuv",
-              "format", GST_TYPE_FOURCC, GST_MAKE_FOURCC ('A', 'Y', 'U', 'V'),
-              NULL);
-
-  link_ok = gst_element_link_filtered (element1, element2, caps);
-  gst_caps_unref (caps);
-
-  if (!link_ok) {
-    g_warning ("Failed to link element1 and element2 amb espaidecolor!");
+    g_warning ("No s'ha pogut linkar element1 i element2 amb filtre demanat");
   }
 
   return link_ok;
@@ -343,7 +296,9 @@ void EntradaVideo::crea(int k, GstElement *pipeline, const char* type, QSize res
   gst_bin_add (GST_BIN (pipeline), bin);
 
   //Linkem els elements
-  link_elements_with_filter (source,tee,resolucio,framerate);
+  caps = gst_caps_new_simple ("video/x-raw-yuv", "width", G_TYPE_INT, resolucio.width(),
+                              "height", G_TYPE_INT, resolucio.height(), "framerate", GST_TYPE_FRACTION,framerate, 1, NULL);
+  link_elements_with_filter (source,tee,caps);
   gst_element_link_many (tee, queue, scale, sink, NULL);
 }
 
@@ -617,24 +572,29 @@ void MainWindow::on_adquirirButton_clicked()
     g_object_set (G_OBJECT (vpgm.mixer), "background", 1 , NULL);
     g_object_set (G_OBJECT (sink_fitxer), "location","sortida.ogg" , NULL);
 
+    caps_color = gst_caps_new_simple ("video/x-raw-yuv", "format", GST_TYPE_FOURCC, GST_MAKE_FOURCC ('A', 'Y', 'U', 'V'), NULL);
+
+    caps_resolucio = gst_caps_new_simple ("video/x-raw-yuv",   "width", G_TYPE_INT, resolucio.width(),
+                                                               "height", G_TYPE_INT, resolucio.height(), NULL);
+
     //Linkem els elements d'entrada amb els de sortida
     for (int k = 0; k < numcam; k++) {
         if(combobox_cam[k]->currentIndex()==1){
             gst_element_link_many (fentrades[k].v.tee, fentrades[k].v.queue_mix, fentrades[k].v.color_conv, NULL);
-            link_elements_with_espaidecolor (fentrades[k].v.color_conv, fentrades[k].v.scale_mix);
-            link_elements_with_resolucio(fentrades[k].v.scale_mix, vpgm.mixer,resolucio);
+            link_elements_with_filter(fentrades[k].v.color_conv, fentrades[k].v.scale_mix, caps_color);
+            link_elements_with_filter(fentrades[k].v.scale_mix, vpgm.mixer, caps_resolucio);
             gst_element_link_many (fentrades[k].a.volume_mix, apgm.mixer, NULL);
         }
         else{
             gst_element_link_many (ventrades[k].tee, ventrades[k].queue_mix, ventrades[k].color_conv, NULL);
-            link_elements_with_espaidecolor (ventrades[k].color_conv, ventrades[k].scale_mix);
-            link_elements_with_resolucio(ventrades[k].scale_mix, vpgm.mixer, resolucio);
+            link_elements_with_filter (ventrades[k].color_conv, ventrades[k].scale_mix, caps_color);
+            link_elements_with_filter (ventrades[k].scale_mix, vpgm.mixer, caps_resolucio);
             gst_element_link_many (ventrades[k].scale_mix, vpgm.mixer, NULL);
             gst_element_link_many (aentrades[k].volume_mix, apgm.mixer, NULL);
         }
     }
     //----------------------------------------------------------------------Serveix per insertar el logo
-    link_elements_with_espaidecolor(lentrada.conv_logo,vpgm.mixer);
+    link_elements_with_filter(lentrada.conv_logo,vpgm.mixer, caps_color);
     //-----------------------------------------------------------------------
     gst_element_link(mux_pgm, sink_fitxer);
 
