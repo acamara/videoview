@@ -13,6 +13,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->stopButton->setEnabled(false);
+    ui->moscaButton->setEnabled(false);
+    ui->checkBox_insereixlogo->setEnabled(false);
+    ui->checkBox_insereixtitol->setEnabled(false);
 
     createActions();
 
@@ -525,7 +528,6 @@ void MainWindow::on_adquirirButton_clicked()
 {
     //Creacio dels elements gstreamer
     pipeline = gst_pipeline_new ("video-mixer");
-    ui->stopButton->setEnabled(true);
 
     mux_pgm =       gst_element_factory_make("oggmux",   "multiplexorfitxer");
     sink_fitxer =   gst_element_factory_make("filesink", "fitxerdesortida");
@@ -559,9 +561,6 @@ void MainWindow::on_adquirirButton_clicked()
         }
     }
 
-    //--------------------------------------Serveix per insertar el logo
-    lentrada.crea(pipeline,imagelogo);
-    //--------------------------------------
     vpgm.crea(0, pipeline);
     apgm.crea(1, pipeline);
 
@@ -593,9 +592,6 @@ void MainWindow::on_adquirirButton_clicked()
             gst_element_link_many (aentrades[k].volume_mix, apgm.mixer, NULL);
         }
     }
-    //----------------------------------------------------------------------Serveix per insertar el logo
-    link_elements_with_filter(lentrada.conv_logo,vpgm.mixer, caps_color);
-    //-----------------------------------------------------------------------
     gst_element_link(mux_pgm, sink_fitxer);
 
     //Canviem l'estat del pipeline a "playing"
@@ -618,6 +614,9 @@ void MainWindow::on_adquirirButton_clicked()
     QApplication::syncX();
     //---------------------------------------------------------------*/
     Label_cam[numcam-1]->setStyleSheet("background-color: rgb(255, 0, 0)");
+    ui->stopButton->setEnabled(true);
+    ui->moscaButton->setEnabled(true); 
+    ui->checkBox_insereixtitol->setEnabled(true);
 }
 
 //Mètode que controla el botó stop
@@ -632,7 +631,11 @@ void MainWindow::on_stopButton_clicked()
       g_print ("Deleting pipeline\n");
       gst_object_unref (GST_OBJECT (pipeline));
       pipeline = NULL;
+
       ui->stopButton->setEnabled(false);
+      ui->checkBox_insereixlogo->setChecked(false);
+      ui->moscalabel->clear();
+      ui->checkBox_insereixtitol->setChecked(false);
     }
 }
 
@@ -643,17 +646,17 @@ void MainWindow::canviacamara(int camactiva)
     GstPad *mixerpad;
 
     for (int k = 0; k < numcam; k++){
+        mixerpad=gst_element_get_pad(vpgm.mixer,(char*)senyal.arg(k).toStdString().c_str());
+
         if(k==camactiva){
-            mixerpad=gst_element_get_pad(vpgm.mixer,(char*)senyal.arg(k).toStdString().c_str());
             g_object_set (G_OBJECT(mixerpad), "alpha",1.0,NULL);
 
             Label_cam[k]->setStyleSheet("background-color: rgb(255, 0, 0)");
         }
         else{
-            Label_cam[k]->setStyleSheet("background-color: rgb(255, 255, 255)");
-
-            mixerpad=gst_element_get_pad(vpgm.mixer, (char*)senyal.arg(k).toStdString().c_str());
             g_object_set (G_OBJECT(mixerpad), "alpha",0,NULL);
+
+            Label_cam[k]->setStyleSheet("background-color: rgb(255, 255, 255)");
         }
     }
 }
@@ -695,6 +698,13 @@ void MainWindow::on_moscaButton_clicked()
     moscaresize=mosca.scaled(ui->moscalabel->width(),ui->moscalabel->height(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
     ui->moscalabel->setPixmap(QPixmap::fromImage(moscaresize));
 
+    //--------------------------------------Serveix per crear els de logo
+    lentrada.crea(pipeline,imagelogo);
+    link_elements_with_filter(lentrada.conv_logo,vpgm.mixer, caps_color);
+    gst_element_set_state (lentrada.bin_logo, GST_STATE_PLAYING);
+    ui->checkBox_insereixlogo->setChecked(true);
+    ui->checkBox_insereixlogo->setEnabled(true);
+    //--------------------------------------
 }
 
 void MainWindow::on_templatesButton_clicked()
@@ -746,4 +756,22 @@ void MainWindow::on_checkBox_insereixtitol_stateChanged(int check)
     }
 }
 
+void MainWindow::on_checkBox_insereixlogo_stateChanged(int check)
+{
+    QString senyal("sink_%1");
+    GstPad *mixerpad;
 
+    mixerpad=gst_element_get_pad(vpgm.mixer,(char*)senyal.arg(numcam).toStdString().c_str());
+
+    if(check==0){
+        g_object_set (G_OBJECT(mixerpad), "alpha",0.0,NULL);
+    }
+    if(check==2){
+        g_object_set (G_OBJECT(mixerpad), "alpha",1.0,NULL);
+
+    }
+    else{
+        return;
+    }
+
+}

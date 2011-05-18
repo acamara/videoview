@@ -84,6 +84,7 @@ protected:
     void keyPressEvent( QKeyEvent * event );
 
 private slots:
+    void on_checkBox_insereixlogo_stateChanged(int );
     void on_removeButton_clicked();
     void on_checkBox_insereixtitol_stateChanged(int );
     void on_addButton_clicked();
