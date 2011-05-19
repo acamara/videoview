@@ -240,14 +240,23 @@
        <layout class="QGridLayout" name="gridLayout_3">
         <item row="0" column="0">
          <widget class="QSlider" name="audioSlider">
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
           <property name="maximum">
            <number>10</number>
+          </property>
+          <property name="singleStep">
+           <number>1</number>
           </property>
           <property name="value">
            <number>0</number>
           </property>
           <property name="orientation">
            <enum>Qt::Vertical</enum>
+          </property>
+          <property name="tickPosition">
+           <enum>QSlider::TicksBothSides</enum>
           </property>
          </widget>
         </item>

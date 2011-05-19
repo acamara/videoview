@@ -748,7 +748,8 @@ void MainWindow::on_checkBox_insereixtitol_stateChanged(int check)
         g_object_set(G_OBJECT(vpgm.textoverlay),"silent",true,NULL);
     }
     if(check==2){
-        g_object_set(G_OBJECT(vpgm.textoverlay),"silent",false,"font-desc","Calibri,PANGO_STYLE_NORMAL,25.0", "text","Hola món!!!", NULL);
+        QString text=ui->plainTextEdit->toPlainText();
+        g_object_set(G_OBJECT(vpgm.textoverlay),"silent",false,"font-desc","Calibri,PANGO_STYLE_NORMAL,25.0", "text",text.toStdString().c_str(), NULL);
         g_object_set(G_OBJECT(vpgm.textoverlay),"halignment", 1 ,"valignment", 2 , NULL);
     }
     else{
