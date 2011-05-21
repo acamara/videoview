@@ -13,7 +13,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->stopButton->setEnabled(false);
-    ui->moscaButton->setEnabled(false);
     ui->checkBox_insereixlogo->setEnabled(false);
     ui->checkBox_insereixtitol->setEnabled(false);
 
@@ -27,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     /* Inicialitzacio Gstreamer */
     gst_init (NULL, NULL);
     pipeline = NULL;
+    lentrada.bin_logo = NULL;
 }
 
 //Destructor de la clase MainWindow
@@ -625,6 +625,7 @@ void MainWindow::on_adquirirButton_clicked()
     ui->moscaButton->setEnabled(true);
     ui->audioSlider->setEnabled(true);
     ui->checkBox_insereixtitol->setEnabled(true);
+    ui->adquirirButton->setEnabled(false);
 }
 
 //Mètode que controla el botó stop
@@ -645,48 +646,54 @@ void MainWindow::on_stopButton_clicked()
       ui->checkBox_insereixlogo->setChecked(false);
       ui->moscalabel->clear();
       ui->checkBox_insereixtitol->setChecked(false);
+      ui->adquirirButton->setEnabled(true);
     }
 }
 
 //Mètode que controla el canvi de càmera
 void MainWindow::canviacamara(int camactiva)
 {
-    QString senyal("sink_%1");
-    GstPad *mixerpad;
+    if (pipeline != NULL) {
+        QString senyal("sink_%1");
+        GstPad *mixerpad;
 
-    for (int k = 0; k < numcam; k++){
-        mixerpad=gst_element_get_pad(vpgm.mixer,(char*)senyal.arg(k).toStdString().c_str());
+        for (int k = 0; k < numcam; k++){
+            mixerpad=gst_element_get_pad(vpgm.mixer,(char*)senyal.arg(k).toStdString().c_str());
 
-        if(k==camactiva){
-            g_object_set (G_OBJECT(mixerpad), "alpha",1.0,NULL);
+            if(k==camactiva){
+                g_object_set (G_OBJECT(mixerpad), "alpha",1.0,NULL);
 
-            Label_cam[k]->setStyleSheet("background-color: rgb(255, 0, 0)");
-        }
-        else{
-            g_object_set (G_OBJECT(mixerpad), "alpha",0,NULL);
+                Label_cam[k]->setStyleSheet("background-color: rgb(255, 0, 0)");
+            }
+            else{
+                g_object_set (G_OBJECT(mixerpad), "alpha",0,NULL);
 
-            Label_cam[k]->setStyleSheet("background-color: rgb(255, 255, 255)");
+                Label_cam[k]->setStyleSheet("background-color: rgb(255, 255, 255)");
+            }
         }
     }
 }
 
 void MainWindow::canviavolum(int valor)
 {
-    QString nom = sender()->objectName();
-    int k=nom[4].digitValue();
+    if (pipeline != NULL) {
+        QString nom = sender()->objectName();
+        int k=nom[4].digitValue();
 
-    if(combobox_cam[k]->currentIndex()==1){
-       g_object_set(G_OBJECT(fentrades[k].a.volume_mix), "volume", double(valor), NULL);
+        if(combobox_cam[k]->currentIndex()==1){
+           g_object_set(G_OBJECT(fentrades[k].a.volume_mix), "volume", double(valor), NULL);
+        }
+        else{
+            g_object_set(G_OBJECT(aentrades[k].volume_mix), "volume", double(valor), NULL);
+        }
     }
-    else{
-        g_object_set(G_OBJECT(aentrades[k].volume_mix), "volume", double(valor), NULL);
-    }
-
 }
 
 void MainWindow::on_audioSlider_valueChanged(int value)
 {
-    g_object_set (G_OBJECT (apgm.volum), "volume", double(value) , NULL);
+    if (pipeline != NULL) {
+        g_object_set (G_OBJECT (apgm.volum), "volume", double(value) , NULL);
+    }
 }
 
 void MainWindow::on_gravarButton_clicked()
@@ -706,14 +713,7 @@ void MainWindow::on_moscaButton_clicked()
     mosca.load (imagelogo);
     moscaresize=mosca.scaled(ui->moscalabel->width(),ui->moscalabel->height(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
     ui->moscalabel->setPixmap(QPixmap::fromImage(moscaresize));
-
-    //--------------------------------------Serveix per crear els de logo
-    lentrada.crea(pipeline,imagelogo);
-    link_elements_with_filter(lentrada.conv_logo,vpgm.mixer, caps_color);
-    gst_element_set_state (lentrada.bin_logo, GST_STATE_PLAYING);
-    ui->checkBox_insereixlogo->setChecked(true);
     ui->checkBox_insereixlogo->setEnabled(true);
-    //--------------------------------------
 }
 
 void MainWindow::on_templatesButton_clicked()
@@ -745,43 +745,56 @@ void MainWindow::on_addButton_clicked()
 }
 
 void MainWindow::on_removeButton_clicked()
-{   if(!fontvideo.empty()){
+{
+    if(!fontvideo.empty()){
         fontvideo.removeAt(ui->listWidget->currentRow());
         delete ui->listWidget->takeItem(ui->listWidget->currentRow());
-        }
+    }
 }
 
 void MainWindow::on_checkBox_insereixtitol_stateChanged(int check)
 {
-    if(check==0){
-        g_object_set(G_OBJECT(vpgm.textoverlay),"silent",true,NULL);
-    }
-    if(check==2){
-        QString text=ui->plainTextEdit->toPlainText();
-        g_object_set(G_OBJECT(vpgm.textoverlay),"silent",false,"font-desc","Calibri,PANGO_STYLE_NORMAL,25.0", "text",text.toStdString().c_str(), NULL);
-        g_object_set(G_OBJECT(vpgm.textoverlay),"halignment", 1 ,"valignment", 2 , NULL);
-    }
-    else{
-        return;
+    if (pipeline != NULL) {
+        if(check==0){
+            g_object_set(G_OBJECT(vpgm.textoverlay),"silent",true,NULL);
+        }
+        if(check==2){
+            QString text=ui->plainTextEdit->toPlainText();
+            g_object_set(G_OBJECT(vpgm.textoverlay),"silent",false,"font-desc","Calibri,PANGO_STYLE_NORMAL,25.0", "text",text.toStdString().c_str(), NULL);
+            g_object_set(G_OBJECT(vpgm.textoverlay),"halignment", 1 ,"valignment", 2 , NULL);
+        }
+        else{
+            return;
+        }
     }
 }
 
 void MainWindow::on_checkBox_insereixlogo_stateChanged(int check)
 {
-    QString senyal("sink_%1");
-    GstPad *mixerpad;
+    if (pipeline != NULL) {
+        QString senyal("sink_%1");
+        GstPad *mixerpad;
 
-    mixerpad=gst_element_get_pad(vpgm.mixer,(char*)senyal.arg(numcam).toStdString().c_str());
+        mixerpad=gst_element_get_pad(vpgm.mixer,(char*)senyal.arg(numcam).toStdString().c_str());
 
-    if(check==0){
-        g_object_set (G_OBJECT(mixerpad), "alpha",0.0,NULL);
+        if(check==0){
+            //Eliminar els elements de logo;
+            gst_element_release_request_pad     (vpgm.mixer,mixerpad);
+            gst_element_unlink (lentrada.conv_logo,vpgm.mixer);
+            gst_element_set_state (lentrada.bin_logo, GST_STATE_NULL);
+            gst_bin_remove(GST_BIN (pipeline),lentrada.bin_logo);
+            //gst_object_unref(lentrada.bin_logo);
+            lentrada.bin_logo = NULL;
+        }
+        if(check==2 && lentrada.bin_logo == NULL){
+            //--------------------------------------Serveix per crear els elements de logo
+            lentrada.crea(pipeline,imagelogo);
+            link_elements_with_filter(lentrada.conv_logo,vpgm.mixer, caps_color);
+            gst_element_set_state (lentrada.bin_logo, GST_STATE_PLAYING);
+            //--------------------------------------
+        }
+        else{
+            return;
+        }
     }
-    if(check==2){
-        g_object_set (G_OBJECT(mixerpad), "alpha",1.0,NULL);
-
-    }
-    else{
-        return;
-    }
-
 }

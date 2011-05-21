@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>758</width>
-    <height>602</height>
+    <width>672</width>
+    <height>596</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -241,7 +241,7 @@
         <item row="0" column="0">
          <widget class="QSlider" name="audioSlider">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="statusTip">
            <string/>
@@ -346,7 +346,7 @@
          </font>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>3</number>
         </property>
         <widget class="QWidget" name="tab_transicions">
          <attribute name="title">
@@ -373,156 +373,140 @@
          <attribute name="title">
           <string>Fitxers</string>
          </attribute>
-         <widget class="QToolButton" name="addButton">
-          <property name="geometry">
-           <rect>
-            <x>250</x>
-            <y>10</y>
-            <width>24</width>
-            <height>25</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-          <property name="icon">
-           <iconset resource="recursos.qrc">
-            <normaloff>:/iconos/images/iconoadd.png</normaloff>:/iconos/images/iconoadd.png</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>16</width>
-            <height>16</height>
-           </size>
-          </property>
-         </widget>
-         <widget class="QListWidget" name="listWidget">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>10</y>
-            <width>231</width>
-            <height>192</height>
-           </rect>
-          </property>
-         </widget>
-         <widget class="QToolButton" name="removeButton">
-          <property name="geometry">
-           <rect>
-            <x>250</x>
-            <y>40</y>
-            <width>24</width>
-            <height>25</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-          <property name="icon">
-           <iconset resource="recursos.qrc">
-            <normaloff>:/iconos/images/iconoremove.png</normaloff>:/iconos/images/iconoremove.png</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>16</width>
-            <height>16</height>
-           </size>
-          </property>
-         </widget>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="0" column="0" rowspan="3">
+           <widget class="QListWidget" name="listWidget"/>
+          </item>
+          <item row="0" column="1">
+           <widget class="QToolButton" name="addButton">
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="recursos.qrc">
+              <normaloff>:/iconos/images/iconoadd.png</normaloff>:/iconos/images/iconoadd.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>16</width>
+              <height>16</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QToolButton" name="removeButton">
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="recursos.qrc">
+              <normaloff>:/iconos/images/iconoremove.png</normaloff>:/iconos/images/iconoremove.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>16</width>
+              <height>16</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>94</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
         </widget>
         <widget class="QWidget" name="tab_titols">
          <attribute name="title">
           <string>Títols</string>
          </attribute>
-         <widget class="QWidget" name="layoutWidget_2">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>10</y>
-            <width>168</width>
-            <height>52</height>
-           </rect>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <item>
-            <widget class="QLabel" name="label_19">
-             <property name="text">
-              <string>Posició:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_4">
-             <item>
-              <widget class="QLabel" name="label_20">
-               <property name="font">
-                <font>
-                 <pointsize>10</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string>X:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QDoubleSpinBox" name="doubleSpinBox_ypos"/>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_21">
-               <property name="font">
-                <font>
-                 <pointsize>10</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string>Y:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QDoubleSpinBox" name="doubleSpinBox_xpos"/>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QPushButton" name="FontButton">
-          <property name="geometry">
-           <rect>
-            <x>190</x>
-            <y>10</y>
-            <width>80</width>
-            <height>23</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Font</string>
-          </property>
-         </widget>
-         <widget class="QCheckBox" name="checkBox_insereixtitol">
-          <property name="geometry">
-           <rect>
-            <x>190</x>
-            <y>40</y>
-            <width>86</width>
-            <height>17</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Insereix</string>
-          </property>
-         </widget>
-         <widget class="QPlainTextEdit" name="plainTextEdit">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>80</y>
-            <width>221</width>
-            <height>101</height>
-           </rect>
-          </property>
-         </widget>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="0" rowspan="2">
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="QLabel" name="label_19">
+              <property name="text">
+               <string>Posició:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <item>
+               <widget class="QLabel" name="label_20">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>X:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="doubleSpinBox_ypos"/>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_21">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Y:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="doubleSpinBox_xpos"/>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="FontButton">
+            <property name="text">
+             <string>Font</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <spacer name="horizontalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="1" column="2">
+           <widget class="QCheckBox" name="checkBox_insereixtitol">
+            <property name="text">
+             <string>Insereix</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="3">
+           <widget class="QPlainTextEdit" name="plainTextEdit"/>
+          </item>
+         </layout>
         </widget>
         <widget class="QWidget" name="tab_grafics">
          <attribute name="title">
@@ -674,6 +658,17 @@
             <string/>
            </property>
           </widget>
+          <zorder>moscaButton</zorder>
+          <zorder>checkBox_insereixlogo</zorder>
+          <zorder>label_22</zorder>
+          <zorder>lineEdit_9</zorder>
+          <zorder>lineEdit_10</zorder>
+          <zorder>label_23</zorder>
+          <zorder>label_24</zorder>
+          <zorder>moscalabel</zorder>
+          <zorder>groupBox_4</zorder>
+          <zorder>groupBox_4</zorder>
+          <zorder>groupBox_4</zorder>
          </widget>
          <widget class="QGroupBox" name="groupBox_4">
           <property name="geometry">
@@ -829,7 +824,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>758</width>
+     <width>672</width>
      <height>25</height>
     </rect>
    </property>
