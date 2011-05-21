@@ -240,6 +240,12 @@
        <layout class="QGridLayout" name="gridLayout_3">
         <item row="0" column="0">
          <widget class="QSlider" name="audioSlider">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="statusTip">
+           <string/>
+          </property>
           <property name="styleSheet">
            <string notr="true"/>
           </property>
@@ -283,6 +289,9 @@
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QPushButton" name="gravarButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="font">
            <font>
             <pointsize>10</pointsize>
@@ -295,6 +304,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="stopButton_2">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="font">
            <font>
             <pointsize>10</pointsize>
@@ -307,6 +319,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="streamButton">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="font">
            <font>
             <pointsize>10</pointsize>

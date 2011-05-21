@@ -546,6 +546,13 @@ void MainWindow::on_adquirirButton_clicked()
           aentrades[k].crea(k, pipeline);
         }
         if(combobox_cam[k]->currentIndex()==1){
+          if(fontvideo.empty()){
+              QMessageBox::warning(this, tr("Video System"),
+                                              tr("Has escollit entrada des de arxiu multimèdia.\n"
+                                                 "Però no hi ha fitxers. Carrega fitxers abans d'adquirir."),
+                                                  QMessageBox::Ok);
+                return;
+          }
           if(fontvideo.size()<=k){
                 fentrades[k].crea(k, pipeline,fontvideo.at(0));
           }
@@ -615,7 +622,8 @@ void MainWindow::on_adquirirButton_clicked()
     //---------------------------------------------------------------*/
     Label_cam[numcam-1]->setStyleSheet("background-color: rgb(255, 0, 0)");
     ui->stopButton->setEnabled(true);
-    ui->moscaButton->setEnabled(true); 
+    ui->moscaButton->setEnabled(true);
+    ui->audioSlider->setEnabled(true);
     ui->checkBox_insereixtitol->setEnabled(true);
 }
 
@@ -633,6 +641,7 @@ void MainWindow::on_stopButton_clicked()
       pipeline = NULL;
 
       ui->stopButton->setEnabled(false);
+      ui->audioSlider->setEnabled(false);
       ui->checkBox_insereixlogo->setChecked(false);
       ui->moscalabel->clear();
       ui->checkBox_insereixtitol->setChecked(false);
