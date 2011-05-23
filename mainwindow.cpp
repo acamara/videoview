@@ -184,6 +184,44 @@ void MainWindow::finishCameras()
   delete widget_pgm;
 }
 
+static gboolean message_handler (GstBus * bus, GstMessage * message, gpointer data)
+{
+  QVUMeter *grup = (QVUMeter*)data;
+
+  if (message->type == GST_MESSAGE_ELEMENT) {
+    const GstStructure *s = gst_message_get_structure (message);
+    const gchar *name = gst_structure_get_name (s);
+
+    if (strcmp (name, "level") == 0) {
+      gint channels,i;
+      gdouble rms_dB, rms;
+      const GValue *list, *value;
+
+      /* we can get the number of channels as the length of any of the value lists */
+      list = gst_structure_get_value (s, "rms");
+      channels = gst_value_list_get_size (list);
+
+      for (i = 0; i < channels; i++) {
+        //g_print ("channel %d\n", i);
+        list = gst_structure_get_value (s, "rms");
+        value = gst_value_list_get_value (list, i);
+        rms_dB = g_value_get_double (value);
+        /* converting from dB to normal gives us a value between 0.0 and 1.0 */
+        rms = pow (10, rms_dB / 20);
+        //g_print ("    normalized rms value: %f\n", rms);
+        if(i==0){
+            grup->setLeftValue(rms);
+        }
+        else{
+            grup->setRightValue(rms);
+        }
+      }
+    }
+  }
+  /* we handled the message we want, and ignored the ones we didn't want. So the core can unref the message for us */
+  return TRUE;
+}
+
 static gboolean link_elements_with_filter (GstElement *element1, GstElement *element2, GstCaps *caps)
 {
   gboolean link_ok;
@@ -404,6 +442,7 @@ void EntradaAudio::crea(int k, GstElement *pipeline)
 
     //Canvi de les propietats d'alguns elements
     g_object_set (G_OBJECT (source), "wave",4, NULL);
+    g_object_set (G_OBJECT (volume_mix), "volume",0, NULL);
 
     //Afegim tots els elements al bin_font corresponent
     gst_bin_add_many (GST_BIN (bin), source, queue_mix, volume_mix, NULL);
@@ -413,6 +452,7 @@ void EntradaAudio::crea(int k, GstElement *pipeline)
 
     //Linkem els elements
     gst_element_link_many (source, queue_mix, volume_mix,NULL);
+
 }
 
 void EntradaLogo::crea(GstElement *pipeline, QString nomfitxer)
@@ -475,27 +515,29 @@ void AudioPGM::crea(int k, GstElement *pipeline){
     QString smixer("audiomixer_%1"), ssink("pgm_sink_%1");
 
     creacomuns(k,"audiomixer");
-    mixer =    gst_element_factory_make("adder" ,    (char*)smixer.arg(k).toStdString().c_str());
-    volum =    gst_element_factory_make("volume",        "volum_pgm");
-    sink =     gst_element_factory_make("autoaudiosink", (char*)ssink.arg(k).toStdString().c_str());
+    mixer =    gst_element_factory_make("adder" ,       (char*)smixer.arg(k).toStdString().c_str());
+    volum =    gst_element_factory_make("volume",       "volum_pgm");
+    level =    gst_element_factory_make("level",        "level_pgm");
+    sink =     gst_element_factory_make("autoaudiosink",(char*)ssink.arg(k).toStdString().c_str());
 
     //Comprovem que s'han pogut crear tots els elements
-    if (!mixer || !volum || !sink) {
+    if (!mixer || !volum || !level || !sink) {
        g_printerr ("Un dels elements d'AudioPGM no s'ha pogut crear. Sortint.\n");
     }
 
     GstCaps *caps;
     caps = gst_caps_new_simple ("audio/x-raw-int","rate", G_TYPE_INT, 44100, "channels", G_TYPE_INT, 2, NULL);
     g_object_set(G_OBJECT(mixer),"caps",caps, NULL);
+    g_object_set (G_OBJECT (level), "interval",100000000,"message", TRUE, NULL);
 
     //Afegim tots els elements al bin_pgm corresponent
-    gst_bin_add_many (GST_BIN (bin), mixer, tee, queue, queue_mix, volum, sink, NULL);
+    gst_bin_add_many (GST_BIN (bin), mixer, tee, queue, queue_mix, volum, level, sink, NULL);
 
     //Afegim el bin_pgm al pipeline
     gst_bin_add (GST_BIN (pipeline),bin);
 
     //Linkem els elements
-    gst_element_link_many(mixer, tee, queue, volum, sink, NULL);
+    gst_element_link_many(mixer, tee, queue, volum, level, sink, NULL);
     gst_element_link(tee, queue_mix);
 }
 
@@ -528,6 +570,10 @@ void MainWindow::on_adquirirButton_clicked()
 {
     //Creacio dels elements gstreamer
     pipeline = gst_pipeline_new ("video-mixer");
+
+    bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
+    gst_bus_add_watch (bus, message_handler, ui->qvumeter);
+    gst_object_unref (bus);
 
     mux_pgm =       gst_element_factory_make("oggmux",   "multiplexorfitxer");
     sink_fitxer =   gst_element_factory_make("filesink", "fitxerdesortida");
@@ -626,6 +672,9 @@ void MainWindow::on_adquirirButton_clicked()
     ui->audioSlider->setEnabled(true);
     ui->checkBox_insereixtitol->setEnabled(true);
     ui->adquirirButton->setEnabled(false);
+    double vol;
+    g_object_get(G_OBJECT(apgm.volum),"volume",&vol, NULL);
+    ui->audioSlider->setValue(vol);
 }
 
 //Mètode que controla el botó stop
@@ -645,6 +694,7 @@ void MainWindow::on_stopButton_clicked()
       ui->audioSlider->setEnabled(false);
       ui->checkBox_insereixlogo->setChecked(false);
       ui->moscalabel->clear();
+      ui->checkBox_insereixlogo->setEnabled(false);
       ui->checkBox_insereixtitol->setChecked(false);
       ui->adquirirButton->setEnabled(true);
     }
@@ -783,7 +833,6 @@ void MainWindow::on_checkBox_insereixlogo_stateChanged(int check)
             gst_element_unlink (lentrada.conv_logo,vpgm.mixer);
             gst_element_set_state (lentrada.bin_logo, GST_STATE_NULL);
             gst_bin_remove(GST_BIN (pipeline),lentrada.bin_logo);
-            //gst_object_unref(lentrada.bin_logo);
             lentrada.bin_logo = NULL;
         }
         if(check==2 && lentrada.bin_logo == NULL){

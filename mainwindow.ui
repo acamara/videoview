@@ -92,6 +92,9 @@
          </widget>
         </item>
         <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2"/>
+        </item>
+        <item>
          <widget class="QLabel" name="label_transicions">
           <property name="font">
            <font>
@@ -238,7 +241,7 @@
       </item>
       <item row="5" column="0">
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="0">
+        <item row="0" column="1">
          <widget class="QSlider" name="audioSlider">
           <property name="enabled">
            <bool>true</bool>
@@ -263,6 +266,25 @@
           </property>
           <property name="tickPosition">
            <enum>QSlider::TicksBothSides</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QVUMeter" name="qvumeter">
+          <property name="maximumSize">
+           <size>
+            <width>50</width>
+            <height>350</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>VU Meter</string>
+          </property>
+          <property name="whatsThis">
+           <string>VU Meter</string>
+          </property>
+          <property name="maxValue">
+           <double>1.000000000000000</double>
           </property>
          </widget>
         </item>
@@ -346,7 +368,7 @@
          </font>
         </property>
         <property name="currentIndex">
-         <number>3</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="tab_transicions">
          <attribute name="title">
@@ -658,17 +680,6 @@
             <string/>
            </property>
           </widget>
-          <zorder>moscaButton</zorder>
-          <zorder>checkBox_insereixlogo</zorder>
-          <zorder>label_22</zorder>
-          <zorder>lineEdit_9</zorder>
-          <zorder>lineEdit_10</zorder>
-          <zorder>label_23</zorder>
-          <zorder>label_24</zorder>
-          <zorder>moscalabel</zorder>
-          <zorder>groupBox_4</zorder>
-          <zorder>groupBox_4</zorder>
-          <zorder>groupBox_4</zorder>
          </widget>
          <widget class="QGroupBox" name="groupBox_4">
           <property name="geometry">
@@ -881,6 +892,13 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QVUMeter</class>
+   <extends>QWidget</extends>
+   <header>qvumeter.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="recursos.qrc"/>
  </resources>

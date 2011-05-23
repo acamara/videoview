@@ -57,7 +57,7 @@ struct VideoPGM: public ElementsComuns {
 };
 
 struct AudioPGM: public ElementsComuns {
-  GstElement  *mixer, *volum, *sink;
+  GstElement  *mixer, *volum, *level, *sink;
   void crea(int k, GstElement *);
 };
 
@@ -132,6 +132,7 @@ private:
     SortidaFitxer vfitxer;
     SortidaFitxer afitxer;
 
+    GstBus *bus;
     GstCaps *caps_resolucio;
     GstCaps *caps_color;
     GstElement  *mux_pgm;
