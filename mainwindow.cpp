@@ -548,21 +548,21 @@ void SortidaFitxer::crea(GstElement *pipeline, GstElement *queue,  GstElement *m
 
     bin_fitxer = gst_bin_new ((char*)sbin.prepend(type).toStdString().c_str());
     conv =      gst_element_factory_make(typeconverter, (char*)sconv.prepend(typeconverter).toStdString().c_str());
-    encoder =   gst_element_factory_make(typeencoder,   (char*)sencoder.prepend(typeencoder).toStdString().c_str());
+    //encoder =   gst_element_factory_make(typeencoder,   (char*)sencoder.prepend(typeencoder).toStdString().c_str());
 
     //Comprovem que s'han pogut crear tots els elements d'entrada
-    if(!bin_fitxer || !conv || !encoder){
+    if(!bin_fitxer || !conv){
       g_printerr ("Un dels elements de la sortida a fitxer no s'ha pogut crear. Sortint.\n");
     }
 
     //Afegim tots els elements al bin corresponent
-    gst_bin_add_many (GST_BIN (bin_fitxer), conv, encoder, NULL);
+    gst_bin_add_many (GST_BIN (bin_fitxer), conv, NULL);
 
     //Afegim els bin_fitxer al pipeline
     gst_bin_add (GST_BIN (pipeline), bin_fitxer);
 
     //Linkem els elements
-    gst_element_link_many (queue, conv, encoder, mux_pgm, NULL);
+    gst_element_link_many (queue, conv, mux_pgm, NULL);
 }
 
 //Mètode que controla el botó capturar
@@ -575,7 +575,7 @@ void MainWindow::on_adquirirButton_clicked()
     gst_bus_add_watch (bus, message_handler, ui->qvumeter);
     gst_object_unref (bus);
 
-    mux_pgm =       gst_element_factory_make("oggmux",   "multiplexorfitxer");
+    mux_pgm =       gst_element_factory_make("avimux",   "multiplexorfitxer");
     sink_fitxer =   gst_element_factory_make("filesink", "fitxerdesortida");
 
     //Comprovem que s'han pogut crear tots els elements d'entrada
@@ -622,7 +622,7 @@ void MainWindow::on_adquirirButton_clicked()
 
     //Canvi de les propietats d'alguns elements
     g_object_set (G_OBJECT (vpgm.mixer), "background", 1 , NULL);
-    g_object_set (G_OBJECT (sink_fitxer), "location","sortida.ogg" , NULL);
+    g_object_set (G_OBJECT (sink_fitxer), "location","sortida.avi" , NULL);
 
     caps_color = gst_caps_new_simple ("video/x-raw-yuv", "format", GST_TYPE_FOURCC, GST_MAKE_FOURCC ('A', 'Y', 'U', 'V'), NULL);
 

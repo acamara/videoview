@@ -62,7 +62,7 @@ struct AudioPGM: public ElementsComuns {
 };
 
 struct SortidaFitxer {
-    GstElement  *bin_fitxer, *conv, *encoder;
+    GstElement  *bin_fitxer, *conv; // "*encoder;" Es podria ficar en cas de voler codificar al instant
     void crea(GstElement *, GstElement *, GstElement *, const char* type, const char* typeconverter, const char* typeencoder);
 };
 
