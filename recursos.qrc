@@ -5,4 +5,8 @@
         <file>images/iconoadd.png</file>
         <file>images/iconoremove.png</file>
     </qresource>
+    <qresource prefix="/slider">
+        <file>images/sliderboto.png</file>
+        <file>images/fonsslider.png</file>
+    </qresource>
 </RCC>

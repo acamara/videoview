@@ -250,7 +250,13 @@
            <string/>
           </property>
           <property name="styleSheet">
-           <string notr="true"/>
+           <string notr="true">QSlider::groove:vertical {
+border-image: url(:/slider/images/fonsslider.png);
+}
+QSlider::handle:vertical {
+with:300px;
+image: url(:/slider/images/sliderboto.png);
+}</string>
           </property>
           <property name="maximum">
            <number>10</number>
