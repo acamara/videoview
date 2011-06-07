@@ -279,7 +279,7 @@ image: url(:/slider/images/sliderboto.png);
           <property name="maximumSize">
            <size>
             <width>50</width>
-            <height>350</height>
+            <height>16777215</height>
            </size>
           </property>
           <property name="toolTip">
@@ -287,6 +287,9 @@ image: url(:/slider/images/sliderboto.png);
           </property>
           <property name="whatsThis">
            <string>VU Meter</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
           </property>
           <property name="maxValue">
            <double>1.000000000000000</double>
@@ -376,7 +379,7 @@ image: url(:/slider/images/sliderboto.png);
          </font>
         </property>
         <property name="currentIndex">
-         <number>4</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="tab_transicions">
          <attribute name="title">
@@ -390,6 +393,19 @@ image: url(:/slider/images/sliderboto.png);
          <layout class="QGridLayout" name="gridLayout_7">
           <item row="0" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_audio"/>
+          </item>
+          <item row="0" column="1">
+           <spacer name="horizontalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
