@@ -254,7 +254,6 @@
 border-image: url(:/slider/images/fonsslider.png);
 }
 QSlider::handle:vertical {
-with:300px;
 image: url(:/slider/images/sliderboto.png);
 }</string>
           </property>
@@ -366,15 +365,18 @@ image: url(:/slider/images/sliderboto.png);
         </item>
        </layout>
       </item>
-      <item row="5" column="3">
-       <widget class="QTabWidget" name="tab_fitxers">
+      <item row="5" column="3" rowspan="2">
+       <widget class="QTabWidget" name="tab_efectes">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="font">
          <font>
           <pointsize>10</pointsize>
          </font>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>4</number>
         </property>
         <widget class="QWidget" name="tab_transicions">
          <attribute name="title">
@@ -385,17 +387,11 @@ image: url(:/slider/images/sliderboto.png);
          <attribute name="title">
           <string>Àudio</string>
          </attribute>
-         <widget class="QWidget" name="horizontalLayoutWidget">
-          <property name="geometry">
-           <rect>
-            <x>6</x>
-            <y>10</y>
-            <width>251</width>
-            <height>191</height>
-           </rect>
-          </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_audio"/>
-         </widget>
+         <layout class="QGridLayout" name="gridLayout_7">
+          <item row="0" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_audio"/>
+          </item>
+         </layout>
         </widget>
         <widget class="QWidget" name="tab">
          <attribute name="title">
