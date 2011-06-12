@@ -699,6 +699,7 @@ void MainWindow::on_stopButton_clicked()
       ui->checkBox_insereixlogo->setEnabled(false);
       ui->checkBox_insereixtitol->setChecked(false);
       ui->adquirirButton->setEnabled(true);
+      ui->audioSlider->setSliderPosition(0);
     }
 }
 
