@@ -86,8 +86,6 @@ void MainWindow::creainterficie()
 
         slideraudio[k] = new QSlider(Qt::Vertical,0);
         slideraudio[k]->setRange(0,10);
-        slideraudio[k]->setStyleSheet(  "QSlider::groove:vertical {border-image: url(:/slider/images/fonsslider.png);}"
-                                        "QSlider::handle:vertical {image: url(:/slider/images/sliderboto.png);}");
         slideraudio[k]->setObjectName(nom.arg(k).toAscii());
         ui->horizontalLayout_audio->addWidget(slideraudio[k]);
         QObject::connect(slideraudio[k], SIGNAL(valueChanged(int)), this, SLOT(canviavolum(int)));
@@ -699,7 +697,6 @@ void MainWindow::on_stopButton_clicked()
       ui->checkBox_insereixlogo->setEnabled(false);
       ui->checkBox_insereixtitol->setChecked(false);
       ui->adquirirButton->setEnabled(true);
-      ui->audioSlider->setSliderPosition(0);
     }
 }
 
