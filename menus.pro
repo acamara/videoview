@@ -29,6 +29,7 @@ else {
                    /usr/include/gstreamer-0.10 \
                    /usr/include/glib-2.0 \
                    /usr/lib/glib-2.0/include \
+                   /usr/lib/x86_64-linux-gnu/glib-2.0/include \
                    /usr/include/libxml2
 
     LIBS += -L/usr/local/lib \
