@@ -1,12 +1,14 @@
 HEADERS += configdialog.h \
     mainwindow.h \
     widgetvideo.h \
-    qvumeter.h
+    qvumeter.h \
+    eprocessat.h
 SOURCES += mainwindow.cpp \
     main.cpp \
     configdialog.cpp \
     widgetvideo.cpp \
-    qvumeter.cpp
+    qvumeter.cpp \
+    eprocessat.cpp
 FORMS += mainwindow.ui \
     configdialog.ui \
     widgetvideo.ui
