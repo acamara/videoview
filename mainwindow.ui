@@ -275,7 +275,7 @@ image: url(:/slider/images/sliderboto.png);
          </widget>
         </item>
         <item row="0" column="0">
-         <widget class="QVUMeter" name="qvumeter">
+         <widget class="QVUMeter" name="qvumeter" native="true">
           <property name="maximumSize">
            <size>
             <width>50</width>
@@ -288,7 +288,7 @@ image: url(:/slider/images/sliderboto.png);
           <property name="whatsThis">
            <string>VU Meter</string>
           </property>
-          <property name="maxValue">
+          <property name="maxValue" stdset="0">
            <double>1.000000000000000</double>
           </property>
          </widget>
@@ -382,7 +382,7 @@ image: url(:/slider/images/sliderboto.png);
          </font>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>3</number>
         </property>
         <widget class="QWidget" name="tab_audio">
          <attribute name="title">
@@ -469,7 +469,7 @@ image: url(:/slider/images/sliderboto.png);
           <string>Títols</string>
          </attribute>
          <layout class="QGridLayout" name="gridLayout_5">
-          <item row="0" column="0" rowspan="2">
+          <item row="0" column="0" rowspan="3">
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
              <widget class="QLabel" name="label_19">
@@ -514,14 +514,7 @@ image: url(:/slider/images/sliderboto.png);
             </item>
            </layout>
           </item>
-          <item row="0" column="2">
-           <widget class="QPushButton" name="FontButton">
-            <property name="text">
-             <string>Font</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
+          <item row="2" column="1">
            <spacer name="horizontalSpacer_4">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -534,15 +527,25 @@ image: url(:/slider/images/sliderboto.png);
             </property>
            </spacer>
           </item>
-          <item row="1" column="2">
-           <widget class="QCheckBox" name="checkBox_insereixtitol">
+          <item row="3" column="0" colspan="3">
+           <widget class="QPlainTextEdit" name="plainTextEdit"/>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="FontButton">
             <property name="text">
-             <string>Insereix</string>
+             <string>Font</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="0" colspan="3">
-           <widget class="QPlainTextEdit" name="plainTextEdit"/>
+          <item row="2" column="2">
+           <widget class="QPushButton" name="Button_insereixtitol">
+            <property name="text">
+             <string>Insereix</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -656,9 +659,12 @@ image: url(:/slider/images/sliderboto.png);
              <enum>QLayout::SetFixedSize</enum>
             </property>
             <item>
-             <widget class="QCheckBox" name="checkBox_2">
+             <widget class="QPushButton" name="Button_insereixTemplate">
               <property name="text">
                <string>Insereix</string>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -782,9 +788,12 @@ image: url(:/slider/images/sliderboto.png);
              <number>0</number>
             </property>
             <item>
-             <widget class="QCheckBox" name="checkBox_insereixlogo">
+             <widget class="QPushButton" name="Button_insereixMosca">
               <property name="text">
                <string>Insereix</string>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
               </property>
              </widget>
             </item>

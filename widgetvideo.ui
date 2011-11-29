@@ -14,7 +14,8 @@
    <string>Widgetvideo</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(0, 0, 0);</string>
+   <string notr="true">background-color: rgb(0, 0, 0);
+border: 5px solid red;</string>
   </property>
   <layout class="QGridLayout" name="gridLayout"/>
  </widget>

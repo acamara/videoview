@@ -35,9 +35,9 @@ protected:
     void keyPressEvent( QKeyEvent * event );
 
 private slots:
-    void on_checkBox_insereixlogo_stateChanged(int );
+    void on_Button_insereixtitol_toggled(bool checked);
+    void on_Button_insereixMosca_toggled(bool checked);
     void on_removeButton_clicked();
-    void on_checkBox_insereixtitol_stateChanged(int );
     void on_addButton_clicked();
     void on_audioSlider_valueChanged(int value);
     void on_templatesButton_clicked();
